@@ -32,7 +32,25 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "El modelo en estudio cubre tres animales destino: **tilapia** (meta 30 a 45 % de proteína), **pollo** (18 a 23 %) y **cerdo** (14 a 20 %). Cada animal se divide en etapas productivas (inicio, crecimiento, engorde). Le sugerimos abrir el asistente guiado para ver la comparación demostrativa.",
   },
   {
-    keywords: ["dieta", "dietas", "comida", "alimento", "ingredientes", "bore", "boton", "botón", "salvado", "choclo", "avena"],
+    keywords: [
+      "dieta",
+      "dietas",
+      "cuales dietas",
+      "que dietas",
+      "estan en estudio",
+      "en estudio",
+      "lista",
+      "comida",
+      "alimento",
+      "ingredientes",
+      "bore",
+      "boton",
+      "boton de oro",
+      "salvado",
+      "salvado de trigo",
+      "choclo",
+      "avena",
+    ],
     answer:
       "Hay tres dietas en estudio. Todas comparten la misma base de **harina de choclo 10 %** y **avena en hojuelas 10 %**, y varían en la fuente proteica principal (80 %): **D1** harina de bore, **D2** harina de botón de oro, **D3** salvado de trigo. La hidratación es común: bebederos con agua más pedazos de manzana.",
   },
@@ -77,7 +95,19 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "El proyecto se desarrolla en el Piedemonte Llanero colombiano, una región con condiciones climáticas favorables para la cría de grillos nativos. Por eso el modelo aprende a recomendar dietas dentro de los rangos típicos de esa zona.",
   },
   {
-    keywords: ["recomienda", "recomendar", "recomendación", "recomendacion", "que dieta", "qué dieta", "cual dieta", "cuál dieta"],
+    keywords: [
+      "recomienda",
+      "recomendar",
+      "recomendacion",
+      "me recomienda",
+      "que me recomienda",
+      "cual me recomienda",
+      "me sugiere",
+      "que me sugiere",
+      "cual es mejor",
+      "cual deberia",
+      "que deberia",
+    ],
     answer:
       "En esta demo no entregamos una recomendación definitiva. **Le sugerimos** abrir el asistente guiado: comparamos las dietas en estudio frente a su meta de proteína y le mostramos cuál se acerca más bajo sus condiciones climáticas. La decisión final debe acompañarse de criterio técnico.",
   },
@@ -106,6 +136,20 @@ function normalize(text: string): string {
     .trim();
 }
 
+function escapeRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Coincidencia por límites de palabra: "dieta" no matchea dentro de "dietas",
+ * y "que dieta" no matchea dentro de "que dietas". Las frases (con espacio)
+ * pesan más que las palabras sueltas.
+ */
+function matchesAsWord(q: string, kw: string): boolean {
+  const re = new RegExp(`(^|\\W)${escapeRegex(kw)}(\\W|$)`);
+  return re.test(q);
+}
+
 export function answerFor(question: string): string {
   const q = normalize(question);
   if (!q) return FALLBACK;
@@ -117,8 +161,7 @@ export function answerFor(question: string): string {
     let score = 0;
     for (const kw of entry.keywords) {
       const nk = normalize(kw);
-      if (q.includes(nk)) {
-        // Coincidencia de frase compuesta vale más que palabra suelta
+      if (matchesAsWord(q, nk)) {
         score += nk.includes(" ") ? 3 : 1;
       }
     }
