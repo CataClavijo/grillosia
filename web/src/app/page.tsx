@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Link from "next/link";
 import {
   Fish,
   Egg,
@@ -8,6 +9,8 @@ import {
   MessageCircle,
   Sparkles,
   Leaf,
+  ArrowRight,
+  Bot,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -17,17 +20,17 @@ const steps = [
   {
     icon: MessageCircle,
     title: "Cuéntenos sobre su finca",
-    body: "Solo unas preguntas: qué animal alimenta y a qué clima cría sus grillos.",
+    body: "Indique a qué animal va destinada la harina y el clima de su región.",
   },
   {
     icon: Sparkles,
-    title: "Buscamos la mejor opción",
-    body: "Comparamos muchas combinaciones de dieta y condiciones de cría.",
+    title: "Comparamos dietas en estudio",
+    body: "El modelo contrasta combinaciones de dieta y condiciones de cría.",
   },
   {
     icon: Leaf,
-    title: "Reciba una recomendación",
-    body: "Le sugerimos una dieta y un estimado de la proteína esperada.",
+    title: "Le sugerimos una opción",
+    body: "Verá una comparación orientativa con la meta de proteína esperada.",
   },
 ];
 
@@ -63,13 +66,10 @@ const d = (ms: number): CSSProperties =>
 
 export default function Home() {
   return (
-    <main className="relative mx-auto flex w-full max-w-[480px] flex-col px-6 pb-20 pt-5">
+    <main className="relative mx-auto flex w-full max-w-[480px] flex-col px-6 pb-16 pt-5">
       {/* ── Cabecera ── */}
-      <header
-        className="reveal flex items-center justify-between"
-        style={d(0)}
-      >
-        <a href="/" className="flex items-center gap-2.5">
+      <header className="reveal flex items-center justify-between" style={d(0)}>
+        <Link href="/" className="flex items-center gap-2.5">
           <span
             aria-hidden
             className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10"
@@ -77,18 +77,18 @@ export default function Home() {
             <span className="block h-2 w-2 rotate-45 bg-primary" />
           </span>
           <span className="text-lg font-bold tracking-tight">GrillIA</span>
-        </a>
+        </Link>
         <ThemeToggle />
       </header>
 
       {/* ── Hero ── */}
-      <section className="mt-14">
+      <section className="mt-12">
         <p
           className="reveal inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1.5 text-[12px] font-medium text-foreground/75"
           style={d(80)}
         >
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
-          Proyecto Minciencias 963 · 2025
+          Piedemonte Llanero · Minciencias 963 · 2025
         </p>
 
         <h1
@@ -99,26 +99,61 @@ export default function Home() {
           <br />
           <span className="text-primary">para la cría</span>
           <br />
-          de sus grillos.
+          de grillos nativos.
         </h1>
 
         <p
           className="reveal mt-6 text-[17px] leading-relaxed text-foreground/75"
           style={d(280)}
         >
-          Le sugerimos una dieta de cría ajustada al clima de su finca y al
-          animal al que va destinada la harina.
+          Estudiamos cómo optimizar las dietas de grillos criados en el
+          Piedemonte Llanero para producir harina proteica destinada a la
+          piscicultura, avicultura y porcicultura.
         </p>
 
-        <div className="reveal mt-8" style={d(420)}>
-          <ProximamenteCard
-            primary="Próximamente"
-            secondary="Estamos terminando los últimos detalles"
-          />
+        <div
+          className="reveal mt-8 flex flex-col gap-3"
+          style={d(420)}
+        >
+          <Button
+            asChild
+            size="lg"
+            className="h-auto justify-between rounded-2xl px-5 py-5 text-[16px] font-semibold"
+          >
+            <Link href="/wizard" aria-label="Probar el asistente guiado">
+              <span className="flex items-center gap-3">
+                <Sparkles className="h-5 w-5" strokeWidth={2} />
+                Probar el asistente guiado
+              </span>
+              <ArrowRight className="h-5 w-5" strokeWidth={2} />
+            </Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="h-auto justify-between rounded-2xl border-primary/30 bg-card/60 px-5 py-5 text-[16px] font-semibold"
+          >
+            <Link href="/chat" aria-label="Conversar con el asistente informativo">
+              <span className="flex items-center gap-3 text-foreground">
+                <Bot className="h-5 w-5 text-primary" strokeWidth={2} />
+                Conversar con el asistente
+              </span>
+              <ArrowRight className="h-5 w-5 text-primary" strokeWidth={2} />
+            </Link>
+          </Button>
         </div>
+
+        <p
+          className="reveal mt-5 text-[12.5px] leading-relaxed text-foreground/60"
+          style={d(540)}
+        >
+          Esta es una versión de demostración. Las respuestas son orientativas
+          y se basan en datos preliminares en estudio.
+        </p>
       </section>
 
-      <Divider delay={620} />
+      <Divider delay={680} />
 
       {/* ── Cómo funciona ── */}
       <Section title="¿Cómo funciona?" subtitle="Tres pasos sencillos.">
@@ -169,7 +204,7 @@ export default function Home() {
                   {f.value}
                 </span>
                 {f.unit && (
-                  <span className="text-2xl font-bold text-foreground/55 leading-none">
+                  <span className="text-2xl font-bold leading-none text-foreground/55">
                     {f.unit}
                   </span>
                 )}
@@ -187,7 +222,7 @@ export default function Home() {
       {/* ── Animales ── */}
       <Section
         title="Para qué animales sirve"
-        subtitle="Adaptamos la recomendación a cada uno."
+        subtitle="Adaptamos la sugerencia a cada uno."
       >
         <ul className="mt-8 space-y-4">
           {animals.map((a, i) => {
@@ -220,7 +255,7 @@ export default function Home() {
 
       {/* ── Clima ── */}
       <Section
-        title="Su clima, nuestra recomendación"
+        title="Su clima, nuestra sugerencia"
         subtitle="El modelo se ajusta a su región."
       >
         <div className="mt-8 grid grid-cols-2 gap-4">
@@ -245,70 +280,54 @@ export default function Home() {
           className="reveal mt-6 text-[15px] leading-relaxed text-foreground/70"
           style={d(320)}
         >
-          Cada recomendación tiene en cuenta el clima real de su región.
+          Cada sugerencia tiene en cuenta el clima real de su región.
         </p>
       </Section>
 
       <Divider />
 
-      {/* ── Cierre ── */}
+      {/* ── CTA final ── */}
       <section>
-        <h2 className="text-[1.75rem] font-bold leading-[1.15] tracking-[-0.015em]">
-          Estamos terminando de prepararla.
+        <h2 className="text-[1.6rem] font-bold leading-[1.15] tracking-[-0.015em]">
+          Pruebe el asistente guiado o
           <br />
-          <span className="text-primary">Vuelva pronto.</span>
+          <span className="text-primary">converse con nosotros.</span>
         </h2>
-        <div className="reveal mt-6" style={d(160)}>
-          <ProximamenteCard
-            primary="Próximamente"
-            secondary="Le avisaremos cuando esté lista"
-          />
+        <div className="reveal mt-6 flex flex-col gap-3" style={d(160)}>
+          <Button
+            asChild
+            size="lg"
+            className="h-auto justify-between rounded-2xl px-5 py-5 text-[16px] font-semibold"
+          >
+            <Link href="/wizard">
+              <span className="flex items-center gap-3">
+                <Sparkles className="h-5 w-5" strokeWidth={2} />
+                Probar el asistente guiado
+              </span>
+              <ArrowRight className="h-5 w-5" strokeWidth={2} />
+            </Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="h-auto justify-between rounded-2xl border-primary/30 bg-card/60 px-5 py-5 text-[16px] font-semibold"
+          >
+            <Link href="/chat">
+              <span className="flex items-center gap-3 text-foreground">
+                <Bot className="h-5 w-5 text-primary" strokeWidth={2} />
+                Conversar con el asistente
+              </span>
+              <ArrowRight className="h-5 w-5 text-primary" strokeWidth={2} />
+            </Link>
+          </Button>
         </div>
       </section>
-
-      {/* ── Footer ── */}
-      <footer className="reveal mt-20 border-t border-border/70 pt-6" style={d(220)}>
-        <p className="text-[15px] font-semibold">Universidad de los Llanos</p>
-        <p className="mt-1 text-[13px] leading-relaxed text-foreground/60">
-          Convocatoria Minciencias 963 de 2025 · Contrato 207 de 2025
-        </p>
-      </footer>
     </main>
   );
 }
 
 /* ────────────────────────────────────────────────────────────────────────── */
-
-function ProximamenteCard({
-  primary,
-  secondary,
-}: {
-  primary: string;
-  secondary: string;
-}) {
-  return (
-    <Button
-      disabled
-      aria-disabled
-      aria-label={`${primary}. ${secondary}`}
-      className="group h-auto w-full justify-start gap-4 rounded-2xl border border-primary/30 bg-card px-5 py-5 text-left text-base font-semibold text-foreground shadow-none hover:bg-card disabled:cursor-default disabled:opacity-100"
-    >
-      <span
-        className="relative inline-flex h-3 w-3 shrink-0 items-center justify-center"
-        aria-hidden
-      >
-        <span className="pulse-ring absolute inset-0 rounded-full bg-primary" />
-        <span className="relative h-2.5 w-2.5 rounded-full bg-primary" />
-      </span>
-      <span className="flex flex-col gap-0.5">
-        <span className="text-[17px] font-bold leading-none">{primary}</span>
-        <span className="text-[13px] font-medium leading-snug text-foreground/65">
-          {secondary}
-        </span>
-      </span>
-    </Button>
-  );
-}
 
 function Section({
   title,
@@ -322,7 +341,7 @@ function Section({
   return (
     <section>
       <div className="reveal" style={d(0)}>
-        <h2 className="text-[1.65rem] font-bold leading-tight tracking-[-0.015em]">
+        <h2 className="text-[1.6rem] font-bold leading-tight tracking-[-0.015em]">
           {title}
         </h2>
         {subtitle && (
@@ -374,11 +393,11 @@ function ClimateTile({
           {label}
         </span>
       </div>
-      <p className="flex items-baseline gap-1.5 text-[2rem] font-extrabold tracking-[-0.02em] leading-none">
+      <p className="flex items-baseline gap-1.5 text-[2rem] font-extrabold leading-none tracking-[-0.02em]">
         <span>{from}</span>
-        <span className="text-foreground/35 text-[1.3rem] font-semibold">a</span>
+        <span className="text-[1.3rem] font-semibold text-foreground/35">a</span>
         <span>{to}</span>
-        <span className="text-base font-bold text-foreground/55 ml-1">
+        <span className="ml-1 text-base font-bold text-foreground/55">
           {unit}
         </span>
       </p>

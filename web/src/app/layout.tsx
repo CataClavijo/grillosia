@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 
 import "./globals.css";
+import { DemoBanner } from "@/components/demo-banner";
+import { SiteFooter } from "@/components/site-footer";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -27,8 +29,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F8F2E7" },
-    { media: "(prefers-color-scheme: dark)", color: "#16130E" },
+    { media: "(prefers-color-scheme: light)", color: "#F4F1E7" },
+    { media: "(prefers-color-scheme: dark)", color: "#0F1612" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -52,7 +54,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <DemoBanner />
+        <div className="flex-1">{children}</div>
+        <SiteFooter />
+      </body>
     </html>
   );
 }

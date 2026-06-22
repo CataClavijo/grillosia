@@ -8,7 +8,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default:
+          "bg-primary text-primary-foreground hover:bg-primary/90",
         outline:
           "border-border bg-background hover:bg-muted hover:text-foreground",
         ghost: "hover:bg-muted hover:text-foreground",
@@ -25,28 +26,44 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
-  VariantProps<typeof buttonVariants>;
+type BaseProps = VariantProps<typeof buttonVariants> & {
+  className?: string;
+  asChild?: boolean;
+};
+
+type ButtonOwnProps = BaseProps &
+  Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseProps>;
 
 function Button({
   className,
   variant,
   size,
-  type = "button",
+  asChild = false,
   ...props
-}: ButtonProps) {
+}: ButtonOwnProps) {
+  const classes = cn(buttonVariants({ variant, size, className }));
+
+  if (asChild) {
+    const child = React.Children.only(
+      (props as { children: React.ReactNode }).children,
+    ) as React.ReactElement<{ className?: string }>;
+    return React.cloneElement(child, {
+      className: cn(classes, child.props.className),
+    });
+  }
+
   return (
     <button
-      type={type}
+      type={(props as React.ButtonHTMLAttributes<HTMLButtonElement>).type ?? "button"}
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
+      className={classes}
+      {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
     />
   );
 }
 
 export { Button, buttonVariants };
-export type { ButtonProps };
+export type { ButtonOwnProps as ButtonProps };
