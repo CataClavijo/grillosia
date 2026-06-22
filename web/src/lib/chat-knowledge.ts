@@ -39,17 +39,17 @@ const KNOWLEDGE: KnowledgeEntry[] = [
   {
     keywords: ["proteina", "proteína", "porcentaje", "rango", "meta"],
     answer:
-      "La meta de proteína de la harina de grillo es del orden de 60 a 70 % en base seca, pero el valor real depende de la dieta, el clima y la especie. En la demo verá bandas estimadas por dieta, no un valor único.",
+      "La **meta interna** del proyecto es alcanzar entre **60 y 70 %** de proteína en la harina de grillo (en base seca). No es un valor ya obtenido: se confirmará mediante análisis bromatológico al final de cada ensayo.",
   },
   {
     keywords: ["temperatura", "humedad", "clima", "ambiente"],
     answer:
-      "El modelo se ajusta al clima de su región. Las condiciones que cubre el estudio van de **24 a 34 °C** de temperatura y de **50 a 80 % de humedad relativa**. Le pedimos esos datos en el asistente guiado para adaptar la comparación.",
+      "El estudio contempla como **condiciones de cría objetivo** un rango de **24 a 34 °C** de temperatura y **50 a 80 %** de humedad relativa. Son los rangos hacia los que apunta el ensayo, no mediciones ya registradas. Le pedimos su clima en el asistente guiado para mostrarle el contexto de su consulta.",
   },
   {
-    keywords: ["especie", "grillo", "grillos", "acheta", "gryllus"],
+    keywords: ["especie", "grillo", "grillos"],
     answer:
-      "El estudio se concentra en especies de grillo adaptadas a la cría en el Piedemonte Llanero. La selección específica de especies y su perfil nutricional se está documentando como parte del proyecto.",
+      "El proyecto trabaja con **grillos nativos del Piedemonte Llanero**. La selección específica y su perfil nutricional se está documentando como parte del estudio.",
   },
   {
     keywords: ["wizard", "asistente guiado", "como uso", "cómo uso", "como funciona", "cómo funciona", "paso a paso"],
@@ -69,7 +69,7 @@ const KNOWLEDGE: KnowledgeEntry[] = [
   {
     keywords: ["harina", "harina de pescado", "alternativa", "sustituir", "reemplazar"],
     answer:
-      "Colombia importa miles de toneladas de harina de pescado al año para alimentación animal. La harina de grillo, con 60 a 70 % de proteína en base seca, se estudia como alternativa nacional viable. GrillIA contribuye al estudio de su producción óptima.",
+      "Colombia importa miles de toneladas de harina de pescado al año para alimentación animal. La harina de grillo se estudia como alternativa nacional, con la **meta interna** del proyecto de alcanzar entre 60 y 70 % de proteína en base seca al final de cada ensayo. GrillIA contribuye al estudio de su producción óptima.",
   },
   {
     keywords: ["piedemonte", "llanero", "región", "region", "donde", "dónde", "ubicacion", "ubicación"],

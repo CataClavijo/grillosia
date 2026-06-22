@@ -35,7 +35,11 @@ const steps = [
 ];
 
 const figures = [
-  { value: "60 a 70", unit: "%", label: "Meta de proteína en la harina" },
+  {
+    value: "60 a 70",
+    unit: "%",
+    label: "Meta interna de proteína en la harina, a confirmar por análisis bromatológico",
+  },
   { value: "3", unit: "", label: "Dietas en estudio" },
   { value: "3", unit: "", label: "Animales que cubre el modelo" },
 ];
@@ -253,10 +257,10 @@ export default function Home() {
 
       <Divider />
 
-      {/* ── Clima ── */}
+      {/* ── Condiciones de cría objetivo ── */}
       <Section
-        title="Su clima, nuestra sugerencia"
-        subtitle="El modelo se ajusta a su región."
+        title="Condiciones de cría contempladas"
+        subtitle="Rangos objetivo del estudio."
       >
         <div className="mt-8 grid grid-cols-2 gap-4">
           <ClimateTile
@@ -280,7 +284,8 @@ export default function Home() {
           className="reveal mt-6 text-[15px] leading-relaxed text-foreground/70"
           style={d(320)}
         >
-          Cada sugerencia tiene en cuenta el clima real de su región.
+          Son los rangos que el proyecto contempla como objetivo para la cría
+          de los grillos, no mediciones ya registradas.
         </p>
       </Section>
 
