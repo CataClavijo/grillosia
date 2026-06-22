@@ -32,9 +32,9 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "El modelo en estudio cubre tres animales destino: **tilapia** (meta 30 a 45 % de proteína), **pollo** (18 a 23 %) y **cerdo** (14 a 20 %). Cada animal se divide en etapas productivas (inicio, crecimiento, engorde). Le sugerimos abrir el asistente guiado para ver la comparación demostrativa.",
   },
   {
-    keywords: ["dieta", "dietas", "comida", "alimento", "ingredientes"],
+    keywords: ["dieta", "dietas", "comida", "alimento", "ingredientes", "bore", "boton", "botón", "salvado", "choclo", "avena"],
     answer:
-      "Tenemos cuatro dietas en estudio: **D1** (maíz, soya y yuca), **D2** (salvado de trigo y soya), **D3** (concentrado comercial) y **D4** (harina de pescado, maíz y soya). Comparamos su efecto sobre la calidad de la harina de grillo bajo distintas condiciones climáticas.",
+      "Hay tres dietas en estudio. Todas comparten la misma base de **harina de choclo 10 %** y **avena en hojuelas 10 %**, y varían en la fuente proteica principal (80 %): **D1** harina de bore, **D2** harina de botón de oro, **D3** salvado de trigo. La hidratación es común: bebederos con agua más pedazos de manzana.",
   },
   {
     keywords: ["proteina", "proteína", "porcentaje", "rango", "meta"],
@@ -49,7 +49,7 @@ const KNOWLEDGE: KnowledgeEntry[] = [
   {
     keywords: ["especie", "grillo", "grillos", "acheta", "gryllus"],
     answer:
-      "Trabajamos principalmente con dos especies: *Acheta domesticus* (grillo doméstico) y *Gryllus bimaculatus* (grillo de dos manchas). Ambas se crían en el Piedemonte Llanero y muestran perfiles nutricionales distintos.",
+      "El estudio se concentra en especies de grillo adaptadas a la cría en el Piedemonte Llanero. La selección específica de especies y su perfil nutricional se está documentando como parte del proyecto.",
   },
   {
     keywords: ["wizard", "asistente guiado", "como uso", "cómo uso", "como funciona", "cómo funciona", "paso a paso"],

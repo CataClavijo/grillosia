@@ -36,7 +36,7 @@ const steps = [
 
 const figures = [
   { value: "60 a 70", unit: "%", label: "Meta de proteína en la harina" },
-  { value: "4", unit: "", label: "Dietas en estudio" },
+  { value: "3", unit: "", label: "Dietas en estudio" },
   { value: "3", unit: "", label: "Animales que cubre el modelo" },
 ];
 

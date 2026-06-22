@@ -17,7 +17,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ANIMALS, DIETS } from "@/lib/animals";
+import { ANIMALS, DIETS, HYDRATION_NOTE } from "@/lib/animals";
 
 const ANIMAL_ICONS: Record<string, typeof Fish> = {
   tilapia: Fish,
@@ -334,30 +334,11 @@ function StepGrid({
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   Pantalla de resultado — demostrativa. NO predice; muestra las dietas en
-   estudio con bandas orientativas calculadas localmente.
+   Pantalla de resultado — demostrativa y honesta.
+   No predice valores: muestra el contexto del usuario y las tres dietas en
+   estudio con su composición real. La meta de proteína por animal proviene
+   de tablas NRC y se etiqueta explícitamente como objetivo del estudio.
    ────────────────────────────────────────────────────────────────────── */
-
-interface DemoRow {
-  diet: (typeof DIETS)[number];
-  proteinLow: number;
-  proteinHigh: number;
-  matchScore: number; // 0..1 cuánto cubre la meta de proteína
-}
-
-/**
- * Bandas orientativas asociadas a cada dieta. No son predicciones del modelo;
- * son rangos de literatura preliminar usados solo para la demo.
- */
-const DIET_BANDS: Record<
-  (typeof DIETS)[number]["id"],
-  { low: number; high: number }
-> = {
-  D1: { low: 56, high: 62 },
-  D2: { low: 52, high: 58 },
-  D3: { low: 58, high: 64 },
-  D4: { low: 62, high: 68 },
-};
 
 function DemoResult({
   animalName,
@@ -378,44 +359,23 @@ function DemoResult({
   humidity: number;
   onReset: () => void;
 }) {
-  const rows: DemoRow[] = useMemo(() => {
-    return DIETS.map((diet) => {
-      const band = DIET_BANDS[diet.id];
-      // Ajuste leve por temperatura/humedad sin pretender precisión científica.
-      const climateAdj =
-        (temp >= 26 && temp <= 30 ? 0.5 : -0.5) +
-        (humidity >= 55 && humidity <= 70 ? 0.5 : -0.5);
-      const proteinLow = Math.round(band.low + climateAdj);
-      const proteinHigh = Math.round(band.high + climateAdj);
-
-      // Cuánto del rango de la dieta cae dentro de la meta del animal.
-      const overlapLow = Math.max(proteinLow, proteinMin);
-      const overlapHigh = Math.min(proteinHigh, proteinMax);
-      const overlap = Math.max(0, overlapHigh - overlapLow);
-      const span = Math.max(1, proteinMax - proteinMin);
-      const matchScore = Math.min(1, overlap / span);
-
-      return { diet, proteinLow, proteinHigh, matchScore };
-    }).sort((a, b) => b.matchScore - a.matchScore);
-  }, [proteinMin, proteinMax, temp, humidity]);
-
   return (
     <section className="reveal" style={d(0)}>
       <div className="inline-flex items-center gap-2 rounded-full border border-demo-border bg-demo-bg px-3 py-1.5 text-[11.5px] font-bold uppercase tracking-wider text-demo-foreground">
         <Info className="h-3.5 w-3.5" strokeWidth={2.25} />
-        Resultado demostrativo
+        Vista demostrativa
       </div>
 
       <h1 className="mt-4 text-[1.85rem] font-bold leading-tight tracking-[-0.02em]">
-        Comparación de dietas en estudio
+        Las dietas que estamos estudiando
       </h1>
       <p className="mt-2 text-[15px] leading-relaxed text-foreground/70">
-        Le sugerimos las dietas con mejor ajuste a su caso. No es una
-        recomendación definitiva: las bandas son rangos preliminares que el
-        modelo está validando.
+        Por ahora no entregamos una recomendación: el modelo aún está en fase
+        de entrenamiento. Le mostramos las tres dietas que el proyecto está
+        comparando junto con la meta de proteína que pide el animal que indicó.
       </p>
 
-      {/* Contexto */}
+      {/* Contexto del usuario */}
       <div className="mt-6 rounded-2xl border border-border/70 bg-card/60 p-4">
         <p className="text-[12px] font-bold uppercase tracking-wider text-foreground/55">
           Su consulta
@@ -432,14 +392,17 @@ function DemoResult({
               <span className="text-foreground/55">({stageDetail})</span>
             </dd>
           </div>
-          <div>
-            <dt className="text-foreground/55">Meta de proteína</dt>
-            <dd className="font-semibold text-primary">
+          <div className="col-span-2">
+            <dt className="text-foreground/55">
+              Meta de proteína{" "}
+              <span className="font-normal italic">(referencia NRC)</span>
+            </dt>
+            <dd className="text-[16px] font-bold text-primary">
               {proteinMin} a {proteinMax} %
             </dd>
           </div>
-          <div>
-            <dt className="text-foreground/55">Clima</dt>
+          <div className="col-span-2">
+            <dt className="text-foreground/55">Clima indicado</dt>
             <dd className="font-semibold">
               {temp} °C · {humidity} % HR
             </dd>
@@ -447,50 +410,31 @@ function DemoResult({
         </dl>
       </div>
 
-      {/* Comparación */}
-      <ul className="mt-6 space-y-3">
-        {rows.map((row, i) => (
+      {/* Dietas reales en estudio */}
+      <p className="mt-7 text-[12px] font-bold uppercase tracking-wider text-foreground/55">
+        Dietas en estudio
+      </p>
+      <ul className="mt-3 space-y-3">
+        {DIETS.map((diet) => (
           <li
-            key={row.diet.id}
-            className={`rounded-2xl border p-4 ${
-              i === 0
-                ? "border-primary/40 bg-primary/5"
-                : "border-border/70 bg-card/60"
-            }`}
+            key={diet.id}
+            className="rounded-2xl border border-border/70 bg-card/70 p-4"
           >
-            <div className="flex items-baseline justify-between gap-3">
-              <div className="flex items-baseline gap-2">
-                <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[11.5px] font-bold tabular-nums text-primary">
-                  {row.diet.id}
-                </span>
-                <span className="text-[16px] font-bold">{row.diet.name}</span>
-              </div>
-              {i === 0 && (
-                <span className="rounded-full bg-gold/30 px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-wider text-foreground/85">
-                  Mejor ajuste
-                </span>
-              )}
+            <div className="flex items-baseline gap-2">
+              <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[11.5px] font-bold tabular-nums text-primary">
+                {diet.id}
+              </span>
+              <span className="text-[16px] font-bold">{diet.name}</span>
             </div>
-            <p className="mt-1 text-[13px] text-foreground/65">
-              {row.diet.composition}
+            <p className="mt-2 text-[13.5px] leading-relaxed text-foreground/75">
+              {diet.composition}
             </p>
-            <div className="mt-3 flex items-center gap-3">
-              <span className="text-[12px] font-semibold text-foreground/55">
-                Banda estimada
-              </span>
-              <span className="text-[14px] font-bold tabular-nums">
-                {row.proteinLow} a {row.proteinHigh} %
-              </span>
-              <span
-                className="ml-auto rounded-md bg-muted px-2 py-0.5 text-[11.5px] font-bold uppercase tracking-wider text-foreground/70"
-                title="Cobertura de la meta de proteína del animal"
-              >
-                Ajuste {Math.round(row.matchScore * 100)} %
-              </span>
-            </div>
           </li>
         ))}
       </ul>
+      <p className="mt-3 text-[12.5px] leading-relaxed text-foreground/60">
+        {HYDRATION_NOTE}
+      </p>
 
       {/* Disclaimer */}
       <div className="mt-7 rounded-2xl border border-demo-border bg-demo-bg/70 p-4">
@@ -500,10 +444,9 @@ function DemoResult({
             strokeWidth={2.25}
           />
           <p className="text-[13px] leading-relaxed text-demo-foreground">
-            Esta comparación es <strong>demostrativa</strong>. Las bandas se
-            basan en literatura preliminar y servirán para validar la
-            experiencia de usuario. El modelo final está en fase de
-            entrenamiento.
+            Esta es una vista <strong>demostrativa</strong>. Cuando termine la
+            fase de entrenamiento del modelo, en este lugar verá una sugerencia
+            comparativa entre las dietas según el clima y el animal indicado.
           </p>
         </div>
       </div>

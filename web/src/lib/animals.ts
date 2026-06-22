@@ -1,7 +1,12 @@
 /**
  * Animales destino soportados por el modelo y catálogo de dietas en estudio.
- * Los rangos de proteína provienen de tablas NRC y se usan solo como guía
- * orientativa dentro de la versión demostrativa.
+ *
+ * Los rangos de proteína por animal y etapa provienen de tablas NRC (National
+ * Research Council) y se usan como referencia técnica orientativa.
+ *
+ * Las dietas son las que el proyecto está evaluando actualmente en
+ * laboratorio. La hidratación se hace por medio de bebederos con agua y
+ * pedazos de manzana, común a todas las dietas.
  */
 
 export const ANIMALS = [
@@ -88,32 +93,39 @@ export const ANIMALS = [
   },
 ] as const;
 
+/**
+ * Dietas reales en estudio dentro del proyecto.
+ *
+ * En las tres se mantiene la misma base de cereal y avena (10 % cada uno),
+ * variando únicamente la fuente proteica principal (80 %). La hidratación es
+ * común: agua en bebederos + pedazos de manzana reemplazados a necesidad.
+ */
 export const DIETS = [
   {
     id: "D1",
-    name: "Maíz + Soya + Yuca",
-    composition: "50% maíz, 30% soya, 20% yuca",
-    hydration: "Pepino",
+    name: "Base bore",
+    main: "Harina de bore",
+    composition:
+      "Harina de bore 80 %, harina de choclo 10 %, avena en hojuelas 10 %",
   },
   {
     id: "D2",
-    name: "Salvado + Soya",
-    composition: "60% salvado de trigo, 40% soya",
-    hydration: "Zanahoria",
+    name: "Base botón de oro",
+    main: "Harina de botón de oro",
+    composition:
+      "Harina de botón de oro 80 %, harina de choclo 10 %, avena en hojuelas 10 %",
   },
   {
     id: "D3",
-    name: "Concentrado comercial",
-    composition: "Concentrado balanceado para aves",
-    hydration: "Manzana",
-  },
-  {
-    id: "D4",
-    name: "Pescado + Maíz + Soya",
-    composition: "20% harina de pescado, 40% maíz, 40% soya",
-    hydration: "Pepino",
+    name: "Base salvado de trigo",
+    main: "Salvado de trigo",
+    composition:
+      "Salvado de trigo 80 %, harina de choclo 10 %, avena en hojuelas 10 %",
   },
 ] as const;
+
+export const HYDRATION_NOTE =
+  "Bebederos con agua y pedazos de manzana, comunes a las tres dietas.";
 
 export type Animal = (typeof ANIMALS)[number];
 export type Stage = Animal["stages"][number];
