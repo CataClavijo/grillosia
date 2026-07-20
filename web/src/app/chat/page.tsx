@@ -5,6 +5,20 @@ import Link from "next/link";
 import { Bot, ChevronLeft, ChevronRight, Info, Save, Send, User, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { SiteNav } from "@/components/site-nav";
 import {
   STARTER_QUESTIONS,
@@ -185,21 +199,38 @@ export default function ChatPage() {
           </p>
         </div>
         {active && active.chat.length > 0 && (
-          <button
-            type="button"
-            onClick={() => {
-              if (
-                window.confirm(
-                  "¿Borrar toda la conversación de esta consulta?",
-                )
-              ) {
-                clearChat(active.id);
-              }
-            }}
-            className="min-h-[44px] text-[13px] font-semibold text-foreground/70 underline underline-offset-2 hover:text-foreground"
-          >
-            Borrar chat
-          </button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                className="h-11 text-[13px] font-semibold text-muted-foreground underline underline-offset-2 hover:text-foreground"
+              >
+                Borrar chat
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  ¿Borrar toda la conversación?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Se perderán todas las preguntas y respuestas guardadas en la
+                  consulta &ldquo;{active.name}&rdquo;. No se puede deshacer.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="h-12 text-base">
+                  No, dejarla
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => clearChat(active.id)}
+                  className="h-12 bg-destructive text-base text-white hover:bg-destructive/90"
+                >
+                  Sí, borrarla
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </div>
 

@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
-  Book,
   Bug,
+  FlaskConical,
   FolderOpen,
   GraduationCap,
   Home,
@@ -13,10 +13,21 @@ import {
   Package,
   School,
   Sparkles,
-  X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProjectSwitcher } from "@/components/project-switcher";
 
@@ -79,125 +90,97 @@ const ITEMS: NavItem[] = [
 ];
 
 /**
- * Nav lateral con menú hamburguesa. La página /metodologia queda fuera del
- * menú principal — está disponible en el footer bajo "Para investigadores"
- * para no intimidar al productor con jerga académica en la navegación.
+ * Navegación principal. La página /metodologia queda fuera de esta lista a
+ * propósito: es contenido académico que intimida al productor. Vive en el
+ * pie del panel y en el footer del sitio, bajo "Para investigadores".
  */
 export function SiteNav({ variant = "full" }: { variant?: "full" | "focused" }) {
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [open]);
-
-  // Variante "focused": para flujos guiados (wizard, tutorial), no mostramos
-  // nada distractor — el back arriba a la izquierda ya es suficiente.
+  // Variante enfocada: durante un flujo guiado no mostramos nada que
+  // distraiga o permita salirse sin querer.
   if (variant === "focused") {
-    return (
-      <div className="flex items-center gap-2">
-        <ThemeToggle />
-      </div>
-    );
+    return <ThemeToggle />;
   }
 
   return (
     <div className="flex items-center gap-2">
       <ProjectSwitcher />
       <ThemeToggle />
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label="Abrir menú"
-        className="inline-flex size-11 items-center justify-center rounded-full border border-border bg-card/60 text-foreground/85 transition-colors hover:border-primary/40 hover:text-foreground"
-      >
-        <Menu className="h-5 w-5" strokeWidth={2} />
-      </button>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-50 flex justify-end bg-foreground/40 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setOpen(false)}
-        >
-          <aside
-            onClick={(e) => e.stopPropagation()}
-            className="flex h-full w-full max-w-[380px] flex-col bg-background shadow-2xl"
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Abrir menú"
+            className="size-11 rounded-full"
           >
-            <div className="flex items-center justify-between border-b border-border px-5 py-4">
-              <div className="flex items-center gap-2">
-                <span
-                  aria-hidden
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10"
-                >
-                  <span className="block h-2 w-2 rotate-45 bg-primary" />
-                </span>
-                <span className="text-base font-bold tracking-tight">
-                  GrillIA
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Cerrar menú"
-                className="inline-flex size-11 items-center justify-center rounded-full text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
+            <Menu />
+          </Button>
+        </SheetTrigger>
+
+        <SheetContent side="right" className="w-full gap-0 sm:max-w-[380px]">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2 text-base">
+              <span
+                aria-hidden
+                className="inline-flex size-8 items-center justify-center rounded-lg bg-primary/10"
               >
-                <X className="h-5 w-5" strokeWidth={2} />
-              </button>
-            </div>
-            <nav className="flex-1 overflow-y-auto p-3">
-              <ul className="flex flex-col gap-1">
-                {ITEMS.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <li key={item.href}>
+                <span className="block size-2 rotate-45 bg-primary" />
+              </span>
+              GrillIA
+            </SheetTitle>
+            <SheetDescription className="sr-only">
+              Navegación principal de la aplicación
+            </SheetDescription>
+          </SheetHeader>
+
+          <Separator />
+
+          <nav className="flex-1 overflow-y-auto p-3">
+            <ul className="flex flex-col gap-1">
+              {ITEMS.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <li key={item.href}>
+                    <SheetClose asChild>
                       <Link
                         href={item.href}
-                        onClick={() => setOpen(false)}
-                        className="flex min-h-[64px] items-start gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-muted"
+                        className="flex min-h-16 items-start gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-none"
                       >
-                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                          <Icon className="h-5 w-5" strokeWidth={1.75} />
+                        <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                          <Icon className="size-5" strokeWidth={1.75} />
                         </span>
                         <span className="flex flex-1 flex-col gap-0.5">
-                          <span className="text-[16px] font-semibold text-foreground">
+                          <span className="text-base font-semibold text-foreground">
                             {item.label}
                           </span>
-                          <span className="text-[13px] leading-snug text-foreground/70">
+                          <span className="text-[13px] leading-snug text-muted-foreground">
                             {item.description}
                           </span>
                         </span>
                       </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
-            <div className="border-t border-border p-4 text-[12px] text-foreground/70">
-              <p className="font-semibold text-foreground/90">En pruebas</p>
-              <p className="mt-1 leading-relaxed">
-                <Book className="mr-1 inline h-3 w-3 -translate-y-px" />
-                <Link
-                  href="/metodologia"
-                  onClick={() => setOpen(false)}
-                  className="underline underline-offset-2"
-                >
-                  Metodología técnica (para investigadores)
-                </Link>
-              </p>
-            </div>
-          </aside>
-        </div>
-      )}
+                    </SheetClose>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          <SheetFooter className="gap-2 border-t">
+            <SheetClose asChild>
+              <Link
+                href="/metodologia"
+                className="flex min-h-11 items-center gap-2 rounded-lg px-2 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <FlaskConical className="size-4" strokeWidth={2} />
+                Para investigadores: metodología técnica
+              </Link>
+            </SheetClose>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

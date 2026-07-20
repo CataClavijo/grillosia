@@ -1,11 +1,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
 /* ──────────────────────────────────────────────────────────────────────────
    Paleta — verde profundo del piedemonte llanero, tierra calida, dorado
-   sutil. Alto contraste, tipografia 17px, pensada para audiencia adulta.
+   sutil. Alto contraste, tipografia 18px, pensada para audiencia adulta
+   rural leyendo en un celular Android bajo el sol.
    ────────────────────────────────────────────────────────────────────── */
 :root {
   --radius: 0.875rem;
@@ -17,13 +19,13 @@
 
   --ink-900: oklch(0.20 0.025 145);
   --ink-700: oklch(0.34 0.030 145);
-  --ink-500: oklch(0.44 0.026 140); /* sube contraste: cumple AA sobre cream */
+  --ink-500: oklch(0.44 0.026 140);
 
   --forest-700: oklch(0.42 0.092 148); /* verde profundo principal */
   --forest-600: oklch(0.50 0.105 148);
   --forest-500: oklch(0.58 0.108 148);
-  --earth-600: oklch(0.50 0.080 55);   /* tierra calida (acento secundario) */
-  --gold-500: oklch(0.74 0.135 82);    /* dorado (acento puntual) */
+  --earth-600: oklch(0.50 0.080 55); /* tierra calida */
+  --gold-500: oklch(0.74 0.135 82); /* dorado puntual */
 
   /* tokens semanticos */
   --background: var(--cream-50);
@@ -38,11 +40,11 @@
   --secondary-foreground: var(--ink-700);
   --muted: var(--cream-200);
   --muted-foreground: var(--ink-500);
-  --accent: var(--earth-600);
-  --accent-foreground: var(--cream-50);
+  --accent: var(--cream-200);
+  --accent-foreground: var(--ink-700);
   --gold: var(--gold-500);
   --gold-foreground: var(--ink-900);
-  --destructive: oklch(0.50 0.150 30);
+  --destructive: oklch(0.52 0.170 27);
   --border: oklch(0.86 0.024 110);
   --input: oklch(0.86 0.024 110);
   --ring: var(--forest-600);
@@ -51,33 +53,65 @@
   --demo-bg: oklch(0.78 0.135 82 / 0.18);
   --demo-border: oklch(0.74 0.135 82 / 0.40);
   --demo-foreground: oklch(0.32 0.080 55);
+
+  /* charts — verdes y tierras, no los grises por defecto */
+  --chart-1: var(--forest-700);
+  --chart-2: var(--forest-500);
+  --chart-3: var(--earth-600);
+  --chart-4: var(--gold-500);
+  --chart-5: var(--ink-500);
+
+  /* sidebar */
+  --sidebar: var(--cream-100);
+  --sidebar-foreground: var(--ink-900);
+  --sidebar-primary: var(--forest-700);
+  --sidebar-primary-foreground: var(--cream-50);
+  --sidebar-accent: var(--cream-200);
+  --sidebar-accent-foreground: var(--ink-700);
+  --sidebar-border: oklch(0.86 0.024 110);
+  --sidebar-ring: var(--forest-600);
 }
 
 .dark {
   --background: oklch(0.135 0.020 145);
-  --foreground: oklch(0.95 0.015 110);
+  --foreground: oklch(0.95 0.014 110);
   --card: oklch(0.18 0.022 145);
-  --card-foreground: oklch(0.95 0.015 110);
-  --popover: oklch(0.15 0.020 145);
-  --popover-foreground: oklch(0.95 0.015 110);
+  --card-foreground: oklch(0.95 0.014 110);
+  --popover: oklch(0.18 0.022 145);
+  --popover-foreground: oklch(0.95 0.014 110);
   --primary: oklch(0.72 0.115 148);
   --primary-foreground: oklch(0.135 0.020 145);
   --secondary: oklch(0.23 0.022 145);
   --secondary-foreground: oklch(0.92 0.013 110);
   --muted: oklch(0.22 0.022 145);
   --muted-foreground: oklch(0.76 0.018 110);
-  --accent: oklch(0.66 0.082 55);
-  --accent-foreground: oklch(0.135 0.020 145);
+  --accent: oklch(0.23 0.022 145);
+  --accent-foreground: oklch(0.92 0.013 110);
   --gold: oklch(0.78 0.130 82);
   --gold-foreground: oklch(0.135 0.020 145);
-  --destructive: oklch(0.65 0.16 30);
-  --border: oklch(0.26 0.024 145);
-  --input: oklch(0.26 0.024 145);
+  --destructive: oklch(0.68 0.180 25);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
   --ring: oklch(0.72 0.115 148);
 
   --demo-bg: oklch(0.55 0.135 82 / 0.18);
   --demo-border: oklch(0.65 0.135 82 / 0.40);
   --demo-foreground: oklch(0.85 0.110 82);
+
+  --chart-1: oklch(0.72 0.115 148);
+  --chart-2: oklch(0.62 0.100 148);
+  --chart-3: oklch(0.66 0.082 55);
+  --chart-4: oklch(0.78 0.130 82);
+  --chart-5: oklch(0.76 0.018 110);
+
+  --sidebar: oklch(0.18 0.022 145);
+  --sidebar-foreground: oklch(0.95 0.014 110);
+  --sidebar-primary: oklch(0.72 0.115 148);
+  --sidebar-primary-foreground: oklch(0.135 0.020 145);
+  --sidebar-accent: oklch(0.23 0.022 145);
+  --sidebar-accent-foreground: oklch(0.92 0.013 110);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: oklch(0.72 0.115 148);
 }
 
 @theme inline {
@@ -104,28 +138,47 @@
   --color-demo-bg: var(--demo-bg);
   --color-demo-border: var(--demo-border);
   --color-demo-foreground: var(--demo-foreground);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
   --radius-sm: calc(var(--radius) * 0.55);
   --radius-md: calc(var(--radius) * 0.75);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.3);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 
-  --font-sans: var(--font-sans), "Plus Jakarta Sans", ui-sans-serif, system-ui,
-    sans-serif;
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-sans);
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
   html {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    @apply font-sans;
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-sans);
-    /* 18px base + line-height 1.65 pensado para adultos con presbicia leyendo
-       al sol en un celular Android. Sube el rango WCAG a AAA en cuerpo. */
+    /* 18px base + line-height 1.65 pensado para adultos con presbicia
+       leyendo al sol en un celular Android. */
     font-size: 18px;
     line-height: 1.65;
     -webkit-tap-highlight-color: transparent;

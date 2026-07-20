@@ -5,6 +5,7 @@ import "./globals.css";
 import { DemoBanner } from "@/components/demo-banner";
 import { SiteFooter } from "@/components/site-footer";
 import { SwKillBoot } from "@/components/sw-kill-boot";
+import { cn } from "@/lib/utils";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -53,7 +54,7 @@ export default function RootLayout({
     <html
       lang="es"
       suppressHydrationWarning
-      className={`${jakarta.variable} h-full antialiased`}
+      className={cn("h-full antialiased font-sans", jakarta.variable)}
     >
       <head>
         <script

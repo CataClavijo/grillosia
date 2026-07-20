@@ -13,7 +13,7 @@ export const config = {
 
 const KILL_VERSION = "4";
 
-export function middleware(req: NextRequest) {
+export default function proxy(req: NextRequest) {
   if (req.nextUrl.searchParams.get("reset") === "1") {
     const res = NextResponse.redirect(new URL("/reset", req.url));
     res.headers.set(

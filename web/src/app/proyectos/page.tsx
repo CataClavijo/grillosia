@@ -14,6 +14,19 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { SiteNav } from "@/components/site-nav";
 import { ANIMALS } from "@/lib/animals";
 import { useProjects } from "@/lib/projects-store";
@@ -77,7 +90,7 @@ export default function ProjectsPage() {
       <section className="mt-8 rounded-2xl border border-primary/30 bg-primary/5 p-5">
         {creating ? (
           <div className="flex flex-col gap-3 sm:flex-row">
-            <input
+            <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => {
@@ -90,28 +103,24 @@ export default function ProjectsPage() {
               autoFocus
               placeholder="Nombre para reconocerla (ej: Tilapia del patio)"
               aria-label="Nombre de la consulta"
-              className="h-12 flex-1 rounded-xl border border-border bg-background px-4 text-[15px] outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
+              className="h-12 flex-1 text-base"
             />
-            <Button
-              size="lg"
-              onClick={finishCreate}
-              className="h-12 rounded-xl px-5 font-semibold"
-            >
+            <Button size="lg" onClick={finishCreate} className="h-12 px-5">
               Crear e ir al asistente
             </Button>
           </div>
         ) : (
-          <button
-            type="button"
+          <Button
+            size="lg"
             onClick={() => setCreating(true)}
-            className="flex w-full items-center justify-between gap-3 rounded-xl bg-primary px-5 py-4 text-left text-[15px] font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+            className="h-auto w-full justify-between px-5 py-4 text-base"
           >
             <span className="flex items-center gap-3">
-              <Plus className="h-5 w-5" strokeWidth={2.25} />
+              <Plus data-icon="inline-start" />
               Empezar una consulta nueva
             </span>
-            <ChevronRight className="h-5 w-5" strokeWidth={2} />
-          </button>
+            <ChevronRight data-icon="inline-end" />
+          </Button>
         )}
         <p className="mt-3 text-[12.5px] leading-relaxed text-foreground/65">
           Al empezar la consulta, la abrimos en el asistente guiado para que
@@ -158,32 +167,47 @@ export default function ProjectsPage() {
                       <h3 className="text-[17px] font-bold leading-tight">
                         {p.name}
                       </h3>
-                      {isActive && (
-                        <span className="rounded-full bg-primary px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wider text-primary-foreground">
-                          Activo
-                        </span>
-                      )}
+                      {isActive && <Badge>Activo</Badge>}
                     </div>
-                    <p className="mt-1 text-[12.5px] text-foreground/55">
+                    <p className="mt-1 text-[13px] text-muted-foreground">
                       Actualizado {relativeTime(p.updatedAt)}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          `¿Seguro que quiere eliminar "${p.name}"? Esta acción no se puede deshacer.`,
-                        )
-                      ) {
-                        remove(p.id);
-                      }
-                    }}
-                    aria-label={`Eliminar ${p.name}`}
-                    className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-foreground/50 transition-colors hover:bg-destructive/10 hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" strokeWidth={2} />
-                  </button>
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Borrar ${p.name}`}
+                        className="size-11 shrink-0 rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                      >
+                        <Trash2 />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          ¿Borrar la consulta &ldquo;{p.name}&rdquo;?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Se perderán sus respuestas y las conversaciones
+                          guardadas en esta consulta. No se puede deshacer.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="h-12 text-base">
+                          No, dejarla
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => remove(p.id)}
+                          className="h-12 bg-destructive text-base text-white hover:bg-destructive/90"
+                        >
+                          Sí, borrarla
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </header>
 
                 <div className="mt-3 flex flex-wrap gap-2 text-[12.5px] font-semibold">
