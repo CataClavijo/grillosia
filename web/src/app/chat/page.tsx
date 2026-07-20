@@ -199,7 +199,7 @@ export default function ChatPage() {
         >
           <ChevronLeft className="size-5" />
         </Link>
-        <p className="text-[17px] font-bold">Asistente</p>
+        <h1 className="text-[17px] font-bold">Asistente</h1>
         {hayMensajes && active ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -8,7 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { SiteNav } from "@/components/site-nav";
-import { StepFooter } from "@/components/step-footer";
+import { BackToGuide } from "@/components/back-to-guide";
 import { CATALOG_INTRO, CATALOG_NOTE, CRICKETS } from "@/lib/content/catalog";
 
 const ACTIVITY_LABEL: Record<string, string> = {
@@ -83,7 +83,7 @@ export default function CatalogPage() {
         ))}
       </Accordion>
 
-      <StepFooter primary={{ label: "Volver a la guía", href: "/tutorial" }} />
+      <BackToGuide />
     </main>
   );
 }

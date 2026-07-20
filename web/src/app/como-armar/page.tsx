@@ -8,7 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { SiteNav } from "@/components/site-nav";
-import { StepFooter } from "@/components/step-footer";
+import { BackToGuide } from "@/components/back-to-guide";
 import {
   COST_NOTE,
   ENCLOSURE_INTRO,
@@ -114,7 +114,7 @@ export default function HowToBuildPage() {
         </AccordionItem>
       </Accordion>
 
-      <StepFooter primary={{ label: "Volver a la guía", href: "/tutorial" }} />
+      <BackToGuide />
     </main>
   );
 }

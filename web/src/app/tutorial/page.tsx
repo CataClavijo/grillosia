@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { TutorialIcon } from "@/components/tutorial-icon";
 import { renderMarkdownBlock } from "@/lib/markdown";
 import { useTutorialSeen } from "@/lib/projects-store";
-import { indiceTutorialGuardado, marcarPaso } from "@/lib/journey";
+import { indiceTutorialGuardado, leerPaso, marcarPaso } from "@/lib/journey";
 import { TUTORIAL_STEPS } from "@/lib/content/tutorial";
 
 export default function TutorialPage() {
@@ -30,8 +30,11 @@ export default function TutorialPage() {
     }
   }, [total]);
 
-  // Anotar el avance para que la landing sepa qué botón mostrar.
+  // Anotar el avance para que la landing sepa qué botón mostrar. Si el
+  // usuario ya terminó el recorrido y vuelve a repasarlo, no lo retrocedemos:
+  // su botón de la portada debe seguir llevándolo al asistente.
   useEffect(() => {
+    if (leerPaso() === "listo") return;
     marcarPaso(`tutorial:${index + 1}` as never);
   }, [index]);
 
