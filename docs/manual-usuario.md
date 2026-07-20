@@ -20,13 +20,13 @@ La aplicación lo lleva de la mano. En la pantalla principal hay **un solo botó
 - Si dejó el recorrido a medias, dice **"Siga donde quedó"** y lo devuelve al paso exacto donde iba.
 - Cuando ya terminó el recorrido, dice **"Ver qué comida le conviene"** y lo lleva directo al asistente.
 
-Debajo de ese botón siempre hay un enlace, **"Ya conozco, quiero preguntar algo"**, por si prefiere ir directo al asistente a preguntar.
+Debajo de ese botón hay un enlace, **"Ver mis consultas guardadas"**, para volver a lo que ya haya hecho.
 
 ## La primera vez: el recorrido de bienvenida
 
 Son tres pantallas cortas:
 
-1. **Bienvenido a GrillIA** — qué es esto y qué gana usted. Desde aquí puede ver los tres grillos de la zona.
+1. **Bienvenido a GrillIA** — qué es esto y qué gana usted. Desde aquí puede ver los grillos del proyecto.
 2. **Arme el espacio** — qué materiales necesita para la caja de cría. Desde aquí puede ver la guía completa de armado.
 3. **Las tres comidas** — cuáles estamos comparando y con qué base.
 
@@ -34,9 +34,11 @@ Al terminar el tercer paso, el botón dice **"Ver qué comida le conviene"** y l
 
 ## Los grillos que estudiamos
 
-Trabajamos con grillos nativos del Piedemonte Llanero, adaptados al clima y a los alimentos de la región. En la sección **Los tres grillos** encuentra una ficha por cada uno: cómo reconocerlo, dónde vive, cómo capturarlo y qué tan apto es para la cría.
+Trabajamos con grillos nativos del Piedemonte Llanero, de la **familia Gryllidae**, que es el grupo al que llamamos comúnmente grillos. La especie exacta todavía está por identificar, así que por ahora los reportamos a nivel de familia.
 
-Las fichas están plegadas. Toque el nombre del grillo para abrirla.
+En la sección **Los grillos** encuentra fotografías de los ejemplares del proyecto, junto con dos guías plegadas: cómo reconocer un grillo en campo y cómo capturarlo sin maltratarlo.
+
+Las fotografías fueron tomadas por Catalina Clavijo-Agudelo y Sebastián Berrío.
 
 ## Cómo armar sus cajas de cría
 
@@ -73,7 +75,7 @@ Para borrar una, toque el bote de basura. Le vamos a preguntar si está seguro a
 
 ## El chat
 
-Al chat le puede preguntar en su propio lenguaje, con palabras del campo. Está pensado para responder cosas como:
+El chat se abre desde el resultado de su consulta: está pensado para conversar sobre lo que acaba de ver. Le puede preguntar en su propio lenguaje, con palabras del campo:
 
 - "¿Cada cuánto cambio el agua de los bebederos?"
 - "¿Cuántos grillos caben en una caja?"

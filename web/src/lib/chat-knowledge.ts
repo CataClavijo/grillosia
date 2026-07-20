@@ -114,9 +114,17 @@ const KNOWLEDGE: KnowledgeEntry[] = [
     },
   },
   {
-    keywords: ["especie", "grillo", "grillos", "que grillos", "cuales grillos"],
+    keywords: [
+      "especie",
+      "grillo",
+      "grillos",
+      "que grillos",
+      "cuales grillos",
+      "gryllidae",
+      "familia",
+    ],
     answer: {
-      text: "Trabajamos con **grillos nativos del Piedemonte Llanero**, o sea grillos que ya viven en su región. Todavía estamos documentando las especies exactas. Puede verlos con foto y descripción en el catálogo.",
+      text: "Trabajamos con **grillos nativos del Piedemonte Llanero**, de la **familia Gryllidae**, que es el grupo al que llamamos comúnmente grillos. La especie exacta todavía está por identificar, así que por ahora los reportamos a nivel de familia. Puede ver las fotografías de nuestros ejemplares en el catálogo.",
       links: [LINKS.catalog],
     },
   },

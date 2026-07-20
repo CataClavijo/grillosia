@@ -21,7 +21,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 const CAMINO = [
   { href: "/", label: "Inicio" },
   { href: "/tutorial", label: "La guía" },
-  { href: "/catalogo", label: "Los tres grillos" },
+  { href: "/catalogo", label: "Los grillos" },
   { href: "/como-armar", label: "Armar la caja" },
   { href: "/wizard", label: "Qué comida usar" },
   { href: "/proyectos", label: "Mis consultas" },

@@ -162,8 +162,20 @@ export default function ProjectPage() {
         </p>
       </section>
 
-      {/* Enlaces */}
+      {/* Créditos de las fotografías */}
       <section className="mt-10 rounded-2xl border border-border/70 bg-card/60 p-5">
+        <h2 className="text-[15px] font-bold">Créditos fotográficos</h2>
+        <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">
+          Las fotografías de los grillos que aparecen en la plataforma fueron
+          tomadas por <strong className="text-foreground/85">Catalina
+          Clavijo-Agudelo</strong> y{" "}
+          <strong className="text-foreground/85">Sebastián Berrío</strong>,
+          sobre ejemplares del propio proyecto.
+        </p>
+      </section>
+
+      {/* Enlaces */}
+      <section className="mt-6 rounded-2xl border border-border/70 bg-card/60 p-5">
         <h2 className="text-[15px] font-bold">Recursos y contacto</h2>
         <ul className="mt-4 space-y-3 text-[14px]">
           <li>

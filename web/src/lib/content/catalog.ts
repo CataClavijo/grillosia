@@ -1,66 +1,76 @@
 /**
- * Catálogo de grillos considerados en el proyecto. Información orientativa
- * mientras se documenta la selección definitiva. Nombres comunes, no
- * científicos.
+ * Grillos del proyecto.
+ *
+ * La identificación de especie todavía no está hecha: por ahora todos los
+ * ejemplares se reportan como **Familia Gryllidae**. Por eso esta página no
+ * presenta especies distintas ni nombres comunes propios — sería inventar
+ * una precisión que el proyecto aún no tiene.
+ *
+ * Las fotografías son de los ejemplares del propio proyecto y van siempre
+ * con el crédito de quien las tomó.
  */
 
-export interface Cricket {
+export interface CricketPhoto {
   id: string;
-  common_name: string;
-  size_cm: string;
-  activity: "Nocturno" | "Crepuscular" | "Diurno";
-  habitat: string;
-  recognition: string;
-  capture_tip: string;
-  suitability: string;
+  src: string;
+  alt: string;
+  /** Autor de la fotografía. Se muestra siempre bajo la imagen. */
+  credit: string;
+  /** Qué se alcanza a ver en esta foto. */
+  note: string;
 }
 
 export const CATALOG_INTRO =
-  "En esta página le mostramos los tipos de grillos nativos del Piedemonte Llanero que estamos considerando dentro del proyecto. Es información orientativa mientras avanzamos con los ensayos: le ayuda a reconocer los grillos que puede encontrar en su finca y a entender cuáles resultan más prometedores para producir harina.";
+  "Estas son fotografías de los grillos con los que estamos trabajando en el proyecto. Todos pertenecen a la familia Gryllidae, que es el grupo al que llamamos comúnmente grillos.";
 
 export const CATALOG_NOTE =
-  "La selección definitiva de los grillos que se usarán en la cría todavía se está documentando. Los nombres que verá aquí son comunes y descriptivos, pensados para que usted los reconozca en el campo; no son nombres científicos.";
+  "Todavía no hemos terminado de identificar la especie exacta de cada ejemplar. Por eso, por ahora los reportamos a nivel de familia. Cuando la identificación esté confirmada, actualizaremos esta página.";
 
-export const CRICKETS: Cricket[] = [
+export const FAMILIA = "Familia Gryllidae";
+
+export const CRICKET_PHOTOS: CricketPhoto[] = [
   {
-    id: "grillo-comun-campo",
-    common_name: "Grillo común de campo",
-    size_cm: "1.8 a 2.5 cm",
-    activity: "Nocturno",
-    habitat:
-      "Vive en potreros, cultivos y patios, escondido entre hojarasca, piedras o grietas del suelo.",
-    recognition:
-      "Cuerpo café oscuro, casi negro, con antenas largas y patas traseras fuertes. Su canto es un chirrido continuo y parejo que se escucha al caer la tarde y en la noche.",
-    capture_tip:
-      "Búsquelo de noche con linterna cerca de hojarasca húmeda. Use un frasco con tapa perforada y un poco de pasto adentro.",
-    suitability: "Sirve bien: es el más conocido y fácil de criar.",
+    id: "grillo-1",
+    src: "/grillos/grillo-1.webp",
+    alt: "Grillo de la familia Gryllidae visto desde arriba, de color café claro, con las patas traseras extendidas.",
+    credit: "Catalina Clavijo-Agudelo",
+    note: "Ejemplar de color café claro, visto desde arriba. Se distinguen bien las patas traseras, que son las que usa para saltar.",
   },
   {
-    id: "grillo-cabeza-redonda-llano",
-    common_name: "Grillo cabeza redonda del llano",
-    size_cm: "1.5 a 2.2 cm",
-    activity: "Crepuscular",
-    habitat:
-      "Prefiere zonas de sabana y bordes de cultivo, entre pastos altos y matas bajas del Piedemonte Llanero.",
-    recognition:
-      "Tiene la cabeza notoriamente redondeada y color café claro con tonos amarillentos. Su canto es más suave y entrecortado, se escucha sobre todo al atardecer.",
-    capture_tip:
-      "Recórralo al atardecer siguiendo el canto. Mueva con cuidado la base de los pastos y recoja con un vaso plástico.",
-    suitability:
-      "Prometedor: crece bien en clima cálido, pero todavía lo estamos estudiando.",
+    id: "grillo-2",
+    src: "/grillos/grillo-2.webp",
+    alt: "Grillo de la familia Gryllidae visto de lado, de color café oscuro, con las antenas largas hacia adelante.",
+    credit: "Sebastián Berrío",
+    note: "Vista de lado. Se ven las antenas largas, una de las señas más fáciles para reconocer un grillo.",
   },
   {
-    id: "grillo-matorral-piedemonte",
-    common_name: "Grillo de matorral del Piedemonte",
-    size_cm: "1.2 a 2.0 cm",
-    activity: "Nocturno",
-    habitat:
-      "Se encuentra en matorrales, cercas vivas y zonas con arbustos, cerca de la humedad de quebradas y caños.",
-    recognition:
-      "Cuerpo más delgado y alargado, de color café con manchas claras en las alas. Su canto es agudo y en tandas cortas, distinto al chirrido continuo del grillo de campo.",
-    capture_tip:
-      "Revise entre ramas bajas y hojarasca húmeda en la mañana temprano. Use guantes y un recipiente ventilado.",
-    suitability:
-      "En observación: aguanta bastante, pero todavía estamos aprendiendo con él.",
+    id: "grillo-3",
+    src: "/grillos/grillo-3.webp",
+    alt: "Grillo de la familia Gryllidae de color café oscuro, visto de lado, con las alas plegadas sobre el cuerpo.",
+    credit: "Sebastián Berrío",
+    note: "Ejemplar más oscuro. Se aprecian las alas plegadas sobre el lomo.",
   },
+  {
+    id: "grillo-4",
+    src: "/grillos/grillo-4.webp",
+    alt: "Grillo de la familia Gryllidae visto desde arriba sobre fondo blanco, con las antenas muy largas extendidas.",
+    credit: "Catalina Clavijo-Agudelo",
+    note: "Vista completa desde arriba. Las antenas pueden ser más largas que el propio cuerpo.",
+  },
+];
+
+/** Cómo reconocer un grillo en campo. Aplica a la familia, no a una especie. */
+export const COMO_RECONOCER: string[] = [
+  "Antenas muy largas, a veces más que el cuerpo entero.",
+  "Patas traseras gruesas y fuertes, hechas para saltar.",
+  "Color café, del claro al casi negro según el ejemplar.",
+  "El canto: los machos frotan las alas y suenan sobre todo al caer la tarde y en la noche.",
+];
+
+/** Recomendaciones generales de captura. */
+export const COMO_CAPTURAR: string[] = [
+  "Búsquelos al atardecer o de noche, guiándose por el canto.",
+  "Revise entre la hojarasca húmeda, bajo piedras y en la base de los pastos.",
+  "Use un frasco con tapa perforada y un poco de pasto adentro.",
+  "Manipúlelos con suavidad: las patas traseras se desprenden con facilidad.",
 ];
