@@ -145,33 +145,36 @@ export default function HowToBuildPage() {
         </ul>
       </section>
 
-      <section className="mt-12 rounded-2xl border border-primary/25 bg-primary/5 p-5">
-        <p className="text-[15px] font-semibold">
-          ¿Listo para elegir una dieta?
-        </p>
-        <p className="mt-1 text-[13.5px] leading-relaxed text-foreground/70">
-          Cuando tenga sus cajas listas, use el asistente guiado para comparar
-          las tres dietas en estudio según su animal y su clima.
-        </p>
-        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-          <Link
-            href="/wizard"
-            className="inline-flex flex-1 items-center justify-between gap-2 rounded-xl bg-primary px-4 py-3 text-[14.5px] font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Ir al asistente guiado
-            <ChevronRight className="h-4 w-4" strokeWidth={2} />
-          </Link>
+      <section className="mt-12">
+        <Link
+          href="/wizard"
+          className="flex min-h-[80px] w-full items-center justify-between gap-3 rounded-2xl bg-primary px-5 py-4 text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          <span className="flex items-center gap-3">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary-foreground/15">
+              <Bot className="h-5 w-5" strokeWidth={2} />
+            </span>
+            <span>
+              <span className="block text-[13px] font-semibold uppercase tracking-wider opacity-90">
+                Paso 4
+              </span>
+              <span className="block text-[17px] font-bold leading-tight">
+                Ya tengo mi caja: ver qué dieta usar
+              </span>
+            </span>
+          </span>
+          <ChevronRight className="h-5 w-5" strokeWidth={2.5} />
+        </Link>
+        <p className="mt-3 text-[13.5px] leading-relaxed text-foreground/70">
+          ¿Tiene otra duda?{" "}
           <Link
             href="/chat"
-            className="inline-flex flex-1 items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-3 text-[14.5px] font-semibold text-foreground transition-colors hover:bg-muted"
+            className="font-semibold text-primary underline underline-offset-2"
           >
-            <span className="flex items-center gap-2">
-              <Bot className="h-4 w-4 text-primary" strokeWidth={2} />
-              Preguntar al chat
-            </span>
-            <ChevronRight className="h-4 w-4 text-primary" strokeWidth={2} />
+            Pregúntele al asistente
           </Link>
-        </div>
+          .
+        </p>
       </section>
     </main>
   );

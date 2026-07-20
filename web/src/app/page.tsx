@@ -3,15 +3,12 @@ import Link from "next/link";
 import {
   ArrowRight,
   Beef,
-  Bot,
   Bug,
   ChevronRight,
   Droplets,
   Egg,
   Fish,
-  FlaskConical,
   GraduationCap,
-  Leaf,
   MessageCircle,
   Package,
   Sparkles,
@@ -23,21 +20,34 @@ import { SiteNav } from "@/components/site-nav";
 import { InterestForm } from "@/components/interest-form";
 import { FirstVisitPrompt } from "@/components/first-visit-prompt";
 
-const steps = [
+const journey = [
   {
-    icon: MessageCircle,
-    title: "Cuéntenos sobre su finca",
-    body: "Indique a qué animal va destinada la harina y el clima de su región.",
+    n: 1,
+    href: "/tutorial",
+    icon: GraduationCap,
+    title: "Cómo empezar",
+    subtitle: "Un recorrido corto para no perderse.",
   },
   {
+    n: 2,
+    href: "/catalogo",
+    icon: Bug,
+    title: "Los grillos de la tierra",
+    subtitle: "Cuáles usamos y cómo se reconocen.",
+  },
+  {
+    n: 3,
+    href: "/como-armar",
+    icon: Package,
+    title: "Cómo armar sus cajas",
+    subtitle: "Paso a paso con materiales baratos.",
+  },
+  {
+    n: 4,
+    href: "/wizard",
     icon: Sparkles,
-    title: "Comparamos dietas en estudio",
-    body: "El modelo contrasta combinaciones de dieta y condiciones de cría.",
-  },
-  {
-    icon: Leaf,
-    title: "Le sugerimos una opción",
-    body: "Verá una comparación orientativa con la meta de proteína esperada.",
+    title: "Consulta paso a paso",
+    subtitle: "Le sugerimos qué dieta usar.",
   },
 ];
 
@@ -46,10 +56,10 @@ const figures = [
     value: "60 a 70",
     unit: "%",
     label:
-      "Meta interna de proteína en la harina, a confirmar por análisis bromatológico",
+      "Meta interna de proteína en la harina, a confirmar en laboratorio",
   },
-  { value: "3", unit: "", label: "Dietas en estudio" },
-  { value: "3", unit: "", label: "Animales que cubre el modelo" },
+  { value: "3", unit: "", label: "Comidas que estamos probando" },
+  { value: "3", unit: "", label: "Animales para los que sirve la harina" },
 ];
 
 const animals = [
@@ -57,7 +67,7 @@ const animals = [
     icon: Fish,
     name: "Tilapia",
     range: "30 a 45 % de proteína",
-    stages: "Alevín, crecimiento, engorde",
+    stages: "Alevines, crecimiento, engorde",
   },
   {
     icon: Egg,
@@ -73,33 +83,6 @@ const animals = [
   },
 ];
 
-const quickLinks = [
-  {
-    href: "/tutorial",
-    icon: GraduationCap,
-    title: "Ver el tutorial",
-    subtitle: "Cinco pasos para empezar",
-  },
-  {
-    href: "/catalogo",
-    icon: Bug,
-    title: "Catálogo de grillos",
-    subtitle: "Grillos nativos del Piedemonte",
-  },
-  {
-    href: "/como-armar",
-    icon: Package,
-    title: "Cómo armar sus cajas",
-    subtitle: "Paso a paso con materiales baratos",
-  },
-  {
-    href: "/metodologia",
-    icon: FlaskConical,
-    title: "Metodología",
-    subtitle: "Cómo estudiamos y modelamos",
-  },
-];
-
 const d = (ms: number): CSSProperties =>
   ({ ["--delay" as string]: `${ms}ms` }) as CSSProperties;
 
@@ -111,9 +94,9 @@ export default function Home() {
         <Link href="/" className="flex items-center gap-2.5">
           <span
             aria-hidden
-            className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10"
           >
-            <span className="block h-2 w-2 rotate-45 bg-primary" />
+            <span className="block h-2.5 w-2.5 rotate-45 bg-primary" />
           </span>
           <span className="text-lg font-bold tracking-tight">GrillIA</span>
         </Link>
@@ -126,7 +109,7 @@ export default function Home() {
       {/* Hero */}
       <section className="mt-10">
         <p
-          className="reveal inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1.5 text-[12px] font-medium text-foreground/75"
+          className="reveal inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1.5 text-[13px] font-medium text-foreground/85"
           style={d(80)}
         >
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
@@ -137,136 +120,90 @@ export default function Home() {
           className="reveal mt-6 text-[2.5rem] font-bold leading-[1.05] tracking-[-0.025em] sm:text-[2.85rem]"
           style={d(160)}
         >
-          Inteligencia artificial
+          Le ayudamos a
           <br />
-          <span className="text-primary">para la cría</span>
+          <span className="text-primary">criar sus grillos</span>
           <br />
-          de grillos nativos.
+          nativos.
         </h1>
 
         <p
-          className="reveal mt-6 text-[17px] leading-relaxed text-foreground/75"
+          className="reveal mt-6 text-[18px] leading-relaxed text-foreground/85"
           style={d(280)}
         >
-          Estudiamos cómo optimizar las dietas de grillos criados en el
-          Piedemonte Llanero para producir harina proteica destinada a la
-          piscicultura, avicultura y porcicultura.
+          Le enseñamos cómo armar las cajas, qué darles de comer y qué harina
+          esperar. Los grillos son nativos del Piedemonte Llanero, para
+          alimentar tilapia, pollo y cerdo.
         </p>
 
-        <div className="reveal mt-8 flex flex-col gap-3" style={d(420)}>
+        {/* Un solo CTA primario grande. Todo lo demás es secundario. */}
+        <div className="reveal mt-8" style={d(420)}>
           <Button
             asChild
             size="lg"
-            className="h-auto justify-between rounded-2xl px-5 py-5 text-[16px] font-semibold"
+            className="h-16 w-full justify-between rounded-2xl px-6 text-[18px] font-bold"
           >
-            <Link href="/wizard" aria-label="Probar el asistente guiado">
+            <Link href="/tutorial" aria-label="Comenzar el recorrido">
               <span className="flex items-center gap-3">
-                <Sparkles className="h-5 w-5" strokeWidth={2} />
-                Probar el asistente guiado
+                <GraduationCap className="h-6 w-6" strokeWidth={2} />
+                Comience aquí
               </span>
-              <ArrowRight className="h-5 w-5" strokeWidth={2} />
+              <ArrowRight className="h-5 w-5" strokeWidth={2.5} />
             </Link>
           </Button>
-          <Button
-            asChild
-            variant="outline"
-            size="lg"
-            className="h-auto justify-between rounded-2xl border-primary/30 bg-card/60 px-5 py-5 text-[16px] font-semibold"
+          <Link
+            href="/chat"
+            className="mt-4 block text-center text-[15px] font-semibold text-foreground/85 underline underline-offset-4 hover:text-foreground"
           >
-            <Link href="/chat" aria-label="Conversar con el asistente informativo">
-              <span className="flex items-center gap-3 text-foreground">
-                <Bot className="h-5 w-5 text-primary" strokeWidth={2} />
-                Conversar con el asistente
-              </span>
-              <ArrowRight className="h-5 w-5 text-primary" strokeWidth={2} />
-            </Link>
-          </Button>
+            Ya conozco, quiero preguntar algo
+          </Link>
         </div>
-
-        <p
-          className="reveal mt-5 text-[12.5px] leading-relaxed text-foreground/60"
-          style={d(540)}
-        >
-          Esta es una versión de demostración. Las respuestas son orientativas
-          y se basan en datos preliminares en estudio.
-        </p>
       </section>
 
-      <Divider delay={680} />
+      <Divider delay={620} />
 
-      {/* Accesos rápidos */}
+      {/* Recorra la guía — numerado */}
       <section>
-        <h2 className="text-[1.4rem] font-bold leading-tight tracking-[-0.015em]">
-          Recorra la guía
+        <h2 className="text-[1.55rem] font-bold leading-tight tracking-[-0.015em]">
+          Recorra la guía en orden
         </h2>
-        <p className="mt-2 text-[15px] text-foreground/65">
-          Cuatro secciones cortas para conocer el proyecto.
+        <p className="mt-2 text-[16px] text-foreground/75">
+          Cuatro pasos, en el orden que se lo recomendamos.
         </p>
-        <ul className="mt-6 grid grid-cols-2 gap-3">
-          {quickLinks.map((q) => {
-            const Icon = q.icon;
+        <ol className="mt-6 space-y-3">
+          {journey.map((step) => {
+            const Icon = step.icon;
             return (
-              <li key={q.href}>
+              <li key={step.href}>
                 <Link
-                  href={q.href}
-                  className="flex h-full flex-col gap-3 rounded-2xl border border-border/70 bg-card/70 p-4 transition-colors hover:border-primary/40 hover:bg-card"
+                  href={step.href}
+                  className="flex min-h-[80px] items-center gap-4 rounded-2xl border border-border/70 bg-card/70 p-4 transition-colors hover:border-primary/40 hover:bg-card"
                 >
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <Icon className="h-5 w-5" strokeWidth={1.75} />
+                  <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-[15px] font-extrabold tabular-nums">
+                    {step.n}
                   </span>
-                  <div>
-                    <p className="text-[14.5px] font-bold leading-tight">
-                      {q.title}
+                  <div className="flex-1">
+                    <p className="text-[17px] font-bold leading-tight">
+                      {step.title}
                     </p>
-                    <p className="mt-1 text-[12.5px] leading-snug text-foreground/60">
-                      {q.subtitle}
+                    <p className="mt-1 text-[14px] leading-snug text-foreground/75">
+                      {step.subtitle}
                     </p>
                   </div>
+                  <ChevronRight
+                    className="h-5 w-5 shrink-0 text-primary"
+                    strokeWidth={2.5}
+                  />
                 </Link>
               </li>
             );
           })}
-        </ul>
+        </ol>
       </section>
 
       <Divider />
 
-      {/* Cómo funciona */}
-      <Section title="¿Cómo funciona?" subtitle="Tres pasos sencillos.">
-        <ol className="mt-8 space-y-5">
-          {steps.map((s, i) => {
-            const Icon = s.icon;
-            return (
-              <li
-                key={s.title}
-                className="reveal flex gap-4 rounded-2xl border border-border/70 bg-card/70 p-4"
-                style={d(120 + i * 90)}
-              >
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Icon className="h-5 w-5" strokeWidth={1.75} />
-                </span>
-                <div className="flex-1">
-                  <p className="flex items-baseline gap-2">
-                    <span className="text-[12px] font-bold tabular-nums text-primary">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="text-[17px] font-semibold leading-snug">
-                      {s.title}
-                    </span>
-                  </p>
-                  <p className="mt-1 text-[15px] leading-relaxed text-foreground/70">
-                    {s.body}
-                  </p>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
-      </Section>
-
-      <Divider />
-
-      {/* Cifras clave */}
+      {/* Cifras clave — copy más llano */}
       <Section title="Las cifras" subtitle="Resumen del proyecto.">
         <div className="mt-8 grid grid-cols-1 gap-4">
           {figures.map((f, i) => (
@@ -280,12 +217,12 @@ export default function Home() {
                   {f.value}
                 </span>
                 {f.unit && (
-                  <span className="text-2xl font-bold leading-none text-foreground/55">
+                  <span className="text-2xl font-bold leading-none text-foreground/70">
                     {f.unit}
                   </span>
                 )}
               </p>
-              <p className="flex-1 text-[15px] font-semibold leading-snug text-foreground/75">
+              <p className="flex-1 text-[15.5px] font-semibold leading-snug text-foreground/85">
                 {f.label}
               </p>
             </div>
@@ -298,7 +235,7 @@ export default function Home() {
       {/* Animales */}
       <Section
         title="Para qué animales sirve"
-        subtitle="Adaptamos la sugerencia a cada uno."
+        subtitle="Le adaptamos la sugerencia según su animal."
       >
         <ul className="mt-8 space-y-4">
           {animals.map((a, i) => {
@@ -314,10 +251,10 @@ export default function Home() {
                 </span>
                 <div className="flex-1">
                   <p className="text-[19px] font-bold">{a.name}</p>
-                  <p className="mt-0.5 text-[14px] font-semibold text-primary">
+                  <p className="mt-0.5 text-[15px] font-semibold text-primary">
                     {a.range}
                   </p>
-                  <p className="mt-1 text-[13px] text-foreground/65">
+                  <p className="mt-1 text-[13.5px] text-foreground/75">
                     {a.stages}
                   </p>
                 </div>
@@ -331,13 +268,13 @@ export default function Home() {
 
       {/* Condiciones */}
       <Section
-        title="Condiciones de cría contempladas"
-        subtitle="Rangos objetivo del estudio."
+        title="Con qué calor y humedad trabajamos"
+        subtitle="Rangos que buscamos en el estudio."
       >
         <div className="mt-8 grid grid-cols-2 gap-4">
           <ClimateTile
             icon={Thermometer}
-            label="Temperatura"
+            label="Calor"
             from="24"
             to="34"
             unit="°C"
@@ -353,65 +290,59 @@ export default function Home() {
           />
         </div>
         <p
-          className="reveal mt-6 text-[15px] leading-relaxed text-foreground/70"
+          className="reveal mt-6 text-[15.5px] leading-relaxed text-foreground/85"
           style={d(320)}
         >
-          Son los rangos que el proyecto contempla como objetivo para la cría
-          de los grillos, no mediciones ya registradas.
+          Son los rangos que buscamos como objetivo del estudio, no medidas
+          que ya tengamos anotadas.
         </p>
       </Section>
 
       <Divider />
 
-      {/* Interés */}
+      {/* CTA final grande */}
+      <section>
+        <h2 className="text-[1.7rem] font-bold leading-[1.15] tracking-[-0.015em]">
+          ¿Listo para empezar?
+        </h2>
+        <p className="mt-2 text-[16px] leading-relaxed text-foreground/85">
+          Le tomará solo unos minutos.
+        </p>
+        <div className="reveal mt-6" style={d(160)}>
+          <Button
+            asChild
+            size="lg"
+            className="h-16 w-full justify-between rounded-2xl px-6 text-[18px] font-bold"
+          >
+            <Link href="/tutorial">
+              <span className="flex items-center gap-3">
+                <GraduationCap className="h-6 w-6" strokeWidth={2} />
+                Comience aquí
+              </span>
+              <ArrowRight className="h-5 w-5" strokeWidth={2.5} />
+            </Link>
+          </Button>
+          <Link
+            href="/chat"
+            className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-border bg-card/60 py-3 text-[15px] font-semibold text-foreground/85"
+          >
+            <MessageCircle className="h-4 w-4 text-primary" strokeWidth={2} />
+            Preguntar algo primero
+          </Link>
+        </div>
+      </section>
+
+      <Divider />
+
+      {/* Interés — al final, no compitiendo con los CTAs */}
       <Section
         title="Estemos en contacto"
-        subtitle="Le avisaremos cuando el modelo esté validado."
+        subtitle="Le avisamos cuando el modelo esté validado."
       >
         <div className="mt-6">
           <InterestForm />
         </div>
       </Section>
-
-      <Divider />
-
-      {/* CTA final */}
-      <section>
-        <h2 className="text-[1.6rem] font-bold leading-[1.15] tracking-[-0.015em]">
-          Pruebe el asistente guiado o
-          <br />
-          <span className="text-primary">converse con nosotros.</span>
-        </h2>
-        <div className="reveal mt-6 flex flex-col gap-3" style={d(160)}>
-          <Button
-            asChild
-            size="lg"
-            className="h-auto justify-between rounded-2xl px-5 py-5 text-[16px] font-semibold"
-          >
-            <Link href="/wizard">
-              <span className="flex items-center gap-3">
-                <Sparkles className="h-5 w-5" strokeWidth={2} />
-                Probar el asistente guiado
-              </span>
-              <ArrowRight className="h-5 w-5" strokeWidth={2} />
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            size="lg"
-            className="h-auto justify-between rounded-2xl border-primary/30 bg-card/60 px-5 py-5 text-[16px] font-semibold"
-          >
-            <Link href="/chat">
-              <span className="flex items-center gap-3 text-foreground">
-                <Bot className="h-5 w-5 text-primary" strokeWidth={2} />
-                Conversar con el asistente
-              </span>
-              <ChevronRight className="h-5 w-5 text-primary" strokeWidth={2} />
-            </Link>
-          </Button>
-        </div>
-      </section>
     </main>
   );
 }
@@ -430,11 +361,11 @@ function Section({
   return (
     <section>
       <div className="reveal" style={d(0)}>
-        <h2 className="text-[1.6rem] font-bold leading-tight tracking-[-0.015em]">
+        <h2 className="text-[1.55rem] font-bold leading-tight tracking-[-0.015em]">
           {title}
         </h2>
         {subtitle && (
-          <p className="mt-2 text-[15px] text-foreground/65">{subtitle}</p>
+          <p className="mt-2 text-[16px] text-foreground/75">{subtitle}</p>
         )}
       </div>
       {children}
@@ -478,15 +409,15 @@ function ClimateTile({
     >
       <div className="flex items-center gap-2 text-primary">
         <Icon className="h-5 w-5" strokeWidth={1.75} />
-        <span className="text-[13px] font-semibold text-foreground/75">
+        <span className="text-[14px] font-semibold text-foreground/85">
           {label}
         </span>
       </div>
       <p className="flex items-baseline gap-1.5 text-[2rem] font-extrabold leading-none tracking-[-0.02em]">
         <span>{from}</span>
-        <span className="text-[1.3rem] font-semibold text-foreground/35">a</span>
+        <span className="text-[1.3rem] font-semibold text-foreground/50">a</span>
         <span>{to}</span>
-        <span className="ml-1 text-base font-bold text-foreground/55">
+        <span className="ml-1 text-base font-bold text-foreground/70">
           {unit}
         </span>
       </p>

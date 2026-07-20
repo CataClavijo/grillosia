@@ -17,7 +17,7 @@
 
   --ink-900: oklch(0.20 0.025 145);
   --ink-700: oklch(0.34 0.030 145);
-  --ink-500: oklch(0.50 0.024 140);
+  --ink-500: oklch(0.44 0.026 140); /* sube contraste: cumple AA sobre cream */
 
   --forest-700: oklch(0.42 0.092 148); /* verde profundo principal */
   --forest-600: oklch(0.50 0.105 148);
@@ -65,7 +65,7 @@
   --secondary: oklch(0.23 0.022 145);
   --secondary-foreground: oklch(0.92 0.013 110);
   --muted: oklch(0.22 0.022 145);
-  --muted-foreground: oklch(0.70 0.018 110);
+  --muted-foreground: oklch(0.76 0.018 110);
   --accent: oklch(0.66 0.082 55);
   --accent-foreground: oklch(0.135 0.020 145);
   --gold: oklch(0.78 0.130 82);
@@ -124,8 +124,11 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    font-size: 17px;
-    line-height: 1.55;
+    /* 18px base + line-height 1.65 pensado para adultos con presbicia leyendo
+       al sol en un celular Android. Sube el rango WCAG a AAA en cuerpo. */
+    font-size: 18px;
+    line-height: 1.65;
+    -webkit-tap-highlight-color: transparent;
     background-image:
       radial-gradient(
         circle at 12% 8%,

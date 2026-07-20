@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   Book,
   Bug,
-  FlaskConical,
   FolderOpen,
   GraduationCap,
   Home,
@@ -37,55 +36,54 @@ const ITEMS: NavItem[] = [
   },
   {
     href: "/tutorial",
-    label: "Tutorial",
+    label: "Cómo empezar",
     icon: GraduationCap,
-    description: "Recorrido guiado de 5 pasos.",
+    description: "Recorrido guiado en pocos pasos.",
   },
   {
     href: "/catalogo",
-    label: "Grillos",
+    label: "Grillos que estudiamos",
     icon: Bug,
-    description: "Grillos nativos del Piedemonte Llanero.",
+    description: "Fichas de los grillos del Piedemonte Llanero.",
   },
   {
     href: "/como-armar",
-    label: "Cómo armar las cajas",
+    label: "Cómo armar sus cajas",
     icon: Package,
     description: "Guía paso a paso para el espacio de cría.",
   },
   {
     href: "/wizard",
-    label: "Asistente guiado",
+    label: "Consulta paso a paso",
     icon: Sparkles,
-    description: "Comparamos dietas según su caso.",
+    description: "Le sugerimos una dieta según su caso.",
   },
   {
     href: "/chat",
-    label: "Chat informativo",
+    label: "Preguntas al equipo",
     icon: MessageCircle,
     description: "Pregunte sobre el proyecto.",
   },
   {
     href: "/proyectos",
-    label: "Mis proyectos",
+    label: "Mis consultas",
     icon: FolderOpen,
-    description: "Gestione sus proyectos de cría.",
-  },
-  {
-    href: "/metodologia",
-    label: "Metodología",
-    icon: FlaskConical,
-    description: "Cómo estudiamos y modelamos.",
+    description: "Sus consultas guardadas para volver después.",
   },
   {
     href: "/proyecto",
-    label: "Sobre el proyecto",
+    label: "Quiénes somos",
     icon: School,
-    description: "Universidad de los Llanos · Minciencias 963-2025.",
+    description: "Universidad de los Llanos · Minciencias.",
   },
 ];
 
-export function SiteNav() {
+/**
+ * Nav lateral con menú hamburguesa. La página /metodologia queda fuera del
+ * menú principal — está disponible en el footer bajo "Para investigadores"
+ * para no intimidar al productor con jerga académica en la navegación.
+ */
+export function SiteNav({ variant = "full" }: { variant?: "full" | "focused" }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -101,6 +99,16 @@ export function SiteNav() {
     };
   }, [open]);
 
+  // Variante "focused": para flujos guiados (wizard, tutorial), no mostramos
+  // nada distractor — el back arriba a la izquierda ya es suficiente.
+  if (variant === "focused") {
+    return (
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center gap-2">
       <ProjectSwitcher />
@@ -109,9 +117,9 @@ export function SiteNav() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Abrir menú"
-        className="inline-flex size-9 items-center justify-center rounded-full border border-border bg-card/60 text-foreground/80 transition-colors hover:border-primary/40 hover:text-foreground"
+        className="inline-flex size-11 items-center justify-center rounded-full border border-border bg-card/60 text-foreground/85 transition-colors hover:border-primary/40 hover:text-foreground"
       >
-        <Menu className="h-4 w-4" strokeWidth={2} />
+        <Menu className="h-5 w-5" strokeWidth={2} />
       </button>
 
       {open && (
@@ -129,7 +137,7 @@ export function SiteNav() {
               <div className="flex items-center gap-2">
                 <span
                   aria-hidden
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10"
                 >
                   <span className="block h-2 w-2 rotate-45 bg-primary" />
                 </span>
@@ -141,7 +149,7 @@ export function SiteNav() {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Cerrar menú"
-                className="inline-flex size-9 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
+                className="inline-flex size-11 items-center justify-center rounded-full text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
               >
                 <X className="h-5 w-5" strokeWidth={2} />
               </button>
@@ -155,16 +163,16 @@ export function SiteNav() {
                       <Link
                         href={item.href}
                         onClick={() => setOpen(false)}
-                        className="flex items-start gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-muted"
+                        className="flex min-h-[64px] items-start gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-muted"
                       >
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                           <Icon className="h-5 w-5" strokeWidth={1.75} />
                         </span>
                         <span className="flex flex-1 flex-col gap-0.5">
-                          <span className="text-[15px] font-semibold text-foreground">
+                          <span className="text-[16px] font-semibold text-foreground">
                             {item.label}
                           </span>
-                          <span className="text-[12.5px] leading-snug text-foreground/60">
+                          <span className="text-[13px] leading-snug text-foreground/70">
                             {item.description}
                           </span>
                         </span>
@@ -174,13 +182,17 @@ export function SiteNav() {
                 })}
               </ul>
             </nav>
-            <div className="border-t border-border p-4 text-[11.5px] text-foreground/55">
-              <p className="font-semibold text-foreground/75">
-                Versión demostrativa
-              </p>
+            <div className="border-t border-border p-4 text-[12px] text-foreground/70">
+              <p className="font-semibold text-foreground/90">En pruebas</p>
               <p className="mt-1 leading-relaxed">
                 <Book className="mr-1 inline h-3 w-3 -translate-y-px" />
-                Consulte el manual en el repositorio del proyecto.
+                <Link
+                  href="/metodologia"
+                  onClick={() => setOpen(false)}
+                  className="underline underline-offset-2"
+                >
+                  Metodología técnica (para investigadores)
+                </Link>
               </p>
             </div>
           </aside>

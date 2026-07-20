@@ -36,7 +36,7 @@ export function ProjectSwitcher({ className }: { className?: string }) {
       >
         <FolderOpen className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
         <span className="truncate">
-          {active ? active.name : "Sin proyecto"}
+          {active ? active.name : "Sin consulta"}
         </span>
         <ChevronDown className="h-3.5 w-3.5 opacity-60" strokeWidth={2} />
       </button>
@@ -49,7 +49,7 @@ export function ProjectSwitcher({ className }: { className?: string }) {
           <ul className="max-h-[240px] overflow-y-auto">
             {projects.length === 0 && (
               <li className="px-4 py-3 text-[13px] text-foreground/60">
-                Aún no tiene proyectos.
+                Aún no ha guardado consultas.
               </li>
             )}
             {projects.map((p) => {
@@ -93,7 +93,7 @@ export function ProjectSwitcher({ className }: { className?: string }) {
                     }
                   }}
                   autoFocus
-                  placeholder="Nombre del proyecto"
+                  placeholder="Nombre de la consulta"
                   className="h-9 flex-1 rounded-lg border border-border bg-background px-3 text-[14px] outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
                 />
                 <button
@@ -101,7 +101,7 @@ export function ProjectSwitcher({ className }: { className?: string }) {
                   onClick={finishCreate}
                   className="h-9 rounded-lg bg-primary px-3 text-[13px] font-semibold text-primary-foreground"
                 >
-                  Crear
+                  Guardar
                 </button>
               </div>
             ) : (
@@ -111,7 +111,7 @@ export function ProjectSwitcher({ className }: { className?: string }) {
                 className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-[14px] font-semibold text-primary transition-colors hover:bg-primary/5"
               >
                 <Plus className="h-4 w-4" strokeWidth={2.5} />
-                Crear proyecto
+                Guardar consulta nueva
               </button>
             )}
           </div>

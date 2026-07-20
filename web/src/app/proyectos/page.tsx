@@ -64,12 +64,12 @@ export default function ProjectsPage() {
           <FolderOpen className="h-6 w-6" strokeWidth={1.5} />
         </span>
         <h1 className="mt-5 text-[2rem] font-bold leading-tight tracking-[-0.02em]">
-          Sus proyectos de cría
+          Sus consultas guardadas
         </h1>
         <p className="mt-3 text-[15.5px] leading-relaxed text-foreground/75">
-          Un proyecto guarda su animal destino, el clima que indicó y la
-          conversación con el asistente. Puede tener varios y cambiarse entre
-          ellos cuando quiera.
+          Aquí quedan anotadas sus consultas. Guardamos el animal, el clima
+          que indicó y las preguntas del chat. Puede tener varias y cambiarse
+          entre ellas cuando quiera.
         </p>
       </section>
 
@@ -88,8 +88,8 @@ export default function ProjectsPage() {
                 }
               }}
               autoFocus
-              placeholder="Nombre del proyecto (ej: Tilapia patio)"
-              aria-label="Nombre del proyecto"
+              placeholder="Nombre para reconocerla (ej: Tilapia del patio)"
+              aria-label="Nombre de la consulta"
               className="h-12 flex-1 rounded-xl border border-border bg-background px-4 text-[15px] outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
             />
             <Button
@@ -108,14 +108,14 @@ export default function ProjectsPage() {
           >
             <span className="flex items-center gap-3">
               <Plus className="h-5 w-5" strokeWidth={2.25} />
-              Crear un proyecto nuevo
+              Empezar una consulta nueva
             </span>
             <ChevronRight className="h-5 w-5" strokeWidth={2} />
           </button>
         )}
         <p className="mt-3 text-[12.5px] leading-relaxed text-foreground/65">
-          Al crear el proyecto, lo abrimos automáticamente en el asistente
-          guiado para que responda las preguntas y guarde su elección.
+          Al empezar la consulta, la abrimos en el asistente guiado para que
+          responda las preguntas y guarde su elección.
         </p>
       </section>
 
@@ -123,13 +123,13 @@ export default function ProjectsPage() {
       <section className="mt-10">
         <h2 className="text-[18px] font-bold tracking-tight">
           {projects.length === 0
-            ? "Aún no tiene proyectos"
-            : `${projects.length} proyecto${projects.length === 1 ? "" : "s"}`}
+            ? "Aún no ha guardado consultas"
+            : `${projects.length} consulta${projects.length === 1 ? "" : "s"}`}
         </h2>
 
         {projects.length === 0 && (
           <p className="mt-3 text-[14.5px] leading-relaxed text-foreground/65">
-            Cuando cree su primer proyecto verá aquí su lista y podrá abrirlo
+            Cuando guarde su primera consulta verá aquí su lista y podrá abrirla
             desde cualquier momento.
           </p>
         )}

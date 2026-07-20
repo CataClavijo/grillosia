@@ -1,5 +1,14 @@
 import Link from "next/link";
-import { Bug, ChevronLeft, Info, Moon, Sun, Sunset } from "lucide-react";
+import {
+  Bug,
+  ChevronLeft,
+  ChevronRight,
+  Info,
+  Moon,
+  Package,
+  Sun,
+  Sunset,
+} from "lucide-react";
 
 import { CATALOG_INTRO, CATALOG_NOTE, CRICKETS } from "@/lib/content/catalog";
 import { SiteNav } from "@/components/site-nav";
@@ -10,6 +19,12 @@ const ACTIVITY_ICON = {
   Crepuscular: Sunset,
   Diurno: Sun,
 } as const;
+
+const ACTIVITY_LABEL: Record<string, string> = {
+  Nocturno: "Sale de noche",
+  Crepuscular: "Sale al amanecer y al atardecer",
+  Diurno: "Sale de día",
+};
 
 export const metadata = {
   title: "Catálogo de grillos — GrillIA",
@@ -36,7 +51,7 @@ export default function CatalogPage() {
           <Bug className="h-6 w-6" strokeWidth={1.5} />
         </span>
         <h1 className="mt-5 text-[2rem] font-bold leading-tight tracking-[-0.02em]">
-          Grillos del Piedemonte Llanero
+          Los grillos de nuestra tierra
         </h1>
         <div className="mt-4 space-y-4">{renderMarkdownBlock(CATALOG_INTRO)}</div>
 
@@ -72,11 +87,11 @@ export default function CatalogPage() {
                   </p>
                 </div>
                 <span
-                  className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-[11.5px] font-bold uppercase tracking-wider text-foreground/70"
-                  aria-label={`Actividad ${c.activity.toLowerCase()}`}
+                  className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1.5 text-[12px] font-semibold text-foreground/85"
+                  aria-label={ACTIVITY_LABEL[c.activity] ?? c.activity}
                 >
                   <ActivityIcon className="h-3.5 w-3.5" strokeWidth={2} />
-                  {c.activity}
+                  {ACTIVITY_LABEL[c.activity] ?? c.activity}
                 </span>
               </header>
 
@@ -109,15 +124,37 @@ export default function CatalogPage() {
         })}
       </section>
 
-      <section className="mt-10 rounded-2xl border border-border/60 bg-card/50 p-4 text-[13px] leading-relaxed text-foreground/70">
-        ¿No está seguro de qué grillo tiene? Pregúntele al{" "}
+      {/* Puente al siguiente paso */}
+      <section className="mt-10">
         <Link
-          href="/chat"
-          className="font-semibold text-primary underline underline-offset-2"
+          href="/como-armar"
+          className="flex min-h-[80px] w-full items-center justify-between gap-3 rounded-2xl bg-primary px-5 py-4 text-primary-foreground transition-colors hover:bg-primary/90"
         >
-          asistente
-        </Link>{" "}
-        o consulte la guía para armar sus cajas antes de empezar.
+          <span className="flex items-center gap-3">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary-foreground/15">
+              <Package className="h-5 w-5" strokeWidth={2} />
+            </span>
+            <span>
+              <span className="block text-[13px] font-semibold uppercase tracking-wider opacity-90">
+                Paso 3
+              </span>
+              <span className="block text-[17px] font-bold leading-tight">
+                Cómo armar mi caja
+              </span>
+            </span>
+          </span>
+          <ChevronRight className="h-5 w-5" strokeWidth={2.5} />
+        </Link>
+        <p className="mt-3 text-[13.5px] leading-relaxed text-foreground/70">
+          ¿No está seguro de qué grillo tiene?{" "}
+          <Link
+            href="/chat"
+            className="font-semibold text-primary underline underline-offset-2"
+          >
+            Pregúntele al asistente
+          </Link>
+          .
+        </p>
       </section>
     </main>
   );

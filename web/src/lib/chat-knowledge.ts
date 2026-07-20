@@ -21,23 +21,24 @@ export interface KnowledgeEntry {
 }
 
 export const WELCOME_MESSAGE =
-  "Esta es una versión de demostración. Las recomendaciones presentadas se basan en datos preliminares y servirán para validar la experiencia de usuario.";
+  "Estamos en pruebas. Lo que le respondemos le sirve de guía, pero conviene confirmarlo con su experiencia.";
 
+/** Preguntas prácticas que un productor real haría (no meta-preguntas). */
 export const STARTER_QUESTIONS = [
-  "¿Qué es GrillIA?",
-  "¿Cómo armo las cajas de cría?",
-  "¿Qué grillos usamos?",
-  "¿Qué dietas están en estudio?",
+  "¿Cada cuánto cambio el agua de los bebederos?",
+  "¿Cuántos grillos caben en una caja?",
+  "¿Cómo sé cuándo cosechar?",
+  "¿Se me murieron muchos, qué hago?",
 ] as const;
 
 const LINKS = {
-  tutorial: { label: "Ver el tutorial", href: "/tutorial" },
-  catalog: { label: "Ver el catálogo de grillos", href: "/catalogo" },
-  enclosure: { label: "Ver la guía de armado", href: "/como-armar" },
-  wizard: { label: "Ir al asistente guiado", href: "/wizard" },
-  methodology: { label: "Ver la metodología", href: "/metodologia" },
-  project: { label: "Sobre el proyecto", href: "/proyecto" },
-  projects: { label: "Ver mis proyectos", href: "/proyectos" },
+  tutorial: { label: "Ver cómo empezar", href: "/tutorial" },
+  catalog: { label: "Ver los grillos que estudiamos", href: "/catalogo" },
+  enclosure: { label: "Ver la guía de las cajas", href: "/como-armar" },
+  wizard: { label: "Ir a la consulta paso a paso", href: "/wizard" },
+  methodology: { label: "Ver metodología (técnica)", href: "/metodologia" },
+  project: { label: "Sobre GrillIA", href: "/proyecto" },
+  projects: { label: "Mis consultas guardadas", href: "/proyectos" },
 } as const;
 
 const KNOWLEDGE: KnowledgeEntry[] = [
@@ -51,8 +52,8 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "de que se trata",
     ],
     answer: {
-      text: "GrillIA es un proyecto de la **Universidad de los Llanos** que estudia cómo optimizar la cría de **grillos nativos del Piedemonte Llanero** para producir harina proteica. La harina se evalúa como alternativa a la harina de pescado importada en piscicultura, avicultura y porcicultura. Cuenta con financiación de la **Convocatoria Minciencias 963 de 2025**.",
-      links: [LINKS.project, LINKS.methodology],
+      text: "GrillIA es un proyecto de la **Universidad de los Llanos** que estudia cómo criar mejor **grillos nativos del Piedemonte Llanero** para hacer harina rica en proteína. Esa harina se estudia para dársela a tilapia, pollo o cerdo, y así reemplazar la harina de pescado importada. El proyecto tiene apoyo de **Minciencias (Convocatoria 963 de 2025)**.",
+      links: [LINKS.project, LINKS.tutorial],
     },
   },
   {
@@ -66,7 +67,7 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "para que sirve",
     ],
     answer: {
-      text: "El modelo en estudio cubre tres animales destino: **tilapia** (meta 30 a 45 % de proteína), **pollo** (18 a 23 %) y **cerdo** (14 a 20 %). Cada animal se divide en etapas productivas (inicio, crecimiento, engorde). Le sugerimos abrir el asistente guiado para ver la comparación demostrativa.",
+      text: "La harina que estudiamos sirve para tres animales: **tilapia** (le pide entre 30 y 45 % de proteína), **pollo** (18 a 23 %) y **cerdo** (14 a 20 %). Cada uno tiene sus etapas (inicio, crecimiento, engorde). Si me cuenta a cuál va destinada, le sugerimos una comida.",
       links: [LINKS.wizard],
     },
   },
@@ -76,10 +77,13 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "dietas",
       "cuales dietas",
       "que dietas",
+      "que comidas",
+      "cuales comidas",
+      "comida",
+      "comidas",
       "estan en estudio",
       "en estudio",
       "lista",
-      "comida",
       "alimento",
       "ingredientes",
       "bore",
@@ -91,28 +95,28 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "avena",
     ],
     answer: {
-      text: "Hay tres dietas en estudio. Todas comparten la misma base de **harina de choclo 10 %** y **avena en hojuelas 10 %**, y varían en la fuente proteica principal (80 %): **D1** harina de bore, **D2** harina de botón de oro, **D3** salvado de trigo. La hidratación es común: bebederos con agua más pedazos de manzana.",
+      text: "Estamos probando **tres comidas**. Todas comparten la misma base: **10 % de harina de choclo y 10 % de avena en hojuelas**. Lo que cambia es el 80 % principal:\n\n- **D1** — harina de bore.\n- **D2** — harina de botón de oro.\n- **D3** — salvado de trigo.\n\nPara la hidratación, en las tres ponemos bebederos con agua y pedacitos de manzana.",
       links: [LINKS.wizard],
     },
   },
   {
     keywords: ["proteina", "porcentaje", "rango", "meta"],
     answer: {
-      text: "La **meta interna** del proyecto es alcanzar entre **60 y 70 %** de proteína en la harina de grillo (en base seca). No es un valor ya obtenido: se confirmará mediante análisis bromatológico al final de cada ensayo.",
+      text: "La **meta** del proyecto es que la harina de grillo tenga entre **60 y 70 %** de proteína (en base seca). Todavía no es un dato conseguido: se confirma con un análisis de laboratorio al final de cada prueba.",
       links: [LINKS.methodology],
     },
   },
   {
-    keywords: ["temperatura", "humedad", "clima", "ambiente"],
+    keywords: ["temperatura", "humedad", "clima", "ambiente", "calor"],
     answer: {
-      text: "El estudio contempla como **condiciones de cría objetivo** un rango de **24 a 34 °C** de temperatura y **50 a 80 %** de humedad relativa. Son los rangos hacia los que apunta el ensayo, no mediciones ya registradas. Le pedimos su clima en el asistente guiado para mostrarle el contexto de su consulta.",
+      text: "Buscamos criar a los grillos entre **24 y 34 grados** de temperatura y con la humedad del aire entre **50 y 80 %**. Son los rangos con los que estamos aprendiendo, no medidas ya tomadas. Si me dice su clima en la consulta, le mostramos las opciones que le van mejor.",
       links: [LINKS.wizard, LINKS.enclosure],
     },
   },
   {
     keywords: ["especie", "grillo", "grillos", "que grillos", "cuales grillos"],
     answer: {
-      text: "El proyecto trabaja con **grillos nativos del Piedemonte Llanero**. La selección específica y su perfil nutricional se está documentando como parte del estudio. En el catálogo puede ver los grillos que estamos considerando, con fotos y descripción.",
+      text: "Trabajamos con **grillos nativos del Piedemonte Llanero**, o sea grillos que ya viven en su región. Todavía estamos documentando las especies exactas. Puede verlos con foto y descripción en el catálogo.",
       links: [LINKS.catalog],
     },
   },
@@ -128,23 +132,93 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "materiales",
       "empezar",
       "como empezar",
+      "montar",
     ],
     answer: {
-      text: "Para armar sus cajas necesita pocos materiales: una **caja plástica de 40 a 60 litros**, malla mosquitero, hueveras de cartón como refugio, un termómetro-higrómetro barato y tapas para el agua y la manzana. La guía le muestra el paso a paso.",
+      text: "Para armar sus cajas necesita cosas sencillas: una **caja plástica de 40 a 60 litros**, malla mosquitera (angeo), hueveras de cartón como escondite, un termómetro con medidor de humedad barato, y tapas para el agua y la manzana. Todo lo explicamos paso a paso.",
       links: [LINKS.enclosure],
     },
   },
   {
-    keywords: ["mantenimiento", "limpieza", "limpiar", "cuidado", "olor", "diario"],
+    keywords: [
+      "mantenimiento",
+      "limpieza",
+      "limpiar",
+      "cuidado",
+      "olor",
+      "diario",
+      "agua",
+      "cambio el agua",
+      "cada cuanto",
+    ],
     answer: {
-      text: "El mantenimiento diario es sencillo: revise el agua y la manzana, retire restos de comida vieja y grillos muertos cada dos o tres días, y limpie el sustrato cada semana. Si nota mal olor, aumente la ventilación. En la guía tiene la lista completa.",
+      text: "Todos los días revise que haya **agua fresca y pedacitos de manzana**. Cada dos o tres días retire restos de comida vieja y grillos muertos. Cada semana limpie el fondo de la caja. Si nota mal olor, seguramente falta ventilación o hay demasiada humedad.",
       links: [LINKS.enclosure],
     },
   },
   {
-    keywords: ["wizard", "asistente guiado", "como uso", "como funciona", "paso a paso"],
+    keywords: [
+      "cuantos grillos",
+      "cuantos caben",
+      "densidad",
+      "cuantos por caja",
+      "poblacion",
+    ],
     answer: {
-      text: "El asistente guiado le pide cuatro datos: el animal destino, su etapa productiva, la temperatura promedio de cría y la humedad. Con eso le sugerimos qué dieta en estudio se acerca más a su meta de proteína. Puede probarlo cuando quiera.",
+      text: "Depende del tamaño de la caja y de la edad de los grillos, pero como referencia inicial: en una caja plástica de 40 a 60 litros con buenos escondites de cartón de huevo, entran cómodamente varios cientos de grillos. Es mejor empezar con menos y agregar refugios (cartones) para que no se peleen.",
+      links: [LINKS.enclosure],
+    },
+  },
+  {
+    keywords: [
+      "cosechar",
+      "cosecha",
+      "cuando cosecho",
+      "cuando cosechar",
+      "cuando estan listos",
+      "cuanto tardan",
+      "cuanto tiempo tardan",
+      "crecen",
+      "tardan en crecer",
+    ],
+    answer: {
+      text: "Todavía no le podemos dar un número exacto porque depende de la comida, la temperatura y la especie. Es parte de lo que estamos estudiando. Por eso le pedimos paciencia mientras aprendemos. Si guarda una consulta con sus datos, cuando terminemos podremos avisarle qué esperar.",
+      links: [LINKS.wizard],
+    },
+  },
+  {
+    keywords: [
+      "se murieron",
+      "muchos muertos",
+      "mortalidad",
+      "murieron",
+      "se me murieron",
+      "enfermos",
+      "enfermedad",
+      "estan enfermos",
+    ],
+    answer: {
+      text: "Lo más común es problema de **ambiente**: demasiada humedad, mala ventilación o cambios bruscos de temperatura. Revise: (1) que la caja tenga buena malla en la tapa, (2) que no haya charcos en el fondo, (3) que no le esté dando sol directo, (4) que los bebederos no permitan ahogamientos. Si el problema sigue, escríbanos con detalles.",
+      links: [LINKS.enclosure],
+    },
+  },
+  {
+    keywords: [
+      "cocina",
+      "sobras",
+      "restos de comida",
+      "puedo dar",
+      "les puedo dar",
+    ],
+    answer: {
+      text: "Le sugerimos usar solo las comidas que estamos probando (harina de bore, botón de oro o salvado de trigo, con choclo y avena). Sobras de cocina con sal, aceite o químicos les pueden hacer daño. La manzana sí sirve bien para la hidratación.",
+      links: [LINKS.wizard],
+    },
+  },
+  {
+    keywords: ["wizard", "asistente guiado", "consulta paso", "como uso", "como funciona", "paso a paso"],
+    answer: {
+      text: "La **consulta paso a paso** le hace cuatro preguntas cortas: qué animal alimenta, en qué etapa está, y qué calor y humedad tiene su espacio. Con eso le mostramos qué comida se acerca más a lo que necesita su animal.",
       links: [LINKS.wizard],
     },
   },
@@ -155,24 +229,28 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "empezar",
       "guia",
       "recorrido",
-      "onboarding",
+      "como empezar",
     ],
     answer: {
-      text: "Puede volver a ver el **tutorial de bienvenida** cuando quiera. Son cinco pasos cortos: qué es GrillIA, los grillos con los que trabajamos, cómo armar las cajas, las dietas en estudio y cómo usar el asistente.",
+      text: "Si es su primera vez, hay un **recorrido corto de cinco pasos** que le explica todo. Puede volver a verlo cuando quiera.",
       links: [LINKS.tutorial],
     },
   },
   {
     keywords: [
       "proyectos",
+      "consultas",
+      "mis consultas",
       "mis proyectos",
       "cambiar de proyecto",
-      "nuevo proyecto",
-      "otro proyecto",
-      "varios proyectos",
+      "cambiar de consulta",
+      "nueva consulta",
+      "otra consulta",
+      "varias consultas",
+      "guardar",
     ],
     answer: {
-      text: "Puede tener **varios proyectos** al mismo tiempo, cada uno con su animal destino, su clima y su propia conversación. Cambiar entre proyectos es un toque desde la lista.",
+      text: "Puede guardar **varias consultas** al mismo tiempo, cada una con su animal, su clima y su conversación. Cambiar entre ellas es un toque desde la lista.",
       links: [LINKS.projects],
     },
   },
@@ -186,7 +264,7 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "llanos",
     ],
     answer: {
-      text: "El proyecto es ejecutado por la **Universidad de los Llanos** con financiación de **Minciencias** a través de la **Convocatoria 963 de 2025** (Contrato 207 de 2025).",
+      text: "El proyecto lo hace la **Universidad de los Llanos** con apoyo de **Minciencias** a través de la **Convocatoria 963 de 2025** (Contrato 207 de 2025).",
       links: [LINKS.project],
     },
   },
@@ -199,22 +277,23 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "validado",
       "definitivo",
       "definitiva",
+      "pruebas",
     ],
     answer: {
-      text: "Esta versión es **demostrativa**. Los resultados que ve aquí no son recomendaciones definitivas: se basan en datos preliminares y el modelo final aún está en fase de entrenamiento. Su propósito hoy es validar la experiencia de usuario.",
+      text: "Estamos en **pruebas**. Lo que ve aquí le sirve de guía, pero todavía no le damos respuestas definitivas: seguimos aprendiendo con las consultas y los ensayos del laboratorio.",
     },
   },
   {
     keywords: ["harina", "harina de pescado", "alternativa", "sustituir", "reemplazar"],
     answer: {
-      text: "Colombia importa miles de toneladas de harina de pescado al año para alimentación animal. La harina de grillo se estudia como alternativa nacional, con la **meta interna** del proyecto de alcanzar entre 60 y 70 % de proteína en base seca al final de cada ensayo.",
+      text: "Colombia importa miles de toneladas de harina de pescado al año para dársela a los animales. La harina de grillo se estudia como una alternativa nacional, con la **meta** de tener entre 60 y 70 % de proteína al terminar cada prueba de laboratorio.",
       links: [LINKS.methodology],
     },
   },
   {
     keywords: ["piedemonte", "llanero", "region", "donde", "ubicacion"],
     answer: {
-      text: "El proyecto se desarrolla en el **Piedemonte Llanero** colombiano, una región con condiciones climáticas favorables para la cría de grillos nativos. Por eso el modelo aprende a recomendar dietas dentro de los rangos típicos de esa zona.",
+      text: "Trabajamos en el **Piedemonte Llanero**, una región del país con clima favorable para criar grillos nativos. Por eso estudiamos las comidas y condiciones típicas de esa zona.",
     },
   },
   {
@@ -232,28 +311,36 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "que deberia",
     ],
     answer: {
-      text: "En esta demo no entregamos una recomendación definitiva. **Le sugerimos** abrir el asistente guiado: comparamos las dietas en estudio frente a su meta de proteína y le mostramos cuál se acerca más bajo sus condiciones climáticas. La decisión final debe acompañarse de criterio técnico.",
+      text: "Todavía no le damos una respuesta única. **Le sugerimos** ir a la consulta paso a paso: comparamos las comidas que estamos probando frente a lo que necesita su animal, y le mostramos cuál se acerca más. La decisión final siempre conviene acompañarla con su propia experiencia.",
       links: [LINKS.wizard],
     },
   },
   {
-    keywords: ["precio", "costo", "valor", "cuesta"],
+    keywords: ["precio", "costo", "valor", "cuesta", "cuanto vale"],
     answer: {
-      text: "Esta versión demostrativa no estima precios ni costos. El proyecto está centrado en optimizar la composición nutricional de la harina; los análisis económicos son parte de fases posteriores.",
+      text: "En esta versión no estamos calculando precios ni costos. El foco del proyecto es la calidad nutricional de la harina; los números de plata vienen en fases posteriores.",
     },
   },
   {
-    keywords: ["gracias", "muchas gracias", "ok"],
+    keywords: ["gracias", "muchas gracias", "ok", "listo"],
     answer: {
-      text: "Con gusto. Recuerde que esta es una versión de demostración. Puede seguir explorando el asistente guiado cuando quiera.",
+      text: "Con gusto. Recuerde que estamos en pruebas, así que puede volver cuando quiera y seguir explorando.",
       links: [LINKS.wizard],
     },
   },
 ];
 
 const FALLBACK: KnowledgeAnswer = {
-  text: "Esa es una buena pregunta. En esta versión de demostración solo puedo responder sobre el proyecto en general: qué es GrillIA, qué animales cubre, qué dietas están en estudio, cómo armar las cajas y cómo funciona el asistente guiado. ¿Le interesa alguno de esos temas?",
-  links: [LINKS.tutorial, LINKS.catalog, LINKS.enclosure],
+  text: "Esa pregunta todavía no la sé responder bien. Puedo ayudarle con temas de **grillos**, **cajas de cría**, **comidas** o **clima**. O si prefiere hablar con una persona del equipo, escríbanos por WhatsApp.",
+  links: [
+    LINKS.tutorial,
+    LINKS.catalog,
+    LINKS.enclosure,
+    {
+      label: "Escribirnos por WhatsApp",
+      href: "https://wa.me/573000000000?text=Hola%2C%20tengo%20una%20pregunta%20sobre%20GrillIA",
+    },
+  ],
 };
 
 function normalize(text: string): string {
@@ -270,11 +357,6 @@ function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-/**
- * Coincidencia por límites de palabra: "dieta" no matchea dentro de "dietas",
- * y "que dieta" no matchea dentro de "que dietas". Las frases (con espacio)
- * pesan más que las palabras sueltas.
- */
 function matchesAsWord(q: string, kw: string): boolean {
   const re = new RegExp(`(^|\\W)${escapeRegex(kw)}(\\W|$)`);
   return re.test(q);

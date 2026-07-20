@@ -33,7 +33,7 @@ export const CRICKETS: Cricket[] = [
       "Cuerpo café oscuro, casi negro, con antenas largas y patas traseras fuertes. Su canto es un chirrido continuo y parejo que se escucha al caer la tarde y en la noche.",
     capture_tip:
       "Búsquelo de noche con linterna cerca de hojarasca húmeda. Use un frasco con tapa perforada y un poco de pasto adentro.",
-    suitability: "Apto: es el más conocido y de manejo sencillo en cría.",
+    suitability: "Sirve bien: es el más conocido y fácil de criar.",
   },
   {
     id: "grillo-cabeza-redonda-llano",
@@ -47,7 +47,7 @@ export const CRICKETS: Cricket[] = [
     capture_tip:
       "Recórralo al atardecer siguiendo el canto. Mueva con cuidado la base de los pastos y recoja con un vaso plástico.",
     suitability:
-      "Promisorio: crece bien en clima cálido, pero requiere más estudio en cría controlada.",
+      "Prometedor: crece bien en clima cálido, pero todavía lo estamos estudiando.",
   },
   {
     id: "grillo-matorral-piedemonte",
@@ -61,6 +61,6 @@ export const CRICKETS: Cricket[] = [
     capture_tip:
       "Revise entre ramas bajas y hojarasca húmeda en la mañana temprano. Use guantes y un recipiente ventilado.",
     suitability:
-      "Requiere más estudio: interesante por su rusticidad, aún en fase de observación.",
+      "En observación: aguanta bastante, pero todavía estamos aprendiendo con él.",
   },
 ];

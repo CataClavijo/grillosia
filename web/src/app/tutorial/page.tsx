@@ -45,19 +45,21 @@ export default function TutorialPage() {
       <header className="flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[14px] font-semibold text-foreground/70 transition-colors hover:text-foreground"
+          className="inline-flex min-h-[44px] items-center gap-1 rounded-full px-3 py-2 text-[15px] font-semibold text-foreground/85 transition-colors hover:text-foreground"
         >
           <ChevronLeft className="h-5 w-5" />
           Inicio
         </Link>
-        <button
-          type="button"
-          onClick={skip}
-          aria-label="Saltar tutorial"
-          className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
-        >
-          Saltar <X className="h-3.5 w-3.5" strokeWidth={2} />
-        </button>
+        {index > 0 && (
+          <button
+            type="button"
+            onClick={skip}
+            aria-label="Saltar el recorrido por ahora"
+            className="inline-flex min-h-[44px] items-center gap-1 rounded-full px-3 py-2 text-[13.5px] font-semibold text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
+          >
+            Saltar por ahora <X className="h-3.5 w-3.5" strokeWidth={2} />
+          </button>
+        )}
       </header>
 
       {/* Barra de progreso */}
