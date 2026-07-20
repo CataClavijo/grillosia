@@ -266,6 +266,8 @@ export default function WizardPage() {
           <Resultado
             animalName={animal.name}
             stageName={stage.name}
+            proteinMin={stage.proteinMin}
+            proteinMax={stage.proteinMax}
             temp={temp}
             humidity={humidity}
             onCambiar={volverAPreguntas}
@@ -432,6 +434,8 @@ function StepClimate({
 function Resultado({
   animalName,
   stageName,
+  proteinMin,
+  proteinMax,
   temp,
   humidity,
   onCambiar,
@@ -439,6 +443,8 @@ function Resultado({
 }: {
   animalName: string;
   stageName: string;
+  proteinMin: number;
+  proteinMax: number;
   temp: number;
   humidity: number;
   onCambiar: () => void;
@@ -466,19 +472,76 @@ function Resultado({
         </button>
       </p>
 
-      <ul className="mt-6 flex flex-col gap-3">
+      {/* Lo que su animal necesita — esto sí es un dato firme (tablas NRC) */}
+      <div className="mt-6 rounded-2xl border-2 border-primary/30 bg-primary/5 p-4">
+        <p className="text-[14px] font-semibold text-foreground/85">
+          Su {animalName.toLowerCase()} en etapa de {stageName.toLowerCase()}{" "}
+          necesita
+        </p>
+        <p className="mt-1 flex items-baseline gap-2">
+          <span className="text-[2.5rem] font-extrabold leading-none tracking-[-0.02em] text-primary">
+            {proteinMin} a {proteinMax}
+          </span>
+          <span className="text-[1.2rem] font-bold text-primary/70">%</span>
+          <span className="text-[14px] font-medium text-muted-foreground">
+            de proteína
+          </span>
+        </p>
+        <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+          Según las tablas de referencia NRC para alimentación animal.
+        </p>
+      </div>
+
+      {/* La comparación: estructura lista, números pendientes del modelo */}
+      <p className="mt-8 text-[15px] font-semibold text-foreground/85">
+        Las tres comidas que estamos comparando
+      </p>
+
+      <ul className="mt-3 flex flex-col gap-3">
         {DIETS.map((diet) => (
-          <li key={diet.id} className="rounded-2xl bg-card p-4">
-            <p className="text-[17px] font-bold">{diet.name}</p>
+          <li key={diet.id} className="rounded-2xl border bg-card p-4">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="text-[17px] font-bold">{diet.name}</p>
+              <span className="shrink-0 rounded-md bg-muted px-2 py-0.5 text-[12px] font-bold tabular-nums text-muted-foreground">
+                {diet.id}
+              </span>
+            </div>
             <p className="mt-1.5 text-[14px] leading-relaxed text-foreground/85">
               {diet.composition}
             </p>
+
+            <div className="mt-3 flex items-center justify-between gap-3 border-t pt-3">
+              <span className="text-[13px] font-medium text-muted-foreground">
+                Proteína que daría la harina
+              </span>
+              <span className="text-[15px] font-bold text-muted-foreground">
+                Por confirmar
+              </span>
+            </div>
           </li>
         ))}
       </ul>
 
       <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-        {HYDRATION_NOTE} Guardado en Mis consultas.
+        {HYDRATION_NOTE}
+      </p>
+
+      {/* Por qué no hay números todavía */}
+      <div className="mt-6 rounded-2xl border border-demo-border bg-demo-bg p-4">
+        <p className="text-[14px] font-bold text-demo-foreground">
+          ¿Por qué todavía no le decimos cuál es la mejor?
+        </p>
+        <p className="mt-1.5 text-[13.5px] leading-relaxed text-demo-foreground">
+          Los grillos de nuestros ensayos siguen creciendo. Cuando se
+          cosechen, el laboratorio mide cuánta proteína quedó en la harina de
+          cada comida. Con esos números el sistema aprende y aquí mismo le
+          diremos cuál se acerca más a lo que su{" "}
+          {animalName.toLowerCase()} necesita.
+        </p>
+      </div>
+
+      <p className="mt-4 text-[13px] text-muted-foreground">
+        Guardado en Mis consultas.
       </p>
 
       <StepFooter
