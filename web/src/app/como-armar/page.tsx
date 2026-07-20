@@ -11,6 +11,7 @@ import { SiteNav } from "@/components/site-nav";
 import { BackToGuide } from "@/components/back-to-guide";
 import {
   COST_NOTE,
+  ENCLOSURE_DISCLAIMER,
   ENCLOSURE_INTRO,
   ENCLOSURE_STEPS,
   MAINTENANCE,
@@ -43,6 +44,9 @@ export default function HowToBuildPage() {
         </h1>
         <p className="text-[16px] leading-relaxed text-foreground/85">
           {ENCLOSURE_INTRO}
+        </p>
+        <p className="text-[14px] leading-relaxed text-muted-foreground">
+          {ENCLOSURE_DISCLAIMER}
         </p>
       </section>
 

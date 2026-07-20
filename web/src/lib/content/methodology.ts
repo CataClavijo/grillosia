@@ -39,7 +39,7 @@ export const METHODOLOGY_SECTIONS: MethodologySection[] = [
     icon: "brain",
     title: "Modelo predictivo",
     body_markdown:
-      "Estudiamos el problema con un enfoque de **Random Forest multi-salida** implementado en scikit-learn (`MultiOutputRegressor` sobre `RandomForestRegressor`, con `OneHotEncoder` para variables categóricas y `StandardScaler` para numéricas).\n\nLa elección responde a tres criterios:\n\n1. **Tamaño del conjunto de datos**: los datos iniciales provienen de literatura (decenas a pocos cientos de registros). Los ensambles de árboles se comportan bien en este régimen, mientras que las redes neuronales profundas suelen sobreajustar.\n2. **Interpretabilidad**: podemos exponer la importancia relativa de cada variable y explicar al productor por qué se le sugiere una dieta u otra.\n3. **Multi-salida nativa**: predecimos simultáneamente proteína y lípidos sin entrenar dos modelos independientes.\n\nEl enfoque es de **clasificación asistida**: el modelo solo puede sugerir dietas que ya haya visto en los datos. No extrapola combinaciones novedosas.\n\n> Como referencia externa, Vargas-Serna et al. (2025) reportan R²=0.99 con una red neuronal sobre 105 registros de literatura. Ese trabajo funciona como línea base y meta a discutir en la validación.\n\nEl **informe técnico completo** — con hiperparámetros, validación cruzada, métricas por objetivo y análisis de residuos — se publicará en el repositorio del proyecto a medida que avancen las fases experimentales.",
+      "Estudiamos el problema con un enfoque de **Random Forest multi-salida** implementado en scikit-learn (`MultiOutputRegressor` sobre `RandomForestRegressor`, con `OneHotEncoder` para variables categóricas y `StandardScaler` para numéricas).\n\nLa elección responde a tres criterios:\n\n1. **Tamaño del conjunto de datos**: los datos iniciales provienen de literatura (decenas a pocos cientos de registros). Los ensambles de árboles se comportan bien en este régimen, mientras que las redes neuronales profundas suelen sobreajustar.\n2. **Interpretabilidad**: podemos exponer la importancia relativa de cada variable y explicar al productor por qué se le sugiere una dieta u otra.\n3. **Multi-salida nativa**: predecimos simultáneamente proteína y lípidos sin entrenar dos modelos independientes.\n\nEl enfoque es de **clasificación asistida**: el modelo solo puede sugerir dietas que ya haya visto en los datos. No extrapola combinaciones novedosas.\n\n> Como referencia externa, Vargas-Serna et al. (2025) aplican una red neuronal a la predicción de rendimiento proteico en cría de insectos y reportan un coeficiente de regresión R = 0,9973. Ese trabajo funciona como línea base y como meta a discutir en la validación.\n\nEl **informe técnico completo** — con hiperparámetros, validación cruzada, métricas por objetivo y análisis de residuos — se publicará en el repositorio del proyecto a medida que avancen las fases experimentales.",
   },
   {
     id: "datos",
@@ -67,8 +67,8 @@ export const METHODOLOGY_SECTIONS: MethodologySection[] = [
 export const REFERENCES: Reference[] = [
   {
     citation:
-      "Vargas-Serna, C. L., Ochoa-Martínez, C. I., & Rodríguez-Sandoval, E. 2025. Predictive modeling of nutritional composition of edible cricket flour using artificial neural networks. Journal of Food Composition and Analysis.",
-    note: "Referencia directa para el enfoque predictivo: R²=0.99 sobre 105 registros de literatura. Funciona como línea base y meta comparativa para el modelo de GrillIA.",
+      "Vargas-Serna, C. L., Ochoa-Martínez, C. I., & Vélez-Pasos, C. 2025. Neural Network for AI-Driven Prediction of Larval Protein Yield: Establishing the Protein Conversion Index (PCI) for Sustainable Insect Farming. Sustainability, 17(2): 652. https://doi.org/10.3390/su17020652",
+    note: "Antecedente directo del enfoque predictivo aplicado a cría de insectos: red neuronal con entrenamiento por regularización bayesiana, R = 0,9973. Funciona como línea base comparativa para el modelo de GrillIA.",
   },
   {
     citation:
@@ -82,8 +82,8 @@ export const REFERENCES: Reference[] = [
   },
   {
     citation:
-      "Kwon, Y.-J., & Lee, K.-Y. 2023. Effects of dietary composition on growth performance and nutritional quality of the cricket Gryllus bimaculatus. Entomological Research, 53(5): 227-238.",
-    note: "Aporta evidencia experimental sobre cómo distintas composiciones dietarias modifican el perfil nutricional de la harina de grillo, alineado con las dietas D1-D3 en estudio.",
+      "Kwon, S., & Lee, K. P. 2026. Nutrient landscape of a cricket nymph: how dietary protein and carbohydrate shape intake, performance, and body composition in the two-spotted cricket, Gryllus bimaculatus. Physiological Entomology. https://doi.org/10.1111/phen.70014",
+    note: "Evidencia experimental de cómo la proporción entre proteína y carbohidrato de la dieta modifica el crecimiento, la supervivencia y la composición corporal del grillo. Es el antecedente más cercano a la pregunta que persiguen las dietas D1 a D3.",
   },
   {
     citation:

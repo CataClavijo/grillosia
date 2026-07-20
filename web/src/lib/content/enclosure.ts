@@ -18,6 +18,14 @@ export interface EnclosureStep {
 export const ENCLOSURE_INTRO =
   "Armar una caja de cría de grillos es sencillo y económico. Con materiales que muchas veces ya tiene en la casa o consigue reciclados, puede empezar sin gastar mucho. Lo importante es hacerlo con calma y paciencia.";
 
+/**
+ * Las cantidades y medidas de esta guía son orientativas: vienen de la
+ * práctica común de cría, no de un protocolo cerrado del proyecto. Se irán
+ * ajustando con lo que muestren los ensayos.
+ */
+export const ENCLOSURE_DISCLAIMER =
+  "Las medidas y cantidades son orientativas, para que tenga un punto de partida. Los ensayos del proyecto nos irán diciendo qué funciona mejor.";
+
 export const COST_NOTE =
   "El montaje completo suele salir muy económico, sobre todo si consigue la caja y las hueveras de segunda o reciclados. Casi todo se reutiliza entre una cría y otra.";
 

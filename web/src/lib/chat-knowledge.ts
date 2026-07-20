@@ -173,7 +173,7 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "poblacion",
     ],
     answer: {
-      text: "Depende del tamaño de la caja y de la edad de los grillos, pero como referencia inicial: en una caja plástica de 40 a 60 litros con buenos escondites de cartón de huevo, entran cómodamente varios cientos de grillos. Es mejor empezar con menos y agregar refugios (cartones) para que no se peleen.",
+      text: "Todavía no le puedo dar un número: la densidad de cría es una de las cosas que estamos midiendo en los ensayos. Lo que sí sabemos por experiencia es que conviene **empezar con pocos** e ir agregando cartones de huevo como escondite, porque cuando quedan apretados se pelean y se mueren más.",
       links: [LINKS.enclosure],
     },
   },
@@ -339,15 +339,11 @@ const KNOWLEDGE: KnowledgeEntry[] = [
 ];
 
 const FALLBACK: KnowledgeAnswer = {
-  text: "Esa pregunta todavía no la sé responder bien. Puedo ayudarle con temas de **grillos**, **cajas de cría**, **comidas** o **clima**. O si prefiere hablar con una persona del equipo, escríbanos por WhatsApp.",
+  text: "Esa pregunta todavía no la sé responder bien. Puedo ayudarle con temas de **grillos**, **cajas de cría**, **comidas** o **clima**. Si prefiere que le responda una persona del equipo, déjenos sus datos y le escribimos.",
   links: [
     LINKS.tutorial,
-    LINKS.catalog,
     LINKS.enclosure,
-    {
-      label: "Escribirnos por WhatsApp",
-      href: "https://wa.me/573000000000?text=Hola%2C%20tengo%20una%20pregunta%20sobre%20GrillIA",
-    },
+    { label: "Dejar mis datos para que me contacten", href: "/contacto" },
   ],
 };
 
