@@ -57,23 +57,42 @@ const EMPTY: ProjectsState = { version: 1, projects: [], activeId: null };
 
 /* ── storage helpers ────────────────────────────────────────────────────── */
 
+/**
+ * useSyncExternalStore exige que getSnapshot devuelva la MISMA referencia
+ * mientras el estado no cambie. Sin este caché, cada llamada a read() hacía
+ * un JSON.parse nuevo y React entraba en un bucle de renders (warning
+ * "The result of getSnapshot should be cached").
+ */
+let cachedRaw: string | null | undefined;
+let cachedState: ProjectsState = EMPTY;
+
 function read(): ProjectsState {
   if (typeof window === "undefined") return EMPTY;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return EMPTY;
+    if (raw === cachedRaw) return cachedState;
+    cachedRaw = raw;
+    if (!raw) {
+      cachedState = EMPTY;
+      return cachedState;
+    }
     const parsed = JSON.parse(raw) as ProjectsState;
-    if (parsed?.version !== 1 || !Array.isArray(parsed.projects)) return EMPTY;
-    return parsed;
+    cachedState =
+      parsed?.version === 1 && Array.isArray(parsed.projects) ? parsed : EMPTY;
+    return cachedState;
   } catch {
-    return EMPTY;
+    cachedState = EMPTY;
+    return cachedState;
   }
 }
 
 function write(next: ProjectsState) {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    const serialized = JSON.stringify(next);
+    window.localStorage.setItem(STORAGE_KEY, serialized);
+    cachedRaw = serialized;
+    cachedState = next;
     // Notifica a las otras pestañas y a nuestros suscriptores locales.
     window.dispatchEvent(new Event("grillia:projects"));
   } catch {

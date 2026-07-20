@@ -1,52 +1,66 @@
-/**
- * Kill-switch agresivo para el service worker anterior.
- *
- * La versión previa interceptaba HTML con network-first + fallback a cache;
- * cuando ni la red ni el cache respondían, el respondWith resolvía undefined
- * y Chrome/Safari mostraban "This page couldn't load".
- *
- * Este SW: (1) toma control inmediato de todos los clientes (skipWaiting +
- * clients.claim), (2) borra todos los caches del origen, (3) se desregistra,
- * y (4) recarga las pestañas activas para que el próximo request pase
- * directamente a la red sin service worker.
- *
- * Además tiene un fetch handler que hace passthrough puro — si por cualquier
- * motivo alguna request llega al SW antes de que se desregistre, se responde
- * con fetch(req) directo. Nunca resuelve undefined.
- */
+// KILL-SWITCH PERMANENTE — GRILLIA_SW_KILL_VERSION=4
+//
+// NO agregar lógica aquí. NO agregar fetch handler. NUNCA.
+//
+// Historia: la v1 de este archivo interceptaba navegaciones con
+//   event.respondWith(caches.match(req).then(r => r || caches.match("/")))
+// y cuando ninguno de los dos estaba en caché el respondWith resolvía a
+// undefined → Chrome y Safari muestran "This page couldn't load".
+//
+// La v3 intentó arreglarlo con un fetch handler de passthrough
+//   event.respondWith(fetch(req).catch(() => Response.error()))
+// pero Response.error() en una navegación produce EXACTAMENTE el mismo
+// síntoma cuando la red parpadea. Un service worker sin fetch handler es
+// funcionalmente equivalente a no tener service worker: el navegador va
+// directo a la red y no hay superficie de fallo.
+//
+// Para reintroducir un service worker real algún día, leer primero
+// docs/sw-strategy.md.
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(self.skipWaiting());
+const KILL_VERSION = "4";
+
+self.addEventListener("install", () => {
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
+      // 1. Borrar todas las cachés heredadas de versiones anteriores.
       try {
         const keys = await caches.keys();
         await Promise.all(keys.map((k) => caches.delete(k)));
       } catch {
         /* noop */
       }
+
+      // 2. Tomar control de los clientes ya abiertos.
       try {
         await self.clients.claim();
       } catch {
         /* noop */
       }
+
+      // 3. Desregistrar. No libera las pestañas ya controladas, pero impide
+      //    que este service worker controle navegaciones futuras.
       try {
         await self.registration.unregister();
       } catch {
         /* noop */
       }
+
+      // 4. Avisar a los clientes. El cliente decide si recarga (ver
+      //    SwKillBoot). Nunca llamamos clients.navigate() desde aquí: esa
+      //    carrera es la que reintroduce el bug.
       try {
-        const clients = await self.clients.matchAll({ type: "window" });
-        clients.forEach((client) => {
+        const all = await self.clients.matchAll({ type: "window" });
+        for (const client of all) {
           try {
-            client.navigate(client.url);
+            client.postMessage({ type: "SW_KILLED", version: KILL_VERSION });
           } catch {
             /* noop */
           }
-        });
+        }
       } catch {
         /* noop */
       }
@@ -54,8 +68,4 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Passthrough total: nunca resolver undefined. Cualquier request que llegue
-// mientras el SW aún está registrado se envía a la red tal cual.
-self.addEventListener("fetch", (event) => {
-  event.respondWith(fetch(event.request).catch(() => Response.error()));
-});
+// Sin fetch handler: passthrough real del navegador.

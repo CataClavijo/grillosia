@@ -10,13 +10,21 @@ export function SiteFooter() {
         <p className="text-[13px] leading-relaxed text-foreground/70">
           Universidad de los Llanos · Convocatoria Minciencias 963 de 2025
         </p>
-        <p className="mt-2 text-[12px] leading-relaxed text-foreground/60">
+        <p className="mt-2 text-[12px] leading-relaxed text-foreground/70">
           <Link
             href="/metodologia"
             className="underline underline-offset-2 hover:text-foreground/90"
           >
             Para investigadores: metodología técnica
           </Link>
+        </p>
+        <p className="mt-1 text-[12px] leading-relaxed text-foreground/70">
+          <a
+            href="/reset"
+            className="underline underline-offset-2 hover:text-foreground/90"
+          >
+            ¿Problemas para cargar? Restablecer la aplicación
+          </a>
         </p>
       </div>
     </footer>

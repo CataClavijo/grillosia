@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { DemoBanner } from "@/components/demo-banner";
 import { SiteFooter } from "@/components/site-footer";
+import { SwKillBoot } from "@/components/sw-kill-boot";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -62,6 +63,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
+        <SwKillBoot />
         <DemoBanner />
         <div className="flex-1">{children}</div>
         <SiteFooter />
