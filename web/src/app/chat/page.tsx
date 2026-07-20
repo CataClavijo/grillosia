@@ -34,10 +34,12 @@ import {
   type KnowledgeLink,
 } from "@/lib/chat-knowledge";
 import {
+  tieneResultado,
   useProjects,
   type ChatMessage as StoreMessage,
 } from "@/lib/projects-store";
 import { inlineMarkdown } from "@/lib/markdown";
+import { StepFooter } from "@/components/step-footer";
 
 interface DisplayMessage {
   id: string;
@@ -141,6 +143,50 @@ export default function ChatPage() {
   };
 
   const hayMensajes = messages.length > 0;
+
+  // El asistente conversa sobre un resultado. Sin una consulta terminada no
+  // hay de qué hablar, así que en vez de un chat vacío mostramos el camino.
+  const consultaLista = active ? tieneResultado(active) : false;
+
+  if (!consultaLista) {
+    return (
+      <main className="mx-auto flex min-h-[calc(100dvh-42px)] w-full max-w-[520px] flex-col px-6 pb-16 pt-5">
+        <header className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-[15px] font-semibold text-foreground/85 transition-colors hover:text-foreground"
+          >
+            <ChevronLeft className="size-5" />
+            Inicio
+          </Link>
+        </header>
+
+        <section className="mt-14 flex flex-col gap-4">
+          <span
+            aria-hidden
+            className="inline-flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"
+          >
+            <Bot className="size-7" strokeWidth={1.5} />
+          </span>
+          <h1 className="text-[1.85rem] font-bold leading-tight tracking-[-0.02em]">
+            Primero hagamos su consulta
+          </h1>
+          <p className="text-[16px] leading-relaxed text-foreground/85">
+            El asistente conversa sobre el resultado de su consulta: qué
+            comida le conviene a su animal y por qué. Conteste las cuatro
+            preguntas y aquí lo esperamos.
+          </p>
+        </section>
+
+        <div className="mt-auto">
+          <StepFooter
+            primary={{ label: "Hacer mi consulta", href: "/wizard" }}
+            secondary={{ label: "Ver la guía", href: "/tutorial" }}
+          />
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto flex h-[calc(100dvh-42px)] w-full max-w-[520px] flex-col px-6 pt-5">

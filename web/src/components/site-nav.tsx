@@ -27,11 +27,14 @@ const CAMINO = [
   { href: "/proyectos", label: "Mis consultas" },
 ];
 
-/** Fuera del camino: se consultan, no se recorren. */
-const SECUNDARIO = [
-  { href: "/chat", label: "Asistente" },
-  { href: "/proyecto", label: "Quiénes somos" },
-];
+/**
+ * Fuera del camino: se consultan, no se recorren.
+ *
+ * El asistente no aparece aquí a propósito. Conversa sobre el resultado de
+ * una consulta, así que se llega a él desde el resultado del asistente
+ * guiado, no como destino suelto.
+ */
+const SECUNDARIO = [{ href: "/proyecto", label: "Quiénes somos" }];
 
 export function SiteNav({ variant = "full" }: { variant?: "full" | "focused" }) {
   const [open, setOpen] = useState(false);

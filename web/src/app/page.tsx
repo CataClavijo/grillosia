@@ -129,10 +129,10 @@ export default function Home() {
             <Link href={siguiente.href}>{siguiente.label}</Link>
           </Button>
           <Link
-            href="/chat"
+            href="/proyectos"
             className="flex min-h-14 items-center text-[16px] font-semibold text-foreground/85 underline underline-offset-4 hover:text-foreground"
           >
-            Ya conozco, quiero preguntar algo
+            Ver mis consultas guardadas
           </Link>
         </div>
       </section>

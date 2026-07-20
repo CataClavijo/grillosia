@@ -45,6 +45,18 @@ export interface Project {
   chat: ChatMessage[];
 }
 
+/**
+ * Una consulta está completa cuando el usuario contestó las cuatro preguntas
+ * del asistente. El chat solo tiene sentido a partir de ahí: existe para
+ * conversar sobre un resultado, no por su cuenta.
+ */
+export function tieneResultado(p: Project): boolean {
+  const s = p.selection;
+  return Boolean(
+    s.animalId && s.stageId && s.temp !== undefined && s.humidity !== undefined,
+  );
+}
+
 interface ProjectsState {
   version: 1;
   projects: Project[];

@@ -20,6 +20,7 @@ import { SiteNav } from "@/components/site-nav";
 import { StepFooter } from "@/components/step-footer";
 import { ANIMALS } from "@/lib/animals";
 import { useProjects } from "@/lib/projects-store";
+import { clearWizardDraft } from "@/lib/wizard-draft";
 
 function relativeTime(ts: number): string {
   const diff = Date.now() - ts;
@@ -39,6 +40,17 @@ export default function ProjectsPage() {
 
   const abrir = (id: string) => {
     setActive(id);
+    router.push("/wizard");
+  };
+
+  /**
+   * Soltar la consulta activa antes de ir al asistente. Si no, el asistente
+   * se hidrata con la consulta anterior y salta directo a su resultado, y el
+   * usuario nunca puede hacer una segunda.
+   */
+  const nuevaConsulta = () => {
+    setActive(null);
+    clearWizardDraft();
     router.push("/wizard");
   };
 
@@ -148,7 +160,7 @@ export default function ProjectsPage() {
       )}
 
       <StepFooter
-        primary={{ label: "Hacer una consulta nueva", href: "/wizard" }}
+        primary={{ label: "Hacer una consulta nueva", onClick: nuevaConsulta }}
       />
     </main>
   );

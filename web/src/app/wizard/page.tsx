@@ -10,6 +10,11 @@ import { StepFooter } from "@/components/step-footer";
 import { ANIMALS, DIETS, HYDRATION_NOTE } from "@/lib/animals";
 import { useProjects } from "@/lib/projects-store";
 import { marcarPaso } from "@/lib/journey";
+import {
+  clearWizardDraft,
+  loadWizardDraft,
+  saveWizardDraft,
+} from "@/lib/wizard-draft";
 
 const ANIMAL_ICONS: Record<string, typeof Fish> = {
   tilapia: Fish,
@@ -43,42 +48,6 @@ const TEMP_TIPICA = 28;
 const HUMEDAD_TIPICA = 60;
 
 const TOTAL_PREGUNTAS = 4;
-const DRAFT_KEY = "grillia-wizard-draft";
-
-interface Draft {
-  animalId: string;
-  stageId: string;
-  temp: number | null;
-  humidity: number | null;
-}
-
-function loadDraft(): Draft | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.sessionStorage.getItem(DRAFT_KEY);
-    return raw ? (JSON.parse(raw) as Draft) : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveDraft(d: Draft) {
-  if (typeof window === "undefined") return;
-  try {
-    window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify(d));
-  } catch {
-    /* noop */
-  }
-}
-
-function clearDraft() {
-  if (typeof window === "undefined") return;
-  try {
-    window.sessionStorage.removeItem(DRAFT_KEY);
-  } catch {
-    /* noop */
-  }
-}
 
 const d = (ms: number): CSSProperties =>
   ({ ["--delay" as string]: `${ms}ms` }) as CSSProperties;
@@ -97,6 +66,22 @@ export default function WizardPage() {
     marcarPaso("wizard");
   }, []);
 
+  /**
+   * Empezar una consulta nueva. Sin soltar la consulta activa, la hidratación
+   * de abajo volvería a saltar al resultado de la anterior y sería imposible
+   * crear una segunda.
+   */
+  const nuevaConsulta = () => {
+    guardado.current = false;
+    setActive(null);
+    clearWizardDraft();
+    setAnimalId("");
+    setStageId("");
+    setTemp(null);
+    setHumidity(null);
+    setStep(1);
+  };
+
   // Hidratación: proyecto activo primero, si no el borrador.
   useEffect(() => {
     if (active && active.selection.animalId) {
@@ -113,7 +98,7 @@ export default function WizardPage() {
       }
       return;
     }
-    const draft = loadDraft();
+    const draft = loadWizardDraft();
     if (draft) {
       setAnimalId(draft.animalId);
       setStageId(draft.stageId);
@@ -130,7 +115,7 @@ export default function WizardPage() {
 
   useEffect(() => {
     if (activeId) return;
-    saveDraft({ animalId, stageId, temp, humidity });
+    saveWizardDraft({ animalId, stageId, temp, humidity });
   }, [activeId, animalId, stageId, temp, humidity]);
 
   const animal = useMemo(
@@ -158,7 +143,7 @@ export default function WizardPage() {
     const id = create(nombre);
     setActive(id);
     updateSelection(id, { animalId, stageId, temp, humidity });
-    clearDraft();
+    clearWizardDraft();
   }, [
     step,
     animal,
@@ -284,6 +269,7 @@ export default function WizardPage() {
             temp={temp}
             humidity={humidity}
             onCambiar={volverAPreguntas}
+            onNueva={nuevaConsulta}
           />
         )}
       </div>
@@ -449,12 +435,14 @@ function Resultado({
   temp,
   humidity,
   onCambiar,
+  onNueva,
 }: {
   animalName: string;
   stageName: string;
   temp: number;
   humidity: number;
   onCambiar: () => void;
+  onNueva: () => void;
 }) {
   return (
     <section className="reveal" style={d(0)}>
@@ -497,6 +485,14 @@ function Resultado({
         primary={{ label: "Preguntar al asistente", href: "/chat" }}
         secondary={{ label: "Ver cómo armar la caja", href: "/como-armar" }}
       />
+
+      <button
+        type="button"
+        onClick={onNueva}
+        className="mt-2 flex min-h-14 w-full items-center justify-center text-[15px] font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground"
+      >
+        Hacer una consulta para otro animal
+      </button>
     </section>
   );
 }
