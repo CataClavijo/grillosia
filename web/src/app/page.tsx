@@ -1,20 +1,27 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import {
-  Fish,
-  Egg,
-  Beef,
-  Thermometer,
-  Droplets,
-  MessageCircle,
-  Sparkles,
-  Leaf,
   ArrowRight,
+  Beef,
   Bot,
+  Bug,
+  ChevronRight,
+  Droplets,
+  Egg,
+  Fish,
+  FlaskConical,
+  GraduationCap,
+  Leaf,
+  MessageCircle,
+  Package,
+  Sparkles,
+  Thermometer,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { SiteNav } from "@/components/site-nav";
+import { InterestForm } from "@/components/interest-form";
+import { FirstVisitPrompt } from "@/components/first-visit-prompt";
 
 const steps = [
   {
@@ -38,7 +45,8 @@ const figures = [
   {
     value: "60 a 70",
     unit: "%",
-    label: "Meta interna de proteína en la harina, a confirmar por análisis bromatológico",
+    label:
+      "Meta interna de proteína en la harina, a confirmar por análisis bromatológico",
   },
   { value: "3", unit: "", label: "Dietas en estudio" },
   { value: "3", unit: "", label: "Animales que cubre el modelo" },
@@ -65,13 +73,40 @@ const animals = [
   },
 ];
 
+const quickLinks = [
+  {
+    href: "/tutorial",
+    icon: GraduationCap,
+    title: "Ver el tutorial",
+    subtitle: "Cinco pasos para empezar",
+  },
+  {
+    href: "/catalogo",
+    icon: Bug,
+    title: "Catálogo de grillos",
+    subtitle: "Grillos nativos del Piedemonte",
+  },
+  {
+    href: "/como-armar",
+    icon: Package,
+    title: "Cómo armar sus cajas",
+    subtitle: "Paso a paso con materiales baratos",
+  },
+  {
+    href: "/metodologia",
+    icon: FlaskConical,
+    title: "Metodología",
+    subtitle: "Cómo estudiamos y modelamos",
+  },
+];
+
 const d = (ms: number): CSSProperties =>
   ({ ["--delay" as string]: `${ms}ms` }) as CSSProperties;
 
 export default function Home() {
   return (
-    <main className="relative mx-auto flex w-full max-w-[480px] flex-col px-6 pb-16 pt-5">
-      {/* ── Cabecera ── */}
+    <main className="relative mx-auto flex w-full max-w-[520px] flex-col px-6 pb-16 pt-5">
+      {/* Cabecera */}
       <header className="reveal flex items-center justify-between" style={d(0)}>
         <Link href="/" className="flex items-center gap-2.5">
           <span
@@ -82,11 +117,14 @@ export default function Home() {
           </span>
           <span className="text-lg font-bold tracking-tight">GrillIA</span>
         </Link>
-        <ThemeToggle />
+        <SiteNav />
       </header>
 
-      {/* ── Hero ── */}
-      <section className="mt-12">
+      {/* Aviso primera visita → tutorial */}
+      <FirstVisitPrompt />
+
+      {/* Hero */}
+      <section className="mt-10">
         <p
           className="reveal inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1.5 text-[12px] font-medium text-foreground/75"
           style={d(80)}
@@ -115,10 +153,7 @@ export default function Home() {
           piscicultura, avicultura y porcicultura.
         </p>
 
-        <div
-          className="reveal mt-8 flex flex-col gap-3"
-          style={d(420)}
-        >
+        <div className="reveal mt-8 flex flex-col gap-3" style={d(420)}>
           <Button
             asChild
             size="lg"
@@ -159,7 +194,44 @@ export default function Home() {
 
       <Divider delay={680} />
 
-      {/* ── Cómo funciona ── */}
+      {/* Accesos rápidos */}
+      <section>
+        <h2 className="text-[1.4rem] font-bold leading-tight tracking-[-0.015em]">
+          Recorra la guía
+        </h2>
+        <p className="mt-2 text-[15px] text-foreground/65">
+          Cuatro secciones cortas para conocer el proyecto.
+        </p>
+        <ul className="mt-6 grid grid-cols-2 gap-3">
+          {quickLinks.map((q) => {
+            const Icon = q.icon;
+            return (
+              <li key={q.href}>
+                <Link
+                  href={q.href}
+                  className="flex h-full flex-col gap-3 rounded-2xl border border-border/70 bg-card/70 p-4 transition-colors hover:border-primary/40 hover:bg-card"
+                >
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" strokeWidth={1.75} />
+                  </span>
+                  <div>
+                    <p className="text-[14.5px] font-bold leading-tight">
+                      {q.title}
+                    </p>
+                    <p className="mt-1 text-[12.5px] leading-snug text-foreground/60">
+                      {q.subtitle}
+                    </p>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <Divider />
+
+      {/* Cómo funciona */}
       <Section title="¿Cómo funciona?" subtitle="Tres pasos sencillos.">
         <ol className="mt-8 space-y-5">
           {steps.map((s, i) => {
@@ -194,7 +266,7 @@ export default function Home() {
 
       <Divider />
 
-      {/* ── Cifras clave ── */}
+      {/* Cifras clave */}
       <Section title="Las cifras" subtitle="Resumen del proyecto.">
         <div className="mt-8 grid grid-cols-1 gap-4">
           {figures.map((f, i) => (
@@ -223,7 +295,7 @@ export default function Home() {
 
       <Divider />
 
-      {/* ── Animales ── */}
+      {/* Animales */}
       <Section
         title="Para qué animales sirve"
         subtitle="Adaptamos la sugerencia a cada uno."
@@ -257,7 +329,7 @@ export default function Home() {
 
       <Divider />
 
-      {/* ── Condiciones de cría objetivo ── */}
+      {/* Condiciones */}
       <Section
         title="Condiciones de cría contempladas"
         subtitle="Rangos objetivo del estudio."
@@ -291,7 +363,19 @@ export default function Home() {
 
       <Divider />
 
-      {/* ── CTA final ── */}
+      {/* Interés */}
+      <Section
+        title="Estemos en contacto"
+        subtitle="Le avisaremos cuando el modelo esté validado."
+      >
+        <div className="mt-6">
+          <InterestForm />
+        </div>
+      </Section>
+
+      <Divider />
+
+      {/* CTA final */}
       <section>
         <h2 className="text-[1.6rem] font-bold leading-[1.15] tracking-[-0.015em]">
           Pruebe el asistente guiado o
@@ -323,7 +407,7 @@ export default function Home() {
                 <Bot className="h-5 w-5 text-primary" strokeWidth={2} />
                 Conversar con el asistente
               </span>
-              <ArrowRight className="h-5 w-5 text-primary" strokeWidth={2} />
+              <ChevronRight className="h-5 w-5 text-primary" strokeWidth={2} />
             </Link>
           </Button>
         </div>

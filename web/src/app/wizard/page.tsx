@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { CSSProperties } from "react";
 import {
   Beef,
@@ -16,8 +17,9 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { SiteNav } from "@/components/site-nav";
 import { ANIMALS, DIETS, HYDRATION_NOTE } from "@/lib/animals";
+import { useProjects } from "@/lib/projects-store";
 
 const ANIMAL_ICONS: Record<string, typeof Fish> = {
   tilapia: Fish,
@@ -34,11 +36,34 @@ const d = (ms: number): CSSProperties =>
   ({ ["--delay" as string]: `${ms}ms` }) as CSSProperties;
 
 export default function WizardPage() {
+  const router = useRouter();
+  const { active, activeId, create, setActive, updateSelection } = useProjects();
+
   const [step, setStep] = useState(1);
   const [animalId, setAnimalId] = useState("");
   const [stageId, setStageId] = useState("");
   const [temp, setTemp] = useState(28);
   const [humidity, setHumidity] = useState(65);
+
+  // Hidratar desde el proyecto activo cuando cambie.
+  useEffect(() => {
+    if (!active) return;
+    setAnimalId(active.selection.animalId ?? "");
+    setStageId(active.selection.stageId ?? "");
+    setTemp(active.selection.temp ?? 28);
+    setHumidity(active.selection.humidity ?? 65);
+    // Si el proyecto ya tiene todo respondido, saltamos al resumen.
+    if (
+      active.selection.animalId &&
+      active.selection.stageId &&
+      active.selection.temp !== undefined &&
+      active.selection.humidity !== undefined
+    ) {
+      setStep(5);
+    } else {
+      setStep(1);
+    }
+  }, [activeId, active]);
 
   const animal = useMemo(
     () => ANIMALS.find((a) => a.id === animalId),
@@ -52,10 +77,30 @@ export default function WizardPage() {
     setStageId("");
     setTemp(28);
     setHumidity(65);
+    if (activeId) {
+      updateSelection(activeId, {
+        animalId: undefined,
+        stageId: undefined,
+        temp: undefined,
+        humidity: undefined,
+      });
+    }
   };
 
+  const persist = (patch: Parameters<typeof updateSelection>[1]) => {
+    if (activeId) updateSelection(activeId, patch);
+  };
+
+  // Si no hay proyecto activo, ofrecer crearlo.
+  if (!active) {
+    return <NoProjectPrompt onCreate={(name) => {
+      const id = create(name);
+      setActive(id);
+    }} />;
+  }
+
   return (
-    <main className="relative mx-auto flex w-full max-w-[480px] flex-col px-6 pb-16 pt-5">
+    <main className="relative mx-auto flex w-full max-w-[520px] flex-col px-6 pb-16 pt-5">
       {/* Cabecera */}
       <header className="flex items-center justify-between">
         {step > 1 && step < 5 ? (
@@ -77,12 +122,24 @@ export default function WizardPage() {
             Inicio
           </Link>
         )}
-        <ThemeToggle />
+        <SiteNav />
       </header>
 
-      {/* Barra de progreso simple */}
+      {/* Contexto del proyecto */}
+      <p className="mt-4 text-[12px] font-semibold text-foreground/55">
+        Proyecto:{" "}
+        <span className="text-primary">{active.name}</span>{" "}
+        <Link
+          href="/proyectos"
+          className="ml-1 underline underline-offset-2 hover:text-foreground"
+        >
+          cambiar
+        </Link>
+      </p>
+
+      {/* Barra de progreso */}
       {step < 5 && (
-        <div className="mt-6">
+        <div className="mt-4">
           <div className="flex items-center justify-between text-[11.5px] font-semibold uppercase tracking-wider text-foreground/55">
             <span>
               Paso {step} de {TOTAL_STEPS - 1}
@@ -109,6 +166,7 @@ export default function WizardPage() {
             onSelect={(id) => {
               setAnimalId(id);
               setStageId("");
+              persist({ animalId: id, stageId: undefined });
               setStep(2);
             }}
           />
@@ -120,6 +178,7 @@ export default function WizardPage() {
             value={stageId}
             onSelect={(id) => {
               setStageId(id);
+              persist({ stageId: id });
               setStep(3);
             }}
           />
@@ -135,6 +194,7 @@ export default function WizardPage() {
             value={temp}
             onSelect={(v) => {
               setTemp(v);
+              persist({ temp: v });
               setStep(4);
             }}
           />
@@ -150,6 +210,7 @@ export default function WizardPage() {
             value={humidity}
             onSelect={(v) => {
               setHumidity(v);
+              persist({ humidity: v });
               setStep(5);
             }}
           />
@@ -157,6 +218,7 @@ export default function WizardPage() {
 
         {step === 5 && animal && stage && (
           <DemoResult
+            projectName={active.name}
             animalName={animal.name}
             stageName={stage.name}
             stageDetail={stage.detail}
@@ -165,6 +227,7 @@ export default function WizardPage() {
             temp={temp}
             humidity={humidity}
             onReset={reset}
+            onGoChat={() => router.push("/chat")}
           />
         )}
       </div>
@@ -173,6 +236,62 @@ export default function WizardPage() {
 }
 
 /* ────────────────────────────────────────────────────────────────────────── */
+
+function NoProjectPrompt({
+  onCreate,
+}: {
+  onCreate: (name: string) => void;
+}) {
+  const [name, setName] = useState("Mi primera cría");
+  return (
+    <main className="relative mx-auto flex w-full max-w-[520px] flex-col px-6 pb-16 pt-5">
+      <header className="flex items-center justify-between">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[14px] font-semibold text-foreground/70 transition-colors hover:text-foreground"
+        >
+          <ChevronLeft className="h-5 w-5" />
+          Inicio
+        </Link>
+        <SiteNav />
+      </header>
+      <section className="mt-10">
+        <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <Sparkles className="h-6 w-6" strokeWidth={1.5} />
+        </span>
+        <h1 className="mt-5 text-[1.85rem] font-bold leading-tight tracking-[-0.02em]">
+          Empecemos con un proyecto
+        </h1>
+        <p className="mt-3 text-[15.5px] leading-relaxed text-foreground/75">
+          Un proyecto guarda su animal destino, el clima y la conversación con
+          el asistente. Puede tener varios y cambiarse entre ellos.
+        </p>
+        <label
+          className="mt-8 block text-[12px] font-bold uppercase tracking-wider text-foreground/55"
+          htmlFor="project-name"
+        >
+          Nombre del proyecto
+        </label>
+        <input
+          id="project-name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") onCreate(name || "Mi primera cría");
+          }}
+          className="mt-2 h-12 w-full rounded-xl border border-border bg-background px-4 text-[15.5px] outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
+        />
+        <Button
+          size="lg"
+          onClick={() => onCreate(name || "Mi primera cría")}
+          className="mt-5 h-auto w-full justify-between rounded-2xl px-5 py-4 text-[16px] font-semibold"
+        >
+          Crear y continuar
+        </Button>
+      </section>
+    </main>
+  );
+}
 
 function StepAnimal({
   value,
@@ -333,14 +452,8 @@ function StepGrid({
   );
 }
 
-/* ──────────────────────────────────────────────────────────────────────────
-   Pantalla de resultado — demostrativa y honesta.
-   No predice valores: muestra el contexto del usuario y las tres dietas en
-   estudio con su composición real. La meta de proteína por animal proviene
-   de tablas NRC y se etiqueta explícitamente como objetivo del estudio.
-   ────────────────────────────────────────────────────────────────────── */
-
 function DemoResult({
+  projectName,
   animalName,
   stageName,
   stageDetail,
@@ -349,7 +462,9 @@ function DemoResult({
   temp,
   humidity,
   onReset,
+  onGoChat,
 }: {
+  projectName: string;
   animalName: string;
   stageName: string;
   stageDetail: string;
@@ -358,6 +473,7 @@ function DemoResult({
   temp: number;
   humidity: number;
   onReset: () => void;
+  onGoChat: () => void;
 }) {
   return (
     <section className="reveal" style={d(0)}>
@@ -375,10 +491,9 @@ function DemoResult({
         comparando junto con la meta de proteína que pide el animal que indicó.
       </p>
 
-      {/* Contexto del usuario */}
       <div className="mt-6 rounded-2xl border border-border/70 bg-card/60 p-4">
         <p className="text-[12px] font-bold uppercase tracking-wider text-foreground/55">
-          Su consulta
+          Su consulta ({projectName})
         </p>
         <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 text-[14px]">
           <div>
@@ -410,7 +525,6 @@ function DemoResult({
         </dl>
       </div>
 
-      {/* Dietas reales en estudio */}
       <p className="mt-7 text-[12px] font-bold uppercase tracking-wider text-foreground/55">
         Dietas en estudio
       </p>
@@ -436,7 +550,6 @@ function DemoResult({
         {HYDRATION_NOTE}
       </p>
 
-      {/* Disclaimer */}
       <div className="mt-7 rounded-2xl border border-demo-border bg-demo-bg/70 p-4">
         <div className="flex items-start gap-3">
           <Info
@@ -451,20 +564,17 @@ function DemoResult({
         </div>
       </div>
 
-      {/* Acciones */}
       <div className="mt-6 flex flex-col gap-3">
         <Button
-          asChild
           size="lg"
+          onClick={onGoChat}
           className="h-auto justify-between rounded-2xl px-5 py-5 text-[16px] font-semibold"
         >
-          <Link href="/chat">
-            <span className="flex items-center gap-3">
-              <Bot className="h-5 w-5" strokeWidth={2} />
-              Preguntar al asistente
-            </span>
-            <span className="text-[13px] font-bold opacity-80">→</span>
-          </Link>
+          <span className="flex items-center gap-3">
+            <Bot className="h-5 w-5" strokeWidth={2} />
+            Preguntar al asistente
+          </span>
+          <span className="text-[13px] font-bold opacity-80">→</span>
         </Button>
         <Button
           variant="outline"

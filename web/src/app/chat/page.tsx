@@ -2,61 +2,98 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Bot, ChevronLeft, Info, Send, User } from "lucide-react";
+import { Bot, ChevronLeft, ChevronRight, Info, Send, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { SiteNav } from "@/components/site-nav";
 import {
   STARTER_QUESTIONS,
   WELCOME_MESSAGE,
   answerFor,
+  type KnowledgeLink,
 } from "@/lib/chat-knowledge";
+import {
+  useProjects,
+  type ChatMessage as StoreMessage,
+} from "@/lib/projects-store";
+import { inlineMarkdown } from "@/lib/markdown";
 
-interface Message {
+interface DisplayMessage {
   id: string;
   role: "user" | "assistant" | "system";
   text: string;
-}
-
-let nextId = 0;
-function id(): string {
-  nextId += 1;
-  return `m-${nextId}`;
+  links?: KnowledgeLink[];
 }
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>(() => [
-    { id: id(), role: "system", text: WELCOME_MESSAGE },
-  ]);
+  const { active, activeId, appendMessage, clearChat } = useProjects();
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [ephemeral, setEphemeral] = useState<DisplayMessage[]>([]);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  const persistent: DisplayMessage[] = active
+    ? active.chat.map((m: StoreMessage) => ({
+        id: m.id,
+        role: m.role,
+        text: m.text,
+        links: m.links,
+      }))
+    : [];
+
+  const messages: DisplayMessage[] = active
+    ? [
+        { id: "sys-welcome", role: "system", text: WELCOME_MESSAGE },
+        ...persistent,
+      ]
+    : [
+        { id: "sys-welcome", role: "system", text: WELCOME_MESSAGE },
+        ...ephemeral,
+      ];
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [messages, thinking]);
+  }, [messages.length, thinking]);
 
   const send = (text: string) => {
     const clean = text.trim();
     if (!clean || thinking) return;
 
     setInput("");
-    setMessages((prev) => [
-      ...prev,
-      { id: id(), role: "user", text: clean },
-    ]);
+    const userMsg: DisplayMessage = {
+      id: `local_${Date.now()}`,
+      role: "user",
+      text: clean,
+    };
+    if (activeId) {
+      appendMessage(activeId, { role: "user", text: clean });
+    } else {
+      setEphemeral((prev) => [...prev, userMsg]);
+    }
     setThinking(true);
 
-    // Simulamos un pequeño retraso para que la respuesta no se sienta brusca.
     window.setTimeout(() => {
-      const answer = answerFor(clean);
-      setMessages((prev) => [
-        ...prev,
-        { id: id(), role: "assistant", text: answer },
-      ]);
+      const ans = answerFor(clean);
+      if (activeId) {
+        appendMessage(activeId, {
+          role: "assistant",
+          text: ans.text,
+          links: ans.links,
+        });
+      } else {
+        setEphemeral((prev) => [
+          ...prev,
+          {
+            id: `local_${Date.now()}_a`,
+            role: "assistant",
+            text: ans.text,
+            links: ans.links,
+          },
+        ]);
+      }
       setThinking(false);
     }, 450);
   };
@@ -67,9 +104,12 @@ export default function ChatPage() {
   };
 
   const hasUserAsked = messages.some((m) => m.role === "user");
+  const conversationTitle = active
+    ? active.name
+    : "Consulta sin proyecto";
 
   return (
-    <main className="relative mx-auto flex h-[calc(100vh-128px)] w-full max-w-[480px] flex-col px-6 pt-5">
+    <main className="relative mx-auto flex h-[calc(100vh-128px)] w-full max-w-[520px] flex-col px-6 pt-5">
       {/* Cabecera */}
       <header className="flex items-center justify-between">
         <Link
@@ -79,16 +119,54 @@ export default function ChatPage() {
           <ChevronLeft className="h-5 w-5" />
           Inicio
         </Link>
-        <div className="flex items-center gap-2">
-          <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
-            Asistente
-          </span>
-          <ThemeToggle />
-        </div>
+        <SiteNav />
       </header>
 
-      {/* Aviso "Modo demostración" */}
-      <div className="mt-4 flex items-start gap-3 rounded-2xl border border-demo-border bg-demo-bg p-3">
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate text-[15px] font-bold">{conversationTitle}</p>
+          <p className="text-[12px] text-foreground/55">
+            {active
+              ? `${active.chat.filter((m) => m.role !== "system").length} mensajes guardados`
+              : "Sus mensajes no se guardarán sin un proyecto activo."}
+          </p>
+        </div>
+        {active && active.chat.length > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              if (
+                window.confirm(
+                  "¿Borrar toda la conversación de este proyecto?",
+                )
+              ) {
+                clearChat(active.id);
+              }
+            }}
+            className="text-[12px] font-semibold text-foreground/60 underline underline-offset-2 hover:text-foreground"
+          >
+            Borrar chat
+          </button>
+        )}
+      </div>
+
+      {!active && (
+        <div className="mt-3 flex items-start gap-3 rounded-2xl border border-primary/25 bg-primary/5 p-3">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={2.25} />
+          <p className="flex-1 text-[12.5px] leading-relaxed text-foreground/80">
+            Sin proyecto activo. Sus mensajes se pierden al recargar. Le
+            sugerimos crear un proyecto para guardarlos.
+          </p>
+          <Link
+            href="/proyectos"
+            className="shrink-0 rounded-full bg-primary px-3 py-1.5 text-[11.5px] font-bold text-primary-foreground"
+          >
+            Crear
+          </Link>
+        </div>
+      )}
+
+      <div className="mt-3 flex items-start gap-3 rounded-2xl border border-demo-border bg-demo-bg p-3">
         <Info
           className="mt-0.5 h-4 w-4 shrink-0 text-demo-foreground"
           strokeWidth={2.25}
@@ -110,7 +188,6 @@ export default function ChatPage() {
         ))}
         {thinking && <TypingBubble />}
 
-        {/* Sugerencias iniciales */}
         {!hasUserAsked && !thinking && (
           <div className="mt-2">
             <p className="text-[11.5px] font-bold uppercase tracking-wider text-foreground/55">
@@ -168,11 +245,11 @@ export default function ChatPage() {
 
 /* ────────────────────────────────────────────────────────────────────────── */
 
-function MessageBubble({ message }: { message: Message }) {
+function MessageBubble({ message }: { message: DisplayMessage }) {
   if (message.role === "system") {
     return (
       <div className="flex justify-center">
-        <div className="max-w-[90%] rounded-2xl bg-muted/70 px-4 py-3 text-center text-[13.5px] leading-relaxed text-foreground/80">
+        <div className="max-w-[92%] rounded-2xl bg-muted/70 px-4 py-3 text-center text-[13.5px] leading-relaxed text-foreground/80">
           {message.text}
         </div>
       </div>
@@ -189,13 +266,28 @@ function MessageBubble({ message }: { message: Message }) {
         </span>
       )}
       <div
-        className={`max-w-[78%] rounded-2xl px-4 py-3 text-[14.5px] leading-relaxed ${
+        className={`max-w-[82%] rounded-2xl px-4 py-3 text-[14.5px] leading-relaxed ${
           isUser
             ? "bg-primary text-primary-foreground"
             : "border border-border/70 bg-card/80 text-foreground"
         }`}
       >
-        <Formatted text={message.text} />
+        <p>{inlineMarkdown(message.text)}</p>
+        {!isUser && message.links && message.links.length > 0 && (
+          <ul className="mt-3 flex flex-col gap-2">
+            {message.links.map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  className="inline-flex w-full items-center justify-between gap-2 rounded-xl border border-primary/25 bg-primary/5 px-3 py-2 text-[13px] font-semibold text-primary transition-colors hover:bg-primary/10"
+                >
+                  <span>{l.label}</span>
+                  <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
       {isUser && (
         <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground/10 text-foreground/80">
@@ -224,26 +316,5 @@ function TypingBubble() {
         </span>
       </div>
     </div>
-  );
-}
-
-/**
- * Render muy ligero de **negritas** y *cursivas* dentro de un mensaje, sin
- * tirar de react-markdown (mantiene el bundle pequeño).
- */
-function Formatted({ text }: { text: string }) {
-  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
-  return (
-    <>
-      {parts.map((part, i) => {
-        if (part.startsWith("**") && part.endsWith("**")) {
-          return <strong key={i}>{part.slice(2, -2)}</strong>;
-        }
-        if (part.startsWith("*") && part.endsWith("*")) {
-          return <em key={i}>{part.slice(1, -1)}</em>;
-        }
-        return <span key={i}>{part}</span>;
-      })}
-    </>
   );
 }

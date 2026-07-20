@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { DemoBanner } from "@/components/demo-banner";
 import { SiteFooter } from "@/components/site-footer";
+import SwRegister from "@/components/sw-register";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -17,7 +18,13 @@ export const metadata: Metadata = {
   description:
     "Proyecto de inteligencia artificial que apoya la producción de harina de grillo como alternativa a la harina de pescado importada. Convocatoria Minciencias 963 de 2025, Universidad de los Llanos.",
   applicationName: "GrillIA",
+  manifest: "/manifest.json",
   authors: [{ name: "Universidad de los Llanos" }],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "GrillIA",
+  },
   openGraph: {
     title: "GrillIA",
     description:
@@ -34,6 +41,7 @@ export const viewport: Viewport = {
   ],
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -58,6 +66,7 @@ export default function RootLayout({
         <DemoBanner />
         <div className="flex-1">{children}</div>
         <SiteFooter />
+        <SwRegister />
       </body>
     </html>
   );
