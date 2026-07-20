@@ -61,8 +61,27 @@ el entrenamiento del modelo viene en los meses siguientes.
 
 ## Recursos del repositorio
 
+### Manuales
+
+Cada manual esta disponible en Markdown y en PDF listo para imprimir o
+adjuntar a un informe.
+
+| Documento | Markdown | PDF |
+|---|---|---|
+| Guia de uso para productores | [`manual-usuario.md`](docs/manual-usuario.md) | [`manual-usuario.pdf`](docs/manual-usuario.pdf) |
+| Manual tecnico | [`manual-tecnico.md`](docs/manual-tecnico.md) | [`manual-tecnico.pdf`](docs/manual-tecnico.pdf) |
+| Esquema de base de datos | [`database-schema.md`](docs/database-schema.md) | [`database-schema.pdf`](docs/database-schema.pdf) |
+| Login con Google y persistencia | [`auth-y-persistencia.md`](docs/auth-y-persistencia.md) | [`auth-y-persistencia.pdf`](docs/auth-y-persistencia.pdf) |
+
+Los PDF se regeneran con:
+
+```bash
+npx md-to-pdf --stylesheet docs/pdf-style.css docs/manual-usuario.md
+```
+
+### Otros
+
 - [`docs/diagrams/er-diagram.svg`](docs/diagrams/er-diagram.svg) — Diagrama de la estructura de la tabla (tambien en PNG y como fuente Mermaid).
-- [`docs/database-schema.md`](docs/database-schema.md) — Descripcion detallada de la tabla, tipos de datos, decisiones de diseno y comandos para aplicar la migracion.
 - [`data/literature/INSTRUCCIONES.md`](data/literature/INSTRUCCIONES.md) — Guia para llenar la plantilla.
 - [`data/literature/template.csv`](data/literature/template.csv) — Plantilla vacia.
 - [`LICENSE`](LICENSE) — Licencia Apache 2.0.

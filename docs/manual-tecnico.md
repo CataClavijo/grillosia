@@ -9,17 +9,18 @@ La aplicación web de GrillIA está construida sobre un stack moderno, ligero y 
 - **TypeScript** en todo el código.
 - **Tailwind CSS 4** para estilos utilitarios.
 - **Plus Jakarta Sans** como tipografía principal (cargada vía `next/font`).
+- **shadcn/ui** (base radix) para las primitivas accesibles: Sheet, Dialog, DropdownMenu, AlertDialog, Accordion.
 - **lucide-react** para iconografía consistente y accesible.
 
-No hay librerías de estado global, ni frameworks CSS-in-JS, ni dependencias pesadas de UI. La superficie de dependencias se mantiene deliberadamente pequeña para facilitar mantenimiento por parte de un equipo académico.
+No hay librerías de estado global ni frameworks CSS-in-JS. La superficie de dependencias se mantiene deliberadamente pequeña para facilitar el mantenimiento por parte de un equipo académico.
 
 ## Estructura del proyecto
 
 El código vive dentro de la carpeta `web/`:
 
-- **`web/src/app/`** — Rutas del App Router de Next.js. Cada carpeta es una ruta (`/`, `/wizard`, `/chat`, `/catalogo`, `/como-armar`, `/proyectos`, `/tutorial`, `/metodologia`, `/proyecto`). Incluye `layout.tsx` raíz con el banner y footer demo, y `page.tsx` por ruta.
+- **`web/src/app/`** — Rutas del App Router de Next.js. Cada carpeta es una ruta (`/`, `/tutorial`, `/catalogo`, `/como-armar`, `/wizard`, `/chat`, `/proyectos`, `/contacto`, `/metodologia`, `/proyecto`, `/reset`). Incluye `layout.tsx` raíz con el banner y footer demo, y `page.tsx` por ruta.
 - **`web/src/components/`** — Componentes reutilizables (UI primitives, cards de proyecto, pasos del wizard, burbujas de chat, banner demo, footer demo, etc.).
-- **`web/src/lib/`** — Lógica pura y datos: `animals.ts` (catálogo de animales y etapas con metas de proteína), `chat-knowledge.ts` (base de conocimiento del chat informativo), `projects-store.ts` (hook de mini-proyectos), `content/*.ts` (contenido de tutorial, catálogo, guía cajas, metodología).
+- **`web/src/lib/`** — Lógica pura y datos: `animals.ts` (catálogo de animales y etapas con metas de proteína), `chat-knowledge.ts` (base de conocimiento del chat informativo), `projects-store.ts` (hook de consultas guardadas), `journey.ts` y `use-paso.ts` (puntero del recorrido), `content/*.ts` (contenido de tutorial, catálogo, guía cajas, metodología).
 
 ## Cómo correr en local
 
@@ -80,12 +81,15 @@ Cualquier cambio en estos archivos se refleja de inmediato en la UI sin migracio
 
 ## Convenciones
 
-- **Tamaño de fuente base: 17px**, pensado para lectura cómoda en celulares de audiencia adulta rural.
+- **Tamaño de fuente base: 18px**, pensado para lectura cómoda en celulares de audiencia adulta rural.
 - **Contraste alto** en todos los textos (mínimo WCAG AA).
-- El **banner demo** superior y el **footer demo** inferior son obligatorios en todas las rutas: recuerdan al usuario que está en una versión demostrativa. Se montan en el `layout.tsx` raíz.
+- El **banner** superior es obligatorio en todas las rutas: recuerda al usuario que está en una versión en pruebas. Se monta en el `layout.tsx` raíz.
 - **Server Components por defecto**. Solo se marca `"use client"` cuando el componente necesita estado local, efectos o handlers de eventos (wizard, chat, formularios).
 - Nombres de archivos y componentes en inglés; textos visibles en español, tratando de "usted".
 - Nunca prometer resultados ni dar fechas específicas en copy: usar "le sugerimos", "meta interna", "dietas en estudio", "condiciones objetivo".
+- **Un botón primario y un enlace secundario por pantalla como máximo.** Use `components/step-footer.tsx`, que impone la regla.
+- El pie del sitio no se renderiza en `/chat` ni en `/reset`: son pantallas de alto completo y el pie les rompe la distribución. La lógica vive en `components/site-footer.tsx`.
+- **No registrar service workers.** El `public/sw.js` es un kill-switch permanente sin `fetch` handler; ver el historial en ese archivo antes de tocarlo.
 
 ## Migración futura a Railway/NextAuth
 

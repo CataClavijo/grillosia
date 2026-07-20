@@ -143,7 +143,7 @@ export default function ChatPage() {
   const hayMensajes = messages.length > 0;
 
   return (
-    <main className="mx-auto flex h-[calc(100vh-96px)] w-full max-w-[520px] flex-col px-6 pt-5">
+    <main className="mx-auto flex h-[calc(100dvh-42px)] w-full max-w-[520px] flex-col px-6 pt-5">
       {/* Cabecera mínima: atrás · título · tres puntos */}
       <header className="flex items-center justify-between">
         <Link
@@ -192,7 +192,9 @@ export default function ChatPage() {
         {!hayMensajes && !thinking && (
           <div className="flex flex-col gap-3">
             <p className="text-[16px] leading-relaxed text-foreground/85">
-              Pregúnteme lo que quiera sobre la cría de grillos.
+              {active
+                ? `Puede preguntarme sobre su consulta de ${active.name.split(" · ")[0].toLowerCase()} o sobre la cría en general.`
+                : "Pregúnteme lo que quiera sobre la cría de grillos."}
             </p>
             <ul className="flex flex-col gap-2">
               {STARTER_QUESTIONS.slice(0, 3).map((q) => (

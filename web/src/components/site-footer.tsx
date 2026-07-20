@@ -1,6 +1,21 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+/**
+ * Pie del sitio con la atribución institucional obligatoria.
+ *
+ * No se renderiza en /chat ni en /reset: son pantallas de alto completo
+ * (el chat tiene composer fijo abajo) y el pie les rompe la distribución.
+ * La atribución sigue visible en el resto de rutas.
+ */
+const SIN_FOOTER = ["/chat", "/reset"];
 
 export function SiteFooter() {
+  const pathname = usePathname();
+  if (SIN_FOOTER.some((r) => pathname?.startsWith(r))) return null;
+
   return (
     <footer className="mt-auto border-t bg-card/40">
       <div className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-2 px-6 py-6 text-center">

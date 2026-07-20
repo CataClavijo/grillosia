@@ -494,8 +494,8 @@ function Resultado({
       </p>
 
       <StepFooter
-        primary={{ label: "Ahora arme su caja", href: "/como-armar" }}
-        secondary={{ label: "Preguntar algo sobre esto", href: "/chat" }}
+        primary={{ label: "Preguntar al asistente", href: "/chat" }}
+        secondary={{ label: "Ver cómo armar la caja", href: "/como-armar" }}
       />
     </section>
   );
