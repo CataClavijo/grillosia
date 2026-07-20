@@ -2,28 +2,30 @@ import Link from "next/link";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-border/70 bg-card/40 pb-[calc(env(safe-area-inset-bottom)+72px)] sm:pb-6">
+    <footer className="mt-auto border-t bg-card/40">
       <div className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-2 px-6 py-6 text-center">
-        <p className="text-[14px] font-semibold text-foreground/90">
-          GrillIA 2026 · En pruebas
+        <p className="text-[13px] text-muted-foreground">
+          Universidad de los Llanos · Minciencias 963 de 2025 · GrillIA 2026 ·
+          En pruebas
         </p>
-        <p className="text-[13px] leading-relaxed text-foreground/70">
-          Universidad de los Llanos · Convocatoria Minciencias 963 de 2025
-        </p>
-        <p className="mt-2 text-[12px] leading-relaxed text-foreground/70">
+        <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[13px]">
           <Link
             href="/metodologia"
-            className="underline underline-offset-2 hover:text-foreground/90"
+            className="text-muted-foreground underline underline-offset-2 hover:text-foreground"
           >
-            Para investigadores: metodología técnica
+            Cómo lo hacemos
           </Link>
-        </p>
-        <p className="mt-1 text-[12px] leading-relaxed text-foreground/70">
+          <Link
+            href="/contacto"
+            className="text-muted-foreground underline underline-offset-2 hover:text-foreground"
+          >
+            Dejar sus datos
+          </Link>
           <a
             href="/reset"
-            className="underline underline-offset-2 hover:text-foreground/90"
+            className="text-muted-foreground underline underline-offset-2 hover:text-foreground"
           >
-            ¿Problemas para cargar? Restablecer la aplicación
+            Restablecer
           </a>
         </p>
       </div>

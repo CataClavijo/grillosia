@@ -2,12 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Bot, ChevronLeft, ChevronRight, Info, Save, Send, User, X } from "lucide-react";
+import {
+  Bot,
+  ChevronLeft,
+  ChevronRight,
+  MoreVertical,
+  Send,
+  User,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,12 +27,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { SiteNav } from "@/components/site-nav";
 import {
   STARTER_QUESTIONS,
-  WELCOME_MESSAGE,
   answerFor,
   type KnowledgeLink,
 } from "@/lib/chat-knowledge";
@@ -34,7 +41,7 @@ import { inlineMarkdown } from "@/lib/markdown";
 
 interface DisplayMessage {
   id: string;
-  role: "user" | "assistant" | "system";
+  role: "user" | "assistant";
   text: string;
   links?: KnowledgeLink[];
 }
@@ -60,44 +67,24 @@ function saveDraft(messages: DisplayMessage[]) {
   }
 }
 
-function clearDraft() {
-  if (typeof window === "undefined") return;
-  try {
-    window.sessionStorage.removeItem(DRAFT_KEY);
-  } catch {
-    /* noop */
-  }
-}
-
 export default function ChatPage() {
-  const { active, activeId, create, setActive, appendMessage, clearChat } =
-    useProjects();
+  const { active, activeId, appendMessage, clearChat } = useProjects();
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const [ephemeral, setEphemeral] = useState<DisplayMessage[]>(() => loadDraft());
-  const [dismissedSaveHint, setDismissedSaveHint] = useState(false);
-  const [saveOpen, setSaveOpen] = useState(false);
-  const [saveName, setSaveName] = useState("");
+  const [confirmarBorrado, setConfirmarBorrado] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  const persistent: DisplayMessage[] = active
-    ? active.chat.map((m: StoreMessage) => ({
-        id: m.id,
-        role: m.role,
-        text: m.text,
-        links: m.links,
-      }))
-    : [];
-
   const messages: DisplayMessage[] = active
-    ? [
-        { id: "sys-welcome", role: "system", text: WELCOME_MESSAGE },
-        ...persistent,
-      ]
-    : [
-        { id: "sys-welcome", role: "system", text: WELCOME_MESSAGE },
-        ...ephemeral,
-      ];
+    ? active.chat
+        .filter((m: StoreMessage) => m.role !== "system")
+        .map((m: StoreMessage) => ({
+          id: m.id,
+          role: m.role as "user" | "assistant",
+          text: m.text,
+          links: m.links,
+        }))
+    : ephemeral;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
@@ -106,7 +93,6 @@ export default function ChatPage() {
     });
   }, [messages.length, thinking]);
 
-  // Persist draft when in ephemeral mode
   useEffect(() => {
     if (!activeId) saveDraft(ephemeral);
   }, [activeId, ephemeral]);
@@ -116,15 +102,13 @@ export default function ChatPage() {
     if (!clean || thinking) return;
 
     setInput("");
-    const userMsg: DisplayMessage = {
-      id: `local_${Date.now()}`,
-      role: "user",
-      text: clean,
-    };
     if (activeId) {
       appendMessage(activeId, { role: "user", text: clean });
     } else {
-      setEphemeral((prev) => [...prev, userMsg]);
+      setEphemeral((prev) => [
+        ...prev,
+        { id: `local_${Date.now()}`, role: "user", text: clean },
+      ]);
     }
     setThinking(true);
 
@@ -156,182 +140,67 @@ export default function ChatPage() {
     send(input);
   };
 
-  const finishSave = () => {
-    const trimmed = saveName.trim() || `Chat · ${new Date().toLocaleDateString("es-CO")}`;
-    const id = create(trimmed);
-    // Copiar ephemeral al proyecto recién creado
-    for (const m of ephemeral) {
-      if (m.role === "system") continue;
-      appendMessage(id, { role: m.role, text: m.text, links: m.links });
-    }
-    setActive(id);
-    setEphemeral([]);
-    clearDraft();
-    setSaveOpen(false);
-  };
-
-  const hasUserAsked = messages.some((m) => m.role === "user");
-  const conversationTitle = active ? active.name : "Chat";
-  const showSaveHint =
-    !active && ephemeral.some((m) => m.role === "user") && !dismissedSaveHint;
+  const hayMensajes = messages.length > 0;
 
   return (
-    <main className="relative mx-auto flex h-[calc(100vh-96px)] w-full max-w-[520px] flex-col px-6 pt-5">
-      {/* Cabecera */}
+    <main className="mx-auto flex h-[calc(100vh-96px)] w-full max-w-[520px] flex-col px-6 pt-5">
+      {/* Cabecera mínima: atrás · título · tres puntos */}
       <header className="flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex min-h-[44px] items-center gap-1 rounded-full px-3 py-2 text-[15px] font-semibold text-foreground/85 transition-colors hover:text-foreground"
+          aria-label="Volver"
+          className="inline-flex size-11 items-center justify-center rounded-full text-foreground/85 transition-colors hover:bg-muted"
         >
-          <ChevronLeft className="h-5 w-5" />
-          Inicio
+          <ChevronLeft className="size-5" />
         </Link>
-        <SiteNav />
-      </header>
-
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-[16px] font-bold">{conversationTitle}</p>
-          <p className="text-[13px] text-foreground/70">
-            {active
-              ? `${active.chat.filter((m) => m.role !== "system").length} mensajes guardados`
-              : "Escríbame lo que quiera preguntar."}
-          </p>
-        </div>
-        {active && active.chat.length > 0 && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
+        <p className="text-[17px] font-bold">Asistente</p>
+        {hayMensajes && active ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-11 text-[13px] font-semibold text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                size="icon"
+                aria-label="Más opciones"
+                className="size-11 rounded-full"
               >
-                Borrar chat
+                <MoreVertical />
               </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  ¿Borrar toda la conversación?
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  Se perderán todas las preguntas y respuestas guardadas en la
-                  consulta &ldquo;{active.name}&rdquo;. No se puede deshacer.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel className="h-12 text-base">
-                  No, dejarla
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => clearChat(active.id)}
-                  className="h-12 bg-destructive text-base text-white hover:bg-destructive/90"
-                >
-                  Sí, borrarla
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onSelect={(e: Event) => {
+                  e.preventDefault();
+                  setConfirmarBorrado(true);
+                }}
+                className="min-h-11 text-destructive"
+              >
+                Borrar conversación
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <span className="size-11" aria-hidden />
         )}
-      </div>
+      </header>
 
-      {/* Oferta suave de guardar tras el primer mensaje */}
-      {showSaveHint && !saveOpen && (
-        <div className="mt-3 flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-3">
-          <Save className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={2} />
-          <p className="flex-1 text-[13.5px] leading-relaxed text-foreground/85">
-            Si quiere, guardo esta conversación para que pueda volver después.
-          </p>
-          <button
-            type="button"
-            onClick={() => setSaveOpen(true)}
-            className="shrink-0 rounded-full bg-primary px-3 py-2 text-[12.5px] font-bold text-primary-foreground"
-          >
-            Guardar
-          </button>
-          <button
-            type="button"
-            onClick={() => setDismissedSaveHint(true)}
-            aria-label="Ahora no"
-            className="shrink-0 rounded-full text-foreground/60 hover:text-foreground"
-          >
-            <X className="h-4 w-4" strokeWidth={2} />
-          </button>
-        </div>
-      )}
-
-      {/* Modal simple de guardar consulta */}
-      {saveOpen && (
-        <div className="mt-3 rounded-2xl border border-primary/40 bg-card p-4">
-          <label
-            htmlFor="chat-consulta-name"
-            className="text-[12.5px] font-bold uppercase tracking-wider text-foreground/70"
-          >
-            Nombre para reconocerla después
-          </label>
-          <input
-            id="chat-consulta-name"
-            value={saveName}
-            onChange={(e) => setSaveName(e.target.value)}
-            placeholder={`Chat · ${new Date().toLocaleDateString("es-CO")}`}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") finishSave();
-            }}
-            autoFocus
-            className="mt-2 h-12 w-full rounded-xl border border-border bg-background px-3 text-[16px] outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
-          />
-          <div className="mt-3 flex gap-2">
-            <Button
-              onClick={finishSave}
-              className="h-12 flex-1 rounded-xl text-[15px] font-bold"
-            >
-              Guardar
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setSaveOpen(false)}
-              className="h-12 rounded-xl border-border bg-card px-4 text-[14px] font-semibold"
-            >
-              Cancelar
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Aviso demo */}
-      <div className="mt-3 flex items-start gap-3 rounded-2xl border border-demo-border bg-demo-bg p-3">
-        <Info
-          className="mt-0.5 h-4 w-4 shrink-0 text-demo-foreground"
-          strokeWidth={2.25}
-        />
-        <p className="text-[13px] leading-relaxed text-demo-foreground">
-          Estamos en pruebas. Lo que respondemos le sirve de guía, pero
-          conviene confirmarlo con su experiencia.
-        </p>
-      </div>
-
-      {/* Mensajes */}
+      {/* Hilo */}
       <div
         ref={scrollRef}
-        className="mt-4 flex-1 space-y-4 overflow-y-auto pb-4"
+        className="mt-6 flex flex-1 flex-col gap-4 overflow-y-auto pb-4"
         aria-live="polite"
       >
-        {messages.map((m) => (
-          <MessageBubble key={m.id} message={m} />
-        ))}
-        {thinking && <TypingBubble />}
-
-        {!hasUserAsked && !thinking && (
-          <div className="mt-2">
-            <p className="text-[12.5px] font-bold uppercase tracking-wider text-foreground/70">
-              Preguntas para empezar
+        {!hayMensajes && !thinking && (
+          <div className="flex flex-col gap-3">
+            <p className="text-[16px] leading-relaxed text-foreground/85">
+              Pregúnteme lo que quiera sobre la cría de grillos.
             </p>
-            <ul className="mt-3 flex flex-col gap-2">
-              {STARTER_QUESTIONS.map((q) => (
+            <ul className="flex flex-col gap-2">
+              {STARTER_QUESTIONS.slice(0, 3).map((q) => (
                 <li key={q}>
                   <button
                     type="button"
                     onClick={() => send(q)}
-                    className="flex min-h-[52px] w-full items-center rounded-2xl border border-border bg-card/70 px-4 py-3 text-left text-[15px] font-semibold text-foreground/90 transition-colors hover:border-primary/40 hover:bg-card"
+                    className="flex min-h-14 w-full items-center rounded-2xl bg-card px-4 py-3 text-left text-[16px] font-medium transition-colors hover:bg-muted"
                   >
                     {q}
                   </button>
@@ -340,20 +209,25 @@ export default function ChatPage() {
             </ul>
           </div>
         )}
+
+        {messages.map((m) => (
+          <MessageBubble key={m.id} message={m} />
+        ))}
+        {thinking && <TypingBubble />}
       </div>
 
       {/* Composer */}
       <form
         onSubmit={onSubmit}
-        className="sticky bottom-0 -mx-6 border-t border-border/60 bg-background/95 px-6 pt-3 pb-[calc(env(safe-area-inset-bottom)+12px)] backdrop-blur"
+        className="sticky bottom-0 -mx-6 border-t bg-background/95 px-6 pt-3 pb-[calc(env(safe-area-inset-bottom)+12px)] backdrop-blur"
       >
-        <div className="flex items-center gap-2 rounded-full border border-border bg-card pl-4 pr-1.5 py-1 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/15">
+        <div className="flex items-center gap-2 rounded-full border bg-card py-1 pl-4 pr-1.5 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/15">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Escríbanos su pregunta"
             aria-label="Escriba su pregunta"
-            className="h-12 flex-1 bg-transparent text-[16px] outline-none placeholder:text-foreground/55"
+            className="h-12 flex-1 bg-transparent text-[16px] outline-none placeholder:text-muted-foreground"
             autoComplete="off"
           />
           <Button
@@ -363,14 +237,33 @@ export default function ChatPage() {
             disabled={!input.trim() || thinking}
             className="size-12 shrink-0 rounded-full disabled:opacity-50"
           >
-            <Send className="h-4.5 w-4.5" strokeWidth={2} />
+            <Send />
           </Button>
         </div>
-        <p className="mt-2 text-center text-[12px] text-foreground/70">
-          Respondemos con información del proyecto, no con respuestas
-          definitivas.
-        </p>
       </form>
+
+      <AlertDialog open={confirmarBorrado} onOpenChange={setConfirmarBorrado}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Borrar toda la conversación?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se perderán todas las preguntas y respuestas. No se puede
+              deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="h-12 text-base">
+              No, dejarla
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => active && clearChat(active.id)}
+              className="h-12 bg-destructive text-base text-white hover:bg-destructive/90"
+            >
+              Sí, borrarla
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 }
@@ -378,30 +271,20 @@ export default function ChatPage() {
 /* ────────────────────────────────────────────────────────────────────────── */
 
 function MessageBubble({ message }: { message: DisplayMessage }) {
-  if (message.role === "system") {
-    return (
-      <div className="flex justify-center">
-        <div className="max-w-[92%] rounded-2xl bg-muted/70 px-4 py-3 text-center text-[14px] leading-relaxed text-foreground/85">
-          {message.text}
-        </div>
-      </div>
-    );
-  }
-
   const isUser = message.role === "user";
 
   return (
     <div className={`flex gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
-        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <Bot className="h-4.5 w-4.5" strokeWidth={2} />
+        <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <Bot className="size-4" strokeWidth={2} />
         </span>
       )}
       <div
         className={`max-w-[82%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
           isUser
             ? "bg-primary text-primary-foreground"
-            : "border border-border/70 bg-card/80 text-foreground"
+            : "bg-card text-foreground"
         }`}
       >
         <p className="whitespace-pre-wrap">{inlineMarkdown(message.text)}</p>
@@ -409,8 +292,8 @@ function MessageBubble({ message }: { message: DisplayMessage }) {
           <ul className="mt-3 flex flex-col gap-2">
             {message.links.map((l) => {
               const external = l.href.startsWith("http");
-              const commonClass =
-                "inline-flex min-h-[44px] w-full items-center justify-between gap-2 rounded-xl border border-primary/25 bg-primary/5 px-3 py-2 text-[14px] font-semibold text-primary transition-colors hover:bg-primary/10";
+              const cls =
+                "inline-flex min-h-11 w-full items-center justify-between gap-2 rounded-xl bg-primary/10 px-3 py-2 text-[14px] font-semibold text-primary transition-colors hover:bg-primary/15";
               return (
                 <li key={l.href}>
                   {external ? (
@@ -418,15 +301,15 @@ function MessageBubble({ message }: { message: DisplayMessage }) {
                       href={l.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={commonClass}
+                      className={cls}
                     >
                       <span>{l.label}</span>
-                      <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
+                      <ChevronRight className="size-4" strokeWidth={2.5} />
                     </a>
                   ) : (
-                    <Link href={l.href} className={commonClass}>
+                    <Link href={l.href} className={cls}>
                       <span>{l.label}</span>
-                      <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
+                      <ChevronRight className="size-4" strokeWidth={2.5} />
                     </Link>
                   )}
                 </li>
@@ -436,8 +319,8 @@ function MessageBubble({ message }: { message: DisplayMessage }) {
         )}
       </div>
       {isUser && (
-        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-foreground/10 text-foreground/80">
-          <User className="h-4.5 w-4.5" strokeWidth={2} />
+        <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-foreground/10 text-foreground/80">
+          <User className="size-4" strokeWidth={2} />
         </span>
       )}
     </div>
@@ -447,15 +330,15 @@ function MessageBubble({ message }: { message: DisplayMessage }) {
 function TypingBubble() {
   return (
     <div className="flex gap-2.5">
-      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-        <Bot className="h-4.5 w-4.5" strokeWidth={2} />
+      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <Bot className="size-4" strokeWidth={2} />
       </span>
-      <div className="rounded-2xl border border-border/70 bg-card/80 px-4 py-3">
+      <div className="rounded-2xl bg-card px-4 py-3">
         <span className="flex items-center gap-1.5" aria-label="Escribiendo">
           {[0, 1, 2].map((i) => (
             <span
               key={i}
-              className="h-1.5 w-1.5 animate-bounce rounded-full bg-foreground/50"
+              className="size-1.5 animate-bounce rounded-full bg-foreground/50"
               style={{ animationDelay: `${i * 120}ms` }}
             />
           ))}

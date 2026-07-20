@@ -3,29 +3,46 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check, ChevronLeft, X } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { TutorialIcon } from "@/components/tutorial-icon";
 import { renderMarkdownBlock } from "@/lib/markdown";
 import { useTutorialSeen } from "@/lib/projects-store";
+import { indiceTutorialGuardado, marcarPaso } from "@/lib/journey";
 import { TUTORIAL_STEPS } from "@/lib/content/tutorial";
 
 export default function TutorialPage() {
   const router = useRouter();
   const { markSeen } = useTutorialSeen();
   const [index, setIndex] = useState(0);
+  const [retomado, setRetomado] = useState(false);
 
   const total = TUTORIAL_STEPS.length;
   const step = useMemo(() => TUTORIAL_STEPS[index], [index]);
-  const progress = ((index + 1) / total) * 100;
+
+  // Retomar donde quedó la vez pasada.
+  useEffect(() => {
+    const guardado = indiceTutorialGuardado();
+    if (guardado > 0 && guardado < total) {
+      setIndex(guardado);
+      setRetomado(true);
+    }
+  }, [total]);
+
+  // Anotar el avance para que la landing sepa qué botón mostrar.
+  useEffect(() => {
+    marcarPaso(`tutorial:${index + 1}` as never);
+  }, [index]);
 
   const advance = useCallback(() => {
     if (index === total - 1) {
       markSeen();
-      router.push("/");
+      marcarPaso("wizard");
+      router.push("/wizard");
     } else {
       setIndex((i) => i + 1);
+      setRetomado(false);
     }
   }, [index, total, markSeen, router]);
 
@@ -45,114 +62,94 @@ export default function TutorialPage() {
       <header className="flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex min-h-[44px] items-center gap-1 rounded-full px-3 py-2 text-[15px] font-semibold text-foreground/85 transition-colors hover:text-foreground"
+          className="inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-[15px] font-semibold text-foreground/85 transition-colors hover:text-foreground"
         >
-          <ChevronLeft className="h-5 w-5" />
+          <ChevronLeft className="size-5" />
           Inicio
         </Link>
-        {index > 0 && (
+        {index === 0 && (
           <button
             type="button"
             onClick={skip}
-            aria-label="Saltar el recorrido por ahora"
-            className="inline-flex min-h-[44px] items-center gap-1 rounded-full px-3 py-2 text-[13.5px] font-semibold text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
+            className="inline-flex min-h-11 items-center rounded-full px-3 py-2 text-[14px] font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
-            Saltar por ahora <X className="h-3.5 w-3.5" strokeWidth={2} />
+            Saltar por ahora
           </button>
         )}
       </header>
 
-      {/* Barra de progreso */}
-      <div className="mt-6">
-        <p className="text-[11.5px] font-semibold uppercase tracking-wider text-foreground/55">
-          Paso {index + 1} de {total}
-        </p>
-        <div
-          className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted"
-          aria-hidden
-        >
+      {/* Progreso: flecha atrás + texto normal + barra pasiva */}
+      <div className="mt-6 flex items-center gap-3">
+        {index > 0 ? (
+          <button
+            type="button"
+            onClick={() => setIndex((i) => Math.max(0, i - 1))}
+            aria-label="Paso anterior"
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <ArrowLeft className="size-5" />
+          </button>
+        ) : (
+          <span className="size-11 shrink-0" aria-hidden />
+        )}
+        <div className="flex-1">
+          <p className="text-[16px] font-semibold text-foreground/85">
+            Paso {index + 1} de {total}
+          </p>
           <div
-            className="h-full rounded-full bg-primary transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          />
+            className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted"
+            aria-hidden
+          >
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-500"
+              style={{ width: `${((index + 1) / total) * 100}%` }}
+            />
+          </div>
         </div>
       </div>
 
+      {retomado && (
+        <p className="mt-4 text-[14px] text-muted-foreground">
+          Siga donde se quedó.
+        </p>
+      )}
+
       {/* Contenido del paso */}
-      <section
-        className="reveal mt-10 flex-1"
-        style={{ animationDelay: "0ms" } as React.CSSProperties}
-        key={step.id}
-      >
-        <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-          <TutorialIcon name={step.icon} className="h-7 w-7" strokeWidth={1.5} />
+      <section className="mt-10 flex-1" key={step.id}>
+        <span className="inline-flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <TutorialIcon name={step.icon} className="size-7" strokeWidth={1.5} />
         </span>
 
         <h1 className="mt-6 text-[2rem] font-bold leading-tight tracking-[-0.02em]">
           {step.title}
         </h1>
-        <p className="mt-2 text-[16px] leading-relaxed text-foreground/65">
+        <p className="mt-2 text-[16px] leading-relaxed text-muted-foreground">
           {step.subtitle}
         </p>
 
-        <div className="mt-6 space-y-4">{renderMarkdownBlock(step.body)}</div>
+        <div className="mt-6 flex flex-col gap-4">
+          {renderMarkdownBlock(step.body)}
+        </div>
 
-        {/* Indicadores de pasos (jump) */}
-        <ol className="mt-10 flex items-center justify-center gap-2" aria-label="Pasos del tutorial">
-          {TUTORIAL_STEPS.map((s, i) => {
-            const active = i === index;
-            const done = i < index;
-            return (
-              <li key={s.id}>
-                <button
-                  type="button"
-                  onClick={() => setIndex(i)}
-                  aria-label={`Ir al paso ${i + 1}: ${s.title}`}
-                  aria-current={active ? "step" : undefined}
-                  className={`flex h-8 w-8 items-center justify-center rounded-full text-[12px] font-bold transition-colors ${
-                    active
-                      ? "bg-primary text-primary-foreground"
-                      : done
-                        ? "bg-primary/25 text-primary"
-                        : "bg-muted text-foreground/50 hover:bg-muted/70"
-                  }`}
-                >
-                  {done ? (
-                    <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
-                  ) : (
-                    i + 1
-                  )}
-                </button>
-              </li>
-            );
-          })}
-        </ol>
+        {step.inlineLink && (
+          <Link
+            href={step.inlineLink.href}
+            className="mt-6 inline-flex min-h-14 items-center gap-2 text-[16px] font-semibold text-primary underline underline-offset-4"
+          >
+            {step.inlineLink.label}
+            <ChevronRight className="size-4" strokeWidth={2.5} />
+          </Link>
+        )}
       </section>
 
-      {/* Navegación */}
-      <div className="mt-10 flex flex-col gap-3">
-        <Button
-          size="lg"
-          onClick={advance}
-          className="h-auto justify-between rounded-2xl px-5 py-5 text-[16px] font-semibold"
-        >
-          <span className="flex items-center gap-2">
-            {step.cta_next}
-          </span>
-          <ArrowRight className="h-5 w-5" strokeWidth={2} />
-        </Button>
-        {index > 0 && (
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => setIndex((i) => Math.max(0, i - 1))}
-            className="h-auto justify-center gap-2 rounded-2xl border-border bg-card/60 px-5 py-4 text-[15px] font-semibold"
-          >
-            <ArrowLeft className="h-4 w-4" strokeWidth={2} />
-            Atrás
-          </Button>
-        )}
-      </div>
+      {/* Un solo botón */}
+      <Button
+        size="lg"
+        onClick={advance}
+        className="mt-10 h-[68px] w-full rounded-2xl text-[18px] font-bold"
+      >
+        {step.cta_next}
+      </Button>
     </main>
   );
 }
