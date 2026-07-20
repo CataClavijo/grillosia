@@ -1,17 +1,25 @@
 /**
- * Kill-switch para el service worker anterior.
+ * Kill-switch agresivo para el service worker anterior.
  *
  * La versión previa interceptaba HTML con network-first + fallback a cache;
- * en algunos navegadores (Safari en particular) devolver undefined desde
- * respondWith rompía la navegación con "This page couldn't load".
+ * cuando ni la red ni el cache respondían, el respondWith resolvía undefined
+ * y Chrome/Safari mostraban "This page couldn't load".
  *
- * Esta versión se autodesregistra en install, borra todos los caches del
- * origen y recarga los clientes activos. La próxima navegación ya no
- * tiene service worker.
+ * Este SW: (1) toma control inmediato de todos los clientes (skipWaiting +
+ * clients.claim), (2) borra todos los caches del origen, (3) se desregistra,
+ * y (4) recarga las pestañas activas para que el próximo request pase
+ * directamente a la red sin service worker.
+ *
+ * Además tiene un fetch handler que hace passthrough puro — si por cualquier
+ * motivo alguna request llega al SW antes de que se desregistre, se responde
+ * con fetch(req) directo. Nunca resuelve undefined.
  */
 
 self.addEventListener("install", (event) => {
-  self.skipWaiting();
+  event.waitUntil(self.skipWaiting());
+});
+
+self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
       try {
@@ -20,15 +28,17 @@ self.addEventListener("install", (event) => {
       } catch {
         /* noop */
       }
-    })(),
-  );
-});
-
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    (async () => {
+      try {
+        await self.clients.claim();
+      } catch {
+        /* noop */
+      }
       try {
         await self.registration.unregister();
+      } catch {
+        /* noop */
+      }
+      try {
         const clients = await self.clients.matchAll({ type: "window" });
         clients.forEach((client) => {
           try {
@@ -42,4 +52,10 @@ self.addEventListener("activate", (event) => {
       }
     })(),
   );
+});
+
+// Passthrough total: nunca resolver undefined. Cualquier request que llegue
+// mientras el SW aún está registrado se envía a la red tal cual.
+self.addEventListener("fetch", (event) => {
+  event.respondWith(fetch(event.request).catch(() => Response.error()));
 });
