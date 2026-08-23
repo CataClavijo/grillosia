@@ -42,13 +42,13 @@ export const STARTER_QUESTIONS = [
 ] as const;
 
 const LINKS = {
-  tutorial: { label: "Ver cómo empezar", href: "/tutorial" },
-  catalog: { label: "Ver los grillos que estudiamos", href: "/catalogo" },
-  enclosure: { label: "Ver la guía de las cajas", href: "/como-armar" },
-  wizard: { label: "Ir a la consulta paso a paso", href: "/wizard" },
+  tutorial: { label: "Arme su caja", href: "/caja" },
+  catalog: { label: "Ver los grillos que estudiamos", href: "/grillos" },
+  enclosure: { label: "Ver la guía de las cajas", href: "/caja" },
+  wizard: { label: "Ir a la consulta paso a paso", href: "/consulta" },
   methodology: { label: "Ver metodología (técnica)", href: "/metodologia" },
   project: { label: "Sobre GrillosIA", href: "/proyecto" },
-  projects: { label: "Mis consultas guardadas", href: "/proyectos" },
+  projects: { label: "Mis consultas guardadas", href: "/consultas" },
 } as const;
 
 const KNOWLEDGE: KnowledgeEntry[] = [

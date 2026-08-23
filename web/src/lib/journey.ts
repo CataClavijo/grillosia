@@ -15,17 +15,18 @@ const STAMP_KEY = "grillia:paso:fecha";
 /** Caduca el puntero a los 60 días: nadie recuerda en qué paso iba. */
 const CADUCIDAD_MS = 60 * 24 * 60 * 60 * 1000;
 
-export type Paso =
-  | "inicio"
-  | "tutorial:1"
-  | "tutorial:2"
-  | "tutorial:3"
-  | "wizard"
-  | "listo";
+/**
+ * El puntero guarda en que parada del camino va, con los mismos numeros que
+ * ve el productor en pantalla. Los valores viejos del tutorial se mapean a la
+ * parada 1 para no perder el progreso de quien ya venia usando la aplicacion.
+ */
+export type Paso = "inicio" | "1" | "2" | "3" | "listo";
 
 export interface SiguientePaso {
   label: string;
   href: string;
+  /** Numero de parada, para que la landing lo diga en el boton. */
+  n: number;
 }
 
 export function leerPaso(): Paso {
@@ -50,21 +51,27 @@ export function marcarPaso(p: Paso) {
   }
 }
 
-/** Único lugar que decide qué botón ve el usuario en la landing. */
+/** Unico lugar que decide que boton ve el productor en el inicio. */
 export function siguientePaso(p: Paso): SiguientePaso {
-  if (p === "inicio") {
-    return { label: "Comience aquí", href: "/tutorial" };
+  // Punteros del esquema anterior: se traen a la parada 1 para no perder el
+  // progreso de quien ya venia usando la aplicacion.
+  const crudo = String(p);
+  if (crudo.startsWith("tutorial")) {
+    return { label: "Arme su caja", href: "/caja", n: 1 };
   }
-  if (p.startsWith("tutorial")) {
-    return { label: "Siga donde quedó", href: "/tutorial" };
+  if (crudo === "wizard") {
+    return { label: "Haga su consulta", href: "/consulta", n: 3 };
   }
-  return { label: "Ver qué comida le conviene", href: "/wizard" };
-}
 
-/** Índice del paso del tutorial guardado (0-based), para retomarlo. */
-export function indiceTutorialGuardado(): number {
-  const p = leerPaso();
-  if (!p.startsWith("tutorial:")) return 0;
-  const n = Number(p.split(":")[1]);
-  return Number.isFinite(n) ? Math.max(0, n - 1) : 0;
+  switch (p) {
+    case "1":
+      return { label: "Arme su caja", href: "/caja", n: 1 };
+    case "2":
+      return { label: "Conozca sus grillos", href: "/grillos", n: 2 };
+    case "3":
+    case "listo":
+      return { label: "Haga su consulta", href: "/consulta", n: 3 };
+    default:
+      return { label: "Arme su caja", href: "/caja", n: 1 };
+  }
 }

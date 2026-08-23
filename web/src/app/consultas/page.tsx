@@ -40,7 +40,7 @@ export default function ProjectsPage() {
 
   const abrir = (id: string) => {
     setActive(id);
-    router.push("/wizard");
+    router.push("/consulta");
   };
 
   /**
@@ -51,7 +51,7 @@ export default function ProjectsPage() {
   const nuevaConsulta = () => {
     setActive(null);
     clearWizardDraft();
-    router.push("/wizard");
+    router.push("/consulta");
   };
 
   return (

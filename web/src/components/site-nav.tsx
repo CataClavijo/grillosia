@@ -18,14 +18,17 @@ import { Separator } from "@/components/ui/separator";
 import { SessionBlock } from "@/components/session-block";
 import { ThemeToggle, useTemaOscuro } from "@/components/theme-toggle";
 
-/** El camino principal. Sin descripciones: la etiqueta ya lo dice. */
+/**
+ * El menu repite el camino, numerado igual que en las pantallas, para que
+ * abrirlo no sea entrar a otro sistema de navegacion sino ver el mismo de
+ * arriba. Debajo, la biblioteca: lo que se consulta y no se recorre.
+ */
 const CAMINO = [
-  { href: "/", label: "Inicio" },
-  { href: "/tutorial", label: "La guía" },
-  { href: "/catalogo", label: "Los grillos" },
-  { href: "/como-armar", label: "Armar la caja" },
-  { href: "/wizard", label: "Qué comida usar" },
-  { href: "/proyectos", label: "Mis consultas" },
+  { href: "/", label: "Inicio", n: null as number | null },
+  { href: "/caja", label: "Arme su caja", n: 1 },
+  { href: "/grillos", label: "Conozca sus grillos", n: 2 },
+  { href: "/consulta", label: "Haga su consulta", n: 3 },
+  { href: "/resultado", label: "Vea su resultado", n: 4 },
 ];
 
 /**
@@ -35,7 +38,10 @@ const CAMINO = [
  * una consulta, así que se llega a él desde el resultado del asistente
  * guiado, no como destino suelto.
  */
-const SECUNDARIO = [{ href: "/proyecto", label: "Quiénes somos" }];
+const SECUNDARIO = [
+  { href: "/consultas", label: "Mis consultas" },
+  { href: "/proyecto", label: "Sobre el proyecto" },
+];
 
 export function SiteNav({ variant = "full" }: { variant?: "full" | "focused" }) {
   const [open, setOpen] = useState(false);
@@ -76,8 +82,13 @@ export function SiteNav({ variant = "full" }: { variant?: "full" | "focused" }) 
                 <SheetClose asChild>
                   <Link
                     href={item.href}
-                    className="flex min-h-14 items-center rounded-xl px-4 text-[17px] font-semibold transition-colors hover:bg-muted"
+                    className="flex min-h-14 items-center gap-3 rounded-xl px-4 text-[17px] font-semibold transition-colors hover:bg-muted"
                   >
+                    {/* El mismo numero que muestra la pantalla: abrir el menu
+                        no cambia de sistema de navegacion. */}
+                    <span className="rotulo w-8 shrink-0 text-primary">
+                      {item.n ? `0${item.n}` : ""}
+                    </span>
                     {item.label}
                   </Link>
                 </SheetClose>

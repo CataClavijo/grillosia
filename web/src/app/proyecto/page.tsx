@@ -11,7 +11,13 @@ import {
   Users,
 } from "lucide-react";
 
+import { InterestForm } from "@/components/interest-form";
+import { renderMarkdownBlock } from "@/lib/markdown";
 import { SiteNav } from "@/components/site-nav";
+import {
+  METHODOLOGY_SECTIONS,
+  REFERENCES,
+} from "@/lib/content/methodology";
 
 export const metadata = {
   title: "Sobre el proyecto — GrillosIA",
@@ -163,6 +169,51 @@ export default function ProjectPage() {
       </section>
 
       {/* Créditos de las fotografías */}
+      {/* Metodologia: vivia en su propia ruta y competia con la tarea desde
+          el pie de todas las pantallas. Aqui es una seccion mas. */}
+      <section className="mt-12">
+        <h2 className="font-display text-[18px] font-bold tracking-[-0.02em]">
+          Cómo lo hacemos
+        </h2>
+        <div className="mt-3 flex flex-col gap-3">
+          {METHODOLOGY_SECTIONS.map((s) => (
+            <details
+              key={s.id}
+              className="rounded-2xl border bg-card/60 p-4 [&_summary]:cursor-pointer"
+            >
+              <summary className="text-[16px] font-semibold">{s.title}</summary>
+              <div className="mt-2 flex flex-col gap-2 text-[15px] leading-relaxed text-foreground/85">
+                {renderMarkdownBlock(s.body_markdown)}
+              </div>
+            </details>
+          ))}
+        </div>
+        <details className="mt-3 rounded-2xl border bg-card/60 p-4">
+          <summary className="cursor-pointer text-[16px] font-semibold">
+            Referencias
+          </summary>
+          <ul className="mt-2 flex flex-col gap-2.5 text-[13.5px] leading-relaxed text-muted-foreground">
+            {REFERENCES.map((r, i) => (
+              <li key={i}>{r.citation}</li>
+            ))}
+          </ul>
+        </details>
+      </section>
+
+      {/* Contacto: era una ruta entera para un formulario. */}
+      <section className="mt-12">
+        <h2 className="font-display text-[18px] font-bold tracking-[-0.02em]">
+          Déjenos sus datos
+        </h2>
+        <p className="mt-2 text-[15px] leading-relaxed text-foreground/85">
+          Si quiere que alguien del equipo le escriba, o si está criando
+          grillos y quiere contarnos cómo le va.
+        </p>
+        <div className="mt-4">
+          <InterestForm />
+        </div>
+      </section>
+
       <section className="mt-10 rounded-2xl border border-border/70 bg-card/60 p-5">
         <h2 className="text-[15px] font-bold">Créditos fotográficos</h2>
         <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">

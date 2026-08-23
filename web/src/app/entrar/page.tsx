@@ -96,7 +96,7 @@ function Entrada() {
         disabled={enviando}
         onClick={() => {
           setEnviando(true);
-          void signIn("google", { callbackUrl: "/proyectos" });
+          void signIn("google", { callbackUrl: "/consultas" });
         }}
         className="h-[68px] w-full rounded-2xl text-[18px] font-bold"
       >

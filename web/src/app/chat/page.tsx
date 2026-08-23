@@ -290,8 +290,8 @@ export default function ChatPage() {
 
         <div className="mt-auto">
           <StepFooter
-            primary={{ label: "Hacer mi consulta", href: "/wizard" }}
-            secondary={{ label: "Ver la guía", href: "/tutorial" }}
+            primary={{ label: "Hacer mi consulta", href: "/consulta" }}
+            secondary={{ label: "Arme su caja", href: "/caja" }}
           />
         </div>
       </main>

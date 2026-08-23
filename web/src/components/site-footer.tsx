@@ -1,47 +1,40 @@
 "use client";
 
-import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 /**
- * Pie del sitio con la atribución institucional obligatoria.
+ * Pie del sitio.
  *
- * No se renderiza en /chat ni en /reset: son pantallas de alto completo
- * (el chat tiene composer fijo abajo) y el pie les rompe la distribución.
- * La atribución sigue visible en el resto de rutas.
+ * Ya no lleva enlaces. Antes tenia tres —metodologia, contacto y /reset— y
+ * aparecian en diez de las once pantallas, compitiendo con la tarea. Los dos
+ * primeros viven ahora en el menu; /reset se dejo de enlazar del todo: es la
+ * herramienta de emergencia para reparar la aplicacion, sigue funcionando
+ * escribiendo la direccion y eso es lo que necesita quien da soporte, no el
+ * productor.
+ *
+ * Lo que queda es la atribucion institucional, obligatoria, y la vineta de
+ * cierre: el cul-de-lampe con que los libros naturalistas rematan capitulo.
  */
-const SIN_FOOTER = ["/chat", "/reset"];
+const SIN_PIE = ["/chat", "/reset", "/consulta"];
 
 export function SiteFooter() {
   const pathname = usePathname();
-  if (SIN_FOOTER.some((r) => pathname?.startsWith(r))) return null;
+  if (SIN_PIE.some((r) => pathname?.startsWith(r))) return null;
 
   return (
-    <footer className="mt-auto border-t bg-card/40">
-      <div className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-2 px-6 py-6 text-center">
-        <p className="text-[13px] text-muted-foreground">
-          Universidad de los Llanos · Minciencias 963 de 2025 · GrillosIA 2026 ·
-          En pruebas
-        </p>
-        <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[13px]">
-          <Link
-            href="/metodologia"
-            className="text-muted-foreground underline underline-offset-2 hover:text-foreground"
-          >
-            Cómo lo hacemos
-          </Link>
-          <Link
-            href="/contacto"
-            className="text-muted-foreground underline underline-offset-2 hover:text-foreground"
-          >
-            Dejar sus datos
-          </Link>
-          <a
-            href="/reset"
-            className="text-muted-foreground underline underline-offset-2 hover:text-foreground"
-          >
-            Restablecer
-          </a>
+    <footer className="mt-auto">
+      <div className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-1 px-6 pb-8 pt-4 text-center">
+        <Image
+          src="/arte/vineta.webp"
+          alt=""
+          width={420}
+          height={140}
+          aria-hidden
+          className="lamina h-auto w-full max-w-[300px]"
+        />
+        <p className="rotulo text-muted-foreground">
+          Universidad de los Llanos · Minciencias 963 · En pruebas
         </p>
       </div>
     </footer>

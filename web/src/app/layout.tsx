@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import {
+  Instrument_Serif,
+  JetBrains_Mono,
+  Plus_Jakarta_Sans,
+  Schibsted_Grotesk,
+} from "next/font/google";
 
 import "./globals.css";
 import { DemoBanner } from "@/components/demo-banner";
@@ -8,6 +13,39 @@ import { SiteFooter } from "@/components/site-footer";
 import { SubirConsultasLocales } from "@/components/subir-consultas-locales";
 import { SwKillBoot } from "@/components/sw-kill-boot";
 import { cn } from "@/lib/utils";
+
+/**
+ * Cuatro papeles, cada uno con su razon:
+ *
+ *  - Schibsted Grotesk para titulares: x-alta grande, se lee de lejos y en
+ *    pantalla pequena.
+ *  - Instrument Serif solo en la frase de enfasis del titular. Nunca en
+ *    parrafos: para leer de corrido, este publico necesita la sans.
+ *  - JetBrains Mono en microetiquetas ("PASO 3 DE 4"), a 11 px y no a 8,
+ *    que es lo que la hace legible para ojos mayores.
+ *  - Plus Jakarta Sans para todo el cuerpo. Ya estaba y funciona.
+ */
+const grotesk = Schibsted_Grotesk({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "800"],
+  display: "swap",
+});
+
+const serif = Instrument_Serif({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
+});
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -64,7 +102,13 @@ export default function RootLayout({
     <html
       lang="es"
       suppressHydrationWarning
-      className={cn("h-full antialiased font-sans", jakarta.variable)}
+      className={cn(
+        "h-full antialiased font-sans",
+        jakarta.variable,
+        grotesk.variable,
+        serif.variable,
+        mono.variable,
+      )}
     >
       <head>
         <script

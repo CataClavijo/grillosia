@@ -18,7 +18,7 @@ export function BackToGuide({ label = "Volver" }: { label?: string }) {
     if (typeof window !== "undefined" && window.history.length > 1) {
       router.back();
     } else {
-      router.push("/tutorial");
+      router.push("/caja");
     }
   };
 

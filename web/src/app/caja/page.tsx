@@ -1,14 +1,10 @@
-import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
-
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { SiteNav } from "@/components/site-nav";
-import { BackToGuide } from "@/components/back-to-guide";
+import { Paso } from "@/components/paso";
 import { Figura } from "@/components/figura";
 import {
   COST_NOTE,
@@ -25,22 +21,11 @@ export const metadata = {
     "Guía paso a paso para armar cajas de cría de grillos con materiales sencillos.",
 };
 
-export default function HowToBuildPage() {
+export default function PaginaCaja() {
   return (
-    <main className="mx-auto flex w-full max-w-[520px] flex-col gap-8 px-6 pb-16 pt-5">
-      <header className="flex items-center justify-between">
-        <Link
-          href="/"
-          className="inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-[15px] font-semibold text-foreground/85 transition-colors hover:text-foreground"
-        >
-          <ChevronLeft className="size-5" />
-          Inicio
-        </Link>
-        <SiteNav />
-      </header>
-
-      <section className="flex flex-col gap-3">
-        <h1 className="text-[2rem] font-bold leading-tight tracking-[-0.02em]">
+    <Paso n={1} titulo="Arme su caja">
+      <section className="flex flex-col gap-3 pt-2">
+        <h1 className="font-display text-[2rem] font-extrabold leading-[1.06] tracking-[-0.03em]">
           Arme su caja de cría
         </h1>
         <p className="text-[16px] leading-relaxed text-foreground/85">
@@ -120,7 +105,6 @@ export default function HowToBuildPage() {
         </AccordionItem>
       </Accordion>
 
-      <BackToGuide />
-    </main>
+    </Paso>
   );
 }

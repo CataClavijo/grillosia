@@ -163,7 +163,10 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 
   --font-sans: var(--font-sans);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-display);
+  --font-display: var(--font-display);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
 }
 
 @layer base {
@@ -286,4 +289,51 @@
     animation: none;
     stroke-dashoffset: 0;
   }
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Rayado: la textura propia de la aplicacion.
+   Sale de las laminas grabadas y del logo, que ya son linea. Se dibuja con
+   gradientes en vez de una imagen de grano: es nitido en cualquier pantalla,
+   no descarga nada y no pide filtros que en un Android barato cuestan
+   cuadros por segundo.
+   ────────────────────────────────────────────────────────────────────── */
+.rayado {
+  position: relative;
+}
+.rayado::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--foreground) 7%, transparent) 0 1px,
+    transparent 1px 7px
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Laminas grabadas. Van en multiply sobre el crema para que el blanco del
+   archivo desaparezca; en oscuro se invierten y pasan a screen, que las deja
+   como grabado blanco sobre negro.
+   ────────────────────────────────────────────────────────────────────── */
+.lamina {
+  mix-blend-mode: multiply;
+  opacity: 0.82;
+}
+.dark .lamina {
+  mix-blend-mode: screen;
+  filter: invert(1);
+  opacity: 0.62;
+}
+
+/* Microetiqueta: "PASO 3 DE 4". A 11 px y no a 8, que es lo que la hace
+   legible para el publico de esta aplicacion. */
+.rotulo {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
 }

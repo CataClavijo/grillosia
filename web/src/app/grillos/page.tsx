@@ -1,6 +1,5 @@
+import { Info } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { ChevronLeft, Info } from "lucide-react";
 
 import {
   Accordion,
@@ -8,8 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { SiteNav } from "@/components/site-nav";
-import { BackToGuide } from "@/components/back-to-guide";
+import { Paso } from "@/components/paso";
 import {
   CATALOG_INTRO,
   CATALOG_NOTE,
@@ -25,19 +23,9 @@ export const metadata = {
     "Fotografías de los grillos del proyecto GrillosIA, familia Gryllidae, del Piedemonte Llanero.",
 };
 
-export default function CatalogPage() {
+export default function PaginaGrillos() {
   return (
-    <main className="mx-auto flex w-full max-w-[520px] flex-col gap-8 px-6 pb-16 pt-5">
-      <header className="flex items-center justify-between">
-        <Link
-          href="/"
-          className="inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-[15px] font-semibold text-foreground/85 transition-colors hover:text-foreground"
-        >
-          <ChevronLeft className="size-5" />
-          Inicio
-        </Link>
-        <SiteNav />
-      </header>
+    <Paso n={2} titulo="Conozca sus grillos">
 
       <section className="flex flex-col gap-3">
         <h1 className="text-[2rem] font-bold leading-tight tracking-[-0.02em]">
@@ -117,8 +105,6 @@ export default function CatalogPage() {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-
-      <BackToGuide />
-    </main>
+    </Paso>
   );
 }
