@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Figura } from "@/components/figura";
 import { Paso } from "@/components/paso";
 import {
   CATALOG_INTRO,
@@ -79,6 +80,57 @@ export default function PaginaGrillos() {
 
       {/* Contenido práctico, aplicable a toda la familia */}
       <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="identificar">
+          <AccordionTrigger className="min-h-16 text-left text-[17px] font-bold">
+            ¿Es un grillo o un saltamontes?
+          </AccordionTrigger>
+          <AccordionContent>
+            <p className="text-[15px] leading-relaxed text-foreground/85">
+              Lo más fácil de mirar son las antenas. El grillo las tiene muy
+              largas, casi tan largas como el cuerpo, y las mueve todo el
+              tiempo. El saltamontes las tiene cortas y gruesas.
+            </p>
+            <p className="mt-2 text-[15px] leading-relaxed text-foreground/85">
+              El grillo también es más achatado y camina; el saltamontes es más
+              alargado y salta lejos.
+            </p>
+            <Figura id="identificar" />
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="macho-hembra">
+          <AccordionTrigger className="min-h-16 text-left text-[17px] font-bold">
+            ¿Cuál es hembra y cuál es macho?
+          </AccordionTrigger>
+          <AccordionContent>
+            <p className="text-[15px] leading-relaxed text-foreground/85">
+              La hembra lleva atrás una aguja larga y recta. Con eso pone los
+              huevos en la tierra. El macho no la tiene.
+            </p>
+            <p className="mt-2 text-[15px] leading-relaxed text-foreground/85">
+              El que canta es el macho, frotando las alas.
+            </p>
+            <Figura id="macho-hembra" />
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="ciclo">
+          <AccordionTrigger className="min-h-16 text-left text-[17px] font-bold">
+            Cómo crecen
+          </AccordionTrigger>
+          <AccordionContent>
+            <p className="text-[15px] leading-relaxed text-foreground/85">
+              Del huevo sale una ninfa: un grillo pequeñito, igual al adulto
+              pero sin alas. Va mudando de piel varias veces y en cada muda
+              crece. Las alas le salen al final.
+            </p>
+            <p className="mt-2 text-[15px] leading-relaxed text-foreground/85">
+              No hay etapa de capullo, como sí la tienen las mariposas.
+            </p>
+            <Figura id="ciclo" />
+          </AccordionContent>
+        </AccordionItem>
+
         <AccordionItem value="reconocer">
           <AccordionTrigger className="min-h-16 text-left text-[17px] font-bold">
             Cómo reconocer un grillo
@@ -102,6 +154,7 @@ export default function PaginaGrillos() {
                 <li key={t}>{t}</li>
               ))}
             </ul>
+            <Figura id="donde-buscar" />
           </AccordionContent>
         </AccordionItem>
       </Accordion>

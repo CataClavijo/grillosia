@@ -15,6 +15,34 @@ import { cn } from "@/lib/utils";
  * Enmarcarlas en una tarjeta clara es mas honesto que fingir transparencia.
  */
 
+/**
+ * Dos estilos de ilustracion, a proposito.
+ *
+ *   TRAZO   — lo que se HACE: cortar la tapa, poner la malla, tamizar. Es
+ *             esquematico porque el detalle estorba cuando lo que importa es
+ *             donde va cada cosa.
+ *   LAMINA  — lo que se RECONOCE: los bichos, los lugares. Aqui el detalle es
+ *             la informacion: nadie identifica un grillo con un esquema.
+ *
+ * Es la misma logica de un manual de taller, que lleva diagramas para armar y
+ * fotografias para reconocer piezas. Al agregar una figura, la pregunta es
+ * cual de las dos cosas hace, no cual se ve mejor.
+ */
+
+/**
+ * Aviso de procedencia para las laminas de biologia.
+ *
+ * Son ilustraciones genericas de la familia Gryllidae, no retratos del grillo
+ * que cria el proyecto: su identificacion taxonomica todavia no esta
+ * confirmada. El catalogo usa fotografias con credito justamente por eso, y
+ * estas laminas no pueden ocupar su lugar.
+ */
+export const LAMINAS_GENERICAS = new Set([
+  "identificar",
+  "macho-hembra",
+  "ciclo",
+]);
+
 export interface DefinicionFigura {
   id: string;
   /** Pie de foto, corto. */
@@ -58,6 +86,41 @@ export const FIGURAS: DefinicionFigura[] = [
     alt: "Dentro de la caja, un plato bajito con alimento y una tapa plástica con agua y un pedazo de manzana.",
     cuando:
       "Cuando pregunten por el agua, los bebederos, la manzana, cómo darles de comer o si se ahogan.",
+  },
+  {
+    id: "donde-buscar",
+    titulo: "Dónde buscarlos: hojarasca, leña y piedra",
+    alt: "Un rincón de patio con hojarasca acumulada, leña vieja apilada y un muro bajo de piedra, alumbrado por una linterna.",
+    cuando:
+      "Cuando pregunten dónde conseguir grillos, dónde buscarlos, cómo atraparlos o a qué hora salen.",
+  },
+  {
+    id: "identificar",
+    titulo: "Grillo arriba, saltamontes abajo: mire las antenas",
+    alt: "Dos insectos de perfil: arriba un grillo con antenas muy largas; abajo un saltamontes con antenas cortas.",
+    cuando:
+      "Cuando pregunten cómo saber si lo que atraparon es un grillo, o en qué se diferencia de un saltamontes o una langosta.",
+  },
+  {
+    id: "macho-hembra",
+    titulo: "La hembra lleva una aguja atrás; el macho no",
+    alt: "Dos grillos de perfil: arriba una hembra con un ovipositor largo y recto saliendo del abdomen; abajo un macho sin él.",
+    cuando:
+      "Cuando pregunten cómo distinguir macho de hembra, cuáles ponen huevos o cómo armar la proporción de la cría.",
+  },
+  {
+    id: "ciclo",
+    titulo: "Huevo, ninfa y adulto",
+    alt: "Tres etapas en fila: un huevo ovalado, una ninfa pequeña sin alas y un grillo adulto con alas.",
+    cuando:
+      "Cuando pregunten cuánto tardan en crecer, por qué los pequeños no tienen alas, o en qué etapa van sus grillos.",
+  },
+  {
+    id: "cosecha",
+    titulo: "Un cedazo para separar, un frasco para guardar",
+    alt: "Un cedazo circular de marco de madera sobre una mesa y, al lado, un frasco de vidrio con tapa perforada.",
+    cuando:
+      "Cuando pregunten cómo cosechar, cómo separar los grillos del sustrato o en qué guardarlos.",
   },
   {
     id: "clima",
@@ -104,6 +167,12 @@ export function Figura({
       </div>
       <figcaption className="mt-2 text-[13.5px] leading-relaxed text-muted-foreground">
         {figura.titulo}
+        {LAMINAS_GENERICAS.has(figura.id) && (
+          <span className="mt-1 block text-[12.5px]">
+            Ilustración general de la familia Gryllidae. No corresponde a una
+            especie identificada.
+          </span>
+        )}
       </figcaption>
     </figure>
   );

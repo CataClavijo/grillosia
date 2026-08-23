@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { Banda } from "@/components/banda";
+import { PortadaHero } from "@/components/portada-hero";
 import { SiteNav } from "@/components/site-nav";
 import { ANIMALS } from "@/lib/animals";
 import { CAMINO } from "@/lib/camino";
@@ -36,31 +36,10 @@ export default function Inicio() {
         <SiteNav />
       </header>
 
-      {/* ── Portada ─────────────────────────────────────────── */}
-      <section className="pt-7">
-        <p className="rotulo text-muted-foreground">Piedemonte Llanero</p>
-        <h1 className="mt-3 font-display text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.03em]">
-          Críe grillos y sepa
-          <br />
-          <span className="font-serif text-primary italic font-normal">
-            qué darles de comer.
-          </span>
-        </h1>
-        <p className="mt-3.5 text-[16.5px] leading-relaxed text-foreground/85">
-          Le acompañamos en cuatro pasos, desde armar la caja hasta saber qué
-          comida le conviene a su tilapia, pollo o cerdo.
-        </p>
-        <Link
-          href={siguiente.href}
-          className="mt-6 flex min-h-14 w-full items-center justify-center rounded-full bg-primary px-6 text-[17px] font-bold text-primary-foreground transition-opacity hover:opacity-90"
-        >
-          {empezando ? "Empezar por el paso 1" : `Seguir en el paso ${siguiente.n}`}
-        </Link>
-      </section>
-
-      {/* La lamina va DESPUES del boton, como banda separadora: asi el boton
-          respira y la ilustracion no compite con la accion. */}
-      <Banda src="/arte/llanura.webp" alto="h-[168px]" className="mt-7" />
+      <PortadaHero
+        href={siguiente.href}
+        cta={empezando ? "Empezar por el paso 1" : `Seguir en el paso ${siguiente.n}`}
+      />
 
       {/* ── Qué es ──────────────────────────────────────────── */}
       <section className="pt-8">
@@ -104,17 +83,6 @@ export default function Inicio() {
           height={520}
           aria-hidden
           className="lamina h-auto w-full max-w-[250px]"
-        />
-      </div>
-
-      <div className="flex justify-center pt-8">
-        <Image
-          src="/arte/grillo.webp"
-          alt=""
-          width={620}
-          height={430}
-          aria-hidden
-          className="lamina h-auto w-full max-w-[340px]"
         />
       </div>
 
@@ -200,8 +168,9 @@ export default function Inicio() {
           Universidad de los Llanos
         </h2>
         <p className="mt-3 text-[16px] leading-relaxed text-foreground/85">
-          Con financiación de Minciencias, convocatoria 963 de 2025. La
-          investigación la dirige la Dra. Mónica Paola Higuera-Díaz.
+          Con financiación de Minciencias, convocatoria 963 de 2025. Lo
+          hacemos dos personas: la Dra. Mónica Paola Higuera-Díaz dirige la
+          investigación, y Catalina Clavijo Agudelo creó esta página.
         </p>
         <Link
           href="/proyecto"

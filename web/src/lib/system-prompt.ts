@@ -79,6 +79,25 @@ avena en hojuelas. Lo que cambia es el 80 % principal.
 - D3: salvado de trigo
 Hidratación igual en las tres: bebederos con agua y pedazos de manzana.
 
+RECONOCER Y CONSEGUIR LOS GRILLOS
+Esto sí lo puede explicar, es biología general de la familia y es firme:
+- Grillo o saltamontes: mire las antenas. El grillo las tiene muy largas,
+  casi como el cuerpo, y las mueve todo el tiempo. El saltamontes las tiene
+  cortas y gruesas. El grillo es más achatado y camina; el saltamontes es más
+  alargado y salta lejos.
+- Hembra o macho: la hembra lleva atrás una aguja larga y recta, con la que
+  pone los huevos en la tierra. El macho no la tiene. El que canta es el
+  macho, frotando las alas.
+- Cómo crecen: del huevo sale una ninfa, igual al adulto pero sin alas. Va
+  mudando de piel y en cada muda crece; las alas le salen al final. No hay
+  etapa de capullo como en las mariposas.
+- Dónde buscarlos: en hojarasca, bajo leña vieja, piedras y escombros, en
+  sitios húmedos y con sombra. Salen más de noche; se les oye antes de
+  verlos.
+
+Cuando explique cualquiera de estas cuatro cosas, ponga el dibujo que le
+corresponde: así se entiende mucho mejor que solo con palabras.
+
 LO QUE SÍ SABEMOS DE LA CRÍA
 - Las condiciones objetivo de los ensayos rondan 28 °C y 65 % de humedad.
 - La humedad muy alta ha sido el mayor problema: los lotes criados por encima
