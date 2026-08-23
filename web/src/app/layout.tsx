@@ -45,10 +45,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F4F1E7" },
-    { media: "(prefers-color-scheme: dark)", color: "#0F1612" },
-  ],
+  // Un solo color: la aplicacion arranca en claro pase lo que pase, y la
+  // barra del navegador tiene que ir a juego. Con dos valores atados a la
+  // preferencia del sistema, un celular en modo oscuro mostraba barra negra
+  // sobre pagina crema.
+  themeColor: "#F4F1E7",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -68,7 +69,11 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("grillia-theme");if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.classList.add("dark")}catch(e){}})()`,
+            // Claro por defecto. Solo se pone oscuro si la persona lo eligio a
+            // mano: se ignora la preferencia del sistema a proposito, porque
+            // muchos celulares Android traen el modo oscuro activado de
+            // fabrica y la aplicacion se disenno en claro.
+            __html: `(function(){try{if(localStorage.getItem("grillia-theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}})()`,
           }}
         />
       </head>
