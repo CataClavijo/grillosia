@@ -24,8 +24,19 @@ function getServerSnapshot() {
   return false;
 }
 
+/**
+ * Si la aplicacion esta en oscuro ahora mismo.
+ *
+ * Lo usa el menu para rotular la fila con lo que va a pasar al pulsar, en
+ * lugar de con el estado actual: "Modo oscuro" estando ya en oscuro se lee
+ * como una etiqueta, no como un boton.
+ */
+export function useTemaOscuro(): boolean {
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+
 export function ThemeToggle() {
-  const dark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const dark = useTemaOscuro();
 
   const toggle = useCallback(() => {
     const next = !dark;

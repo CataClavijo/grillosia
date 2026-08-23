@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SessionBlock } from "@/components/session-block";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle, useTemaOscuro } from "@/components/theme-toggle";
 
 /** El camino principal. Sin descripciones: la etiqueta ya lo dice. */
 const CAMINO = [
@@ -39,6 +39,9 @@ const SECUNDARIO = [{ href: "/proyecto", label: "Quiénes somos" }];
 
 export function SiteNav({ variant = "full" }: { variant?: "full" | "focused" }) {
   const [open, setOpen] = useState(false);
+  // Antes del return temprano de abajo: un hook no se puede llamar de forma
+  // condicional.
+  const oscuro = useTemaOscuro();
 
   // Durante un flujo guiado no mostramos nada: la flecha de atrás basta.
   if (variant === "focused") return null;
@@ -103,7 +106,9 @@ export function SiteNav({ variant = "full" }: { variant?: "full" | "focused" }) 
         <div className="border-t">
           <SessionBlock onNavigate={() => setOpen(false)} />
           <div className="flex min-h-16 items-center justify-between border-t px-4">
-            <span className="text-[16px] font-medium">Modo oscuro</span>
+            <span className="text-[16px] font-medium">
+              {oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+            </span>
             <ThemeToggle />
           </div>
         </div>
