@@ -19,7 +19,7 @@ import {
 } from "@/lib/content/enclosure";
 
 export const metadata = {
-  title: "Armar la caja — GrillIA",
+  title: "Armar la caja — GrillosIA",
   description:
     "Guía paso a paso para armar cajas de cría de grillos con materiales sencillos.",
 };

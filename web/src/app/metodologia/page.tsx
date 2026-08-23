@@ -12,7 +12,7 @@ import {
 } from "@/lib/content/methodology";
 
 export const metadata = {
-  title: "Metodología — GrillIA",
+  title: "Metodología — GrillosIA",
   description: HERO_SUBTITLE,
 };
 

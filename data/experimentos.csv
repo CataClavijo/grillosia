@@ -1,0 +1,8 @@
+id_ensayo,tipo_dieta,alimento_g_dia,temperatura,humedad_ambiental,especie,tiempo_desarrollo,proteina_harina,lipidos_harina,tasa_supervivencia,biomasa_total,longitud_final,fotoperiodo,densidad,n_grillos_inicio,fuente,observaciones
+LOTE 1,D1,0.0833,26.32,74.2,Gryllidae,12,,,3.3333,,3.54,12.0,1260.5042,60,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 2,D2,0.0526,26.4571,75.8571,Gryllidae,19,,,15.5,,5.06,12.0,555.5556,20,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 3,D3,0.1176,27.8667,67.1667,Gryllidae,34,,,100.0,,,12.0,2207.7922,170,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 4,D3,1.0769,27.9667,64.0,Gryllidae,13,,,100.0,,,12.0,,25,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 5,D1,0.7692,27.9667,64.0,Gryllidae,13,,,100.0,,,12.0,,40,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Grillos llegaron ya medianos Especie según plantilla: Acheta domesticus.
+LOTE 6,D2,0.6154,27.9667,64.0,Gryllidae,13,,,100.0,,,12.0,,52,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 7,D2,0.1667,27.9667,64.0,Gryllidae,12,,,100.0,,,12.0,,54,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Especie según plantilla: Acheta domesticus.

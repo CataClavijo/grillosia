@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/logo";
 import { SiteNav } from "@/components/site-nav";
 import { usePaso } from "@/lib/use-paso";
 
@@ -87,14 +88,9 @@ export default function Home() {
     <main className="mx-auto flex w-full max-w-[520px] flex-col gap-14 px-6 pb-16 pt-5">
       {/* Cabecera */}
       <header className="flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span
-            aria-hidden
-            className="inline-flex size-9 items-center justify-center rounded-lg bg-primary/10"
-          >
-            <span className="block size-2.5 rotate-45 bg-primary" />
-          </span>
-          <span className="text-lg font-bold tracking-tight">GrillIA</span>
+        <Link href="/" className="flex items-center gap-2">
+          <Logo size={40} className="size-10" />
+          <span className="text-lg font-bold tracking-tight">GrillosIA</span>
         </Link>
         <SiteNav />
       </header>

@@ -145,7 +145,7 @@ export default function ProjectsPage() {
                         No, dejarla
                       </AlertDialogCancel>
                       <AlertDialogAction
-                        onClick={() => remove(p.id)}
+                        onClick={() => void remove(p.id)}
                         className="h-12 bg-destructive text-base text-white hover:bg-destructive/90"
                       >
                         Sí, borrarla

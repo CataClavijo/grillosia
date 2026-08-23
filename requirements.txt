@@ -1,0 +1,30 @@
+# Dependencias del servicio de predicción de GrillosIA.
+#
+# Vive en la raíz y no en backend/ porque es también el archivo que Railway
+# lee para construir el servicio, y en esa fase todavía no tiene el resto
+# del repositorio a la mano.
+#
+# Instalación:  pip install -r requirements.txt
+
+# API
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+
+# Modelo
+scikit-learn==1.6.1
+pandas==2.2.3
+numpy==2.2.1
+joblib==1.4.2
+
+# Base de datos
+sqlalchemy==2.0.36
+alembic==1.14.1
+psycopg2-binary==2.9.10
+
+# Lectura de la plantilla de recolección (Excel)
+openpyxl==3.1.5
+
+# Pruebas
+pytest==8.3.4
+httpx==0.28.1

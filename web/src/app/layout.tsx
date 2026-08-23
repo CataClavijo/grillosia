@@ -3,7 +3,9 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 
 import "./globals.css";
 import { DemoBanner } from "@/components/demo-banner";
+import { SessionGate } from "@/components/session-gate";
 import { SiteFooter } from "@/components/site-footer";
+import { SubirConsultasLocales } from "@/components/subir-consultas-locales";
 import { SwKillBoot } from "@/components/sw-kill-boot";
 import { cn } from "@/lib/utils";
 
@@ -14,24 +16,31 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
+/** Dominio público. Sin esto las vistas previas al compartir por WhatsApp no
+ *  resuelven bien las rutas relativas. */
+const SITIO = process.env.NEXT_PUBLIC_SITE_URL ?? "https://grillosia.com";
+
 export const metadata: Metadata = {
-  title: "GrillIA — Inteligencia artificial para la cría de grillos",
+  metadataBase: new URL(SITIO),
+  title: "GrillosIA — Inteligencia artificial para la cría de grillos",
   description:
     "Proyecto de inteligencia artificial que apoya la producción de harina de grillo como alternativa a la harina de pescado importada. Convocatoria Minciencias 963 de 2025, Universidad de los Llanos.",
-  applicationName: "GrillIA",
+  applicationName: "GrillosIA",
   manifest: "/manifest.json",
   authors: [{ name: "Universidad de los Llanos" }],
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "GrillIA",
+    title: "GrillosIA",
   },
   openGraph: {
-    title: "GrillIA",
+    title: "GrillosIA",
     description:
       "Inteligencia artificial para la cría de grillos. Proyecto Minciencias y Universidad de los Llanos.",
     type: "website",
     locale: "es_CO",
+    url: SITIO,
+    siteName: "GrillosIA",
   },
 };
 
@@ -64,10 +73,13 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <SwKillBoot />
-        <DemoBanner />
-        <div className="flex-1">{children}</div>
-        <SiteFooter />
+        <SessionGate>
+          <SwKillBoot />
+          <SubirConsultasLocales />
+          <DemoBanner />
+          <div className="flex-1">{children}</div>
+          <SiteFooter />
+        </SessionGate>
       </body>
     </html>
   );

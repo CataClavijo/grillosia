@@ -2,7 +2,7 @@
 
 Importa los modelos SQLAlchemy del proyecto para que
 ``alembic revision --autogenerate`` detecte cambios de esquema, y toma la URL
-de la base de datos de la variable de entorno ``GRILLIA_DATABASE_URL``.
+de la base de datos de la variable de entorno ``GRILLOSIA_DATABASE_URL``.
 """
 
 import os
@@ -23,7 +23,7 @@ config = context.config
 # Permite que la misma migracion se ejecute en local, CI y produccion sin
 # editar el archivo .ini.
 DATABASE_URL = os.environ.get(
-    "GRILLIA_DATABASE_URL", "postgresql://localhost:5432/grillia"
+    "GRILLOSIA_DATABASE_URL", "postgresql://localhost:5432/grillia"
 )
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 

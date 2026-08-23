@@ -5,7 +5,7 @@ import { SiteNav } from "@/components/site-nav";
 import { InterestForm } from "@/components/interest-form";
 
 export const metadata = {
-  title: "Dejar sus datos — GrillIA",
+  title: "Dejar sus datos — GrillosIA",
   description:
     "Déjenos su correo y le avisamos cuando el modelo esté validado.",
 };

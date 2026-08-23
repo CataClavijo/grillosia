@@ -20,9 +20,9 @@ import {
 } from "@/lib/content/catalog";
 
 export const metadata = {
-  title: "Los grillos — GrillIA",
+  title: "Los grillos — GrillosIA",
   description:
-    "Fotografías de los grillos del proyecto GrillIA, familia Gryllidae, del Piedemonte Llanero.",
+    "Fotografías de los grillos del proyecto GrillosIA, familia Gryllidae, del Piedemonte Llanero.",
 };
 
 export default function CatalogPage() {

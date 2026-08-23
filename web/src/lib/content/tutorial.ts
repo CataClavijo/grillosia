@@ -26,9 +26,9 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     id: "bienvenida",
     number: 1,
     icon: "sparkles",
-    title: "Bienvenido a GrillIA",
+    title: "Bienvenido a GrillosIA",
     subtitle: "Su guía para criar grillos en casa",
-    body: "Hola, qué gusto tenerlo por aquí. **GrillIA** le acompaña en la cría de grillos nativos del Piedemonte Llanero, para que produzca harina rica en proteína y la use con sus tilapias, pollos o cerdos.\n\nLe vamos a mostrar cómo preparar el espacio de cría y qué comidas estamos comparando. Son grillos de su misma región, así que ya están acostumbrados al clima de por aquí.",
+    body: "Hola, qué gusto tenerlo por aquí. **GrillosIA** le acompaña en la cría de grillos nativos del Piedemonte Llanero, para que produzca harina rica en proteína y la use con sus tilapias, pollos o cerdos.\n\nLe vamos a mostrar cómo preparar el espacio de cría y qué comidas estamos comparando. Son grillos de su misma región, así que ya están acostumbrados al clima de por aquí.",
     cta_next: "Continuar",
     inlineLink: {
       label: "Ver los grillos del proyecto",

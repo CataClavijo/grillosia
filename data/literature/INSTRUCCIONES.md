@@ -1,12 +1,12 @@
 # Instrucciones para llenar el template de literatura
 
-## Para el equipo de biologia — Proyecto GrillIA
+## Para el equipo de biologia — Proyecto GrillosIA
 
 ---
 
 ## 1. Objetivo
 
-El archivo `template.csv` es la plantilla donde vamos a registrar **todos los datos experimentales** que encontremos en articulos cientificos sobre nutricion y cria de grillos. Estos datos alimentaran el modelo predictivo de GrillIA. Mientras mas datos de calidad tengamos, mejor sera el modelo.
+El archivo `template.csv` es la plantilla donde vamos a registrar **todos los datos experimentales** que encontremos en articulos cientificos sobre nutricion y cria de grillos. Estos datos alimentaran el modelo predictivo de GrillosIA. Mientras mas datos de calidad tengamos, mejor sera el modelo.
 
 ---
 

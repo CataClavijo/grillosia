@@ -15,7 +15,7 @@ export interface Reference {
   note: string;
 }
 
-export const HERO_TITLE = "Metodología del proyecto GrillIA";
+export const HERO_TITLE = "Metodología del proyecto GrillosIA";
 export const HERO_SUBTITLE =
   "Cómo estudiamos, modelamos y validamos la cría de grillos nativos del Piedemonte Llanero.";
 
@@ -25,7 +25,7 @@ export const METHODOLOGY_SECTIONS: MethodologySection[] = [
     icon: "target",
     title: "El problema que abordamos",
     body_markdown:
-      "Colombia importa cerca de **12.000 toneladas al año de harina de pescado** para alimentar tilapia, pollo y cerdo. Esta dependencia encarece los concentrados que compran los pequeños productores del país y expone al sector pecuario a la volatilidad del mercado internacional y a la presión sobre las pesquerías marinas.\n\nLa harina de grillo aparece como una alternativa concreta:\n\n- Alto contenido proteico (**meta interna 60-70% en base seca**, a confirmar por análisis bromatológico).\n- Perfil de aminoácidos y lípidos favorable para monogástricos y peces.\n- Producción posible en pequeñas unidades familiares, con baja huella de agua y suelo.\n\nGrillIA se enfoca específicamente en **grillos nativos del Piedemonte Llanero**, un rasgo diferencial frente a proyectos que trabajan con especies exóticas. La pregunta que guía la metodología es sencilla:\n\n> ¿Qué combinación de dieta y condiciones de cría le permite a un productor obtener harina con el perfil proteico que su animal necesita, manteniendo una supervivencia viable del cultivo?\n\nResponderla exige articular biología, nutrición animal y ciencia de datos en una misma plataforma, y hacerlo con un lenguaje que un productor sin formación técnica pueda entender.",
+      "Colombia importa cerca de **12.000 toneladas al año de harina de pescado** para alimentar tilapia, pollo y cerdo. Esta dependencia encarece los concentrados que compran los pequeños productores del país y expone al sector pecuario a la volatilidad del mercado internacional y a la presión sobre las pesquerías marinas.\n\nLa harina de grillo aparece como una alternativa concreta:\n\n- Alto contenido proteico (**meta interna 60-70% en base seca**, a confirmar por análisis bromatológico).\n- Perfil de aminoácidos y lípidos favorable para monogástricos y peces.\n- Producción posible en pequeñas unidades familiares, con baja huella de agua y suelo.\n\nGrillosIA se enfoca específicamente en **grillos nativos del Piedemonte Llanero**, un rasgo diferencial frente a proyectos que trabajan con especies exóticas. La pregunta que guía la metodología es sencilla:\n\n> ¿Qué combinación de dieta y condiciones de cría le permite a un productor obtener harina con el perfil proteico que su animal necesita, manteniendo una supervivencia viable del cultivo?\n\nResponderla exige articular biología, nutrición animal y ciencia de datos en una misma plataforma, y hacerlo con un lenguaje que un productor sin formación técnica pueda entender.",
   },
   {
     id: "variables",
@@ -53,14 +53,14 @@ export const METHODOLOGY_SECTIONS: MethodologySection[] = [
     icon: "flag",
     title: "Fase actual del proyecto",
     body_markdown:
-      "GrillIA se encuentra en **fase de MVP demostrativo**. Esto significa:\n\n- El modelo de IA **está en entrenamiento**. Las cifras que devuelve la plataforma son útiles para ilustrar el flujo de trabajo y validar el diseño de la interfaz, pero **no constituyen recomendaciones productivas definitivas**.\n- Los ensayos experimentales sobre las dietas D1, D2 y D3 están en curso. Los resultados bromatológicos finales alimentarán versiones posteriores del modelo.\n- Las metas de proteína por animal se presentan como **objetivos NRC**, no como resultados garantizados.\n\n## Qué ya se puede hacer\n\n- Explorar la plataforma completa: chat informativo, wizard de dietas y visualización de resultados.\n- Comprender el flujo de decisión que un productor seguirá cuando el modelo esté validado.\n- Entregar retroalimentación temprana sobre lenguaje, usabilidad y contenido.\n\n## Qué está pendiente\n\n- Cierre de los ensayos experimentales y análisis bromatológico.\n- Reentrenamiento del modelo con datos propios y validación cruzada.\n- Documentación técnica final y publicación de resultados.\n\nEvitamos anunciar fechas específicas: las publicaremos únicamente cuando los datos experimentales lo respalden.",
+      "GrillosIA se encuentra en **fase de MVP demostrativo**. Esto significa:\n\n- El modelo de IA **está en entrenamiento**. Las cifras que devuelve la plataforma son útiles para ilustrar el flujo de trabajo y validar el diseño de la interfaz, pero **no constituyen recomendaciones productivas definitivas**.\n- Los ensayos experimentales sobre las dietas D1, D2 y D3 están en curso. Los resultados bromatológicos finales alimentarán versiones posteriores del modelo.\n- Las metas de proteína por animal se presentan como **objetivos NRC**, no como resultados garantizados.\n\n## Qué ya se puede hacer\n\n- Explorar la plataforma completa: chat informativo, wizard de dietas y visualización de resultados.\n- Comprender el flujo de decisión que un productor seguirá cuando el modelo esté validado.\n- Entregar retroalimentación temprana sobre lenguaje, usabilidad y contenido.\n\n## Qué está pendiente\n\n- Cierre de los ensayos experimentales y análisis bromatológico.\n- Reentrenamiento del modelo con datos propios y validación cruzada.\n- Documentación técnica final y publicación de resultados.\n\nEvitamos anunciar fechas específicas: las publicaremos únicamente cuando los datos experimentales lo respalden.",
   },
   {
     id: "lecturas",
     icon: "book-open",
     title: "Lecturas recomendadas",
     body_markdown:
-      "La metodología de GrillIA se apoya en literatura previa sobre entomofagia, nutrición de insectos y modelos predictivos aplicados a producción animal. A continuación listamos las referencias que consideramos indispensables para quien quiera profundizar.\n\nCada referencia aporta a un aspecto distinto del proyecto:\n\n- Bases nutricionales de los grillos como fuente proteica.\n- Modelado estadístico de la composición de harina de insectos.\n- Marco global de la FAO sobre insectos comestibles y seguridad alimentaria.\n- Diseño de dietas experimentales para grillos.\n- Requerimientos nutricionales por especie animal según NRC.\n\nLe invitamos a revisar la sección de referencias que aparece a continuación. Si es evaluador o investigador y desea acceder al informe técnico ampliado, al repositorio de código o a la plantilla de datos, puede solicitarlo al equipo de la Universidad de los Llanos a través de los canales institucionales del proyecto.",
+      "La metodología de GrillosIA se apoya en literatura previa sobre entomofagia, nutrición de insectos y modelos predictivos aplicados a producción animal. A continuación listamos las referencias que consideramos indispensables para quien quiera profundizar.\n\nCada referencia aporta a un aspecto distinto del proyecto:\n\n- Bases nutricionales de los grillos como fuente proteica.\n- Modelado estadístico de la composición de harina de insectos.\n- Marco global de la FAO sobre insectos comestibles y seguridad alimentaria.\n- Diseño de dietas experimentales para grillos.\n- Requerimientos nutricionales por especie animal según NRC.\n\nLe invitamos a revisar la sección de referencias que aparece a continuación. Si es evaluador o investigador y desea acceder al informe técnico ampliado, al repositorio de código o a la plantilla de datos, puede solicitarlo al equipo de la Universidad de los Llanos a través de los canales institucionales del proyecto.",
   },
 ];
 
@@ -68,7 +68,7 @@ export const REFERENCES: Reference[] = [
   {
     citation:
       "Vargas-Serna, C. L., Ochoa-Martínez, C. I., & Vélez-Pasos, C. 2025. Neural Network for AI-Driven Prediction of Larval Protein Yield: Establishing the Protein Conversion Index (PCI) for Sustainable Insect Farming. Sustainability, 17(2): 652. https://doi.org/10.3390/su17020652",
-    note: "Antecedente directo del enfoque predictivo aplicado a cría de insectos: red neuronal con entrenamiento por regularización bayesiana, R = 0,9973. Funciona como línea base comparativa para el modelo de GrillIA.",
+    note: "Antecedente directo del enfoque predictivo aplicado a cría de insectos: red neuronal con entrenamiento por regularización bayesiana, R = 0,9973. Funciona como línea base comparativa para el modelo de GrillosIA.",
   },
   {
     citation:

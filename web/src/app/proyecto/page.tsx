@@ -14,7 +14,7 @@ import {
 import { SiteNav } from "@/components/site-nav";
 
 export const metadata = {
-  title: "Sobre el proyecto — GrillIA",
+  title: "Sobre el proyecto — GrillosIA",
   description:
     "Universidad de los Llanos · Convocatoria Minciencias 963 de 2025 · Contrato 207 de 2025.",
 };
@@ -83,7 +83,7 @@ export default function ProjectPage() {
           Un proyecto de la Universidad de los Llanos.
         </h1>
         <p className="mt-4 text-[16px] leading-relaxed text-foreground/75">
-          GrillIA es una iniciativa de investigación aplicada financiada por
+          GrillosIA es una iniciativa de investigación aplicada financiada por
           <strong> Minciencias</strong> en el marco de la Convocatoria 963 de
           2025. Estudiamos cómo optimizar la cría de grillos nativos del
           Piedemonte Llanero para producir harina proteica destinada a la

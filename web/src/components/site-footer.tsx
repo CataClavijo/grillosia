@@ -20,7 +20,7 @@ export function SiteFooter() {
     <footer className="mt-auto border-t bg-card/40">
       <div className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-2 px-6 py-6 text-center">
         <p className="text-[13px] text-muted-foreground">
-          Universidad de los Llanos · Minciencias 963 de 2025 · GrillIA 2026 ·
+          Universidad de los Llanos · Minciencias 963 de 2025 · GrillosIA 2026 ·
           En pruebas
         </p>
         <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[13px]">

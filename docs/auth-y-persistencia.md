@@ -29,10 +29,10 @@ En Google Cloud Console:
 1. **APIs & Services → Credentials → Create Credentials → OAuth Client ID**.
 2. Tipo de aplicación: **Web application**.
 3. **Authorized JavaScript origins**:
-   - `https://grilliaa.vercel.app`
+   - `https://grillosia.com`
    - `http://localhost:3000` (para desarrollo)
 4. **Authorized redirect URIs**:
-   - `https://grilliaa.vercel.app/api/auth/callback/google`
+   - `https://grillosia.com/api/auth/callback/google`
    - `http://localhost:3000/api/auth/callback/google`
 5. Guardar y copiar el **Client ID** y **Client Secret**.
 
@@ -43,7 +43,7 @@ En **Settings → Environment Variables** del proyecto:
 | Variable | Valor |
 |---|---|
 | `NEXT_PUBLIC_ENABLE_AUTH` | `"true"` |
-| `NEXTAUTH_URL` | `https://grilliaa.vercel.app` |
+| `NEXTAUTH_URL` | `https://grillosia.com` |
 | `NEXTAUTH_SECRET` | Cadena aleatoria de 32+ caracteres. Se genera con `openssl rand -base64 32`. |
 | `DATABASE_URL` | El valor copiado de Railway. |
 | `GOOGLE_CLIENT_ID` | Del paso 2. |

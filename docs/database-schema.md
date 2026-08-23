@@ -1,6 +1,6 @@
-# GrillIA — Esquema de Base de Datos
+# GrillosIA — Esquema de Base de Datos
 
-Este documento describe el esquema relacional usado por GrillIA para almacenar
+Este documento describe el esquema relacional usado por GrillosIA para almacenar
 los datos experimentales (de literatura cientifica y de ensayos de laboratorio)
 que alimentan el modelo predictivo de calidad nutricional de harina de grillo.
 
@@ -135,7 +135,7 @@ createdb grillia
 # 2. (Opcional) configurar URL si no se usa el default
 #    El default es `postgresql://localhost:5432/grillia`. Para overridear,
 #    exportar la variable de entorno antes de correr alembic:
-export GRILLIA_DATABASE_URL="postgresql://USUARIO@localhost:5432/grillia"
+export GRILLOSIA_DATABASE_URL="postgresql://USUARIO@localhost:5432/grillia"
 
 # 3. Crear entorno virtual e instalar dependencias
 cd backend

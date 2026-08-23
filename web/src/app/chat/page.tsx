@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Bot,
@@ -31,8 +31,12 @@ import {
 import {
   STARTER_QUESTIONS,
   answerFor,
+  type ContextoModelo,
   type KnowledgeLink,
 } from "@/lib/chat-knowledge";
+import { ANIMALS } from "@/lib/animals";
+import type { ContextoConsulta } from "@/lib/system-prompt";
+import { usePrediccion } from "@/lib/prediccion";
 import {
   tieneResultado,
   useProjects,
@@ -69,13 +73,86 @@ function saveDraft(messages: DisplayMessage[]) {
   }
 }
 
+/**
+ * Le pregunta al asistente. Devuelve `null` cuando no está disponible, para
+ * que quien llama caiga a las respuestas guionadas en lugar de mostrar un
+ * error.
+ */
+async function preguntarAlAsistente(
+  mensajes: { role: "user" | "assistant"; text: string }[],
+  contexto: ContextoConsulta | null,
+): Promise<{ text: string; links?: KnowledgeLink[] } | null> {
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ mensajes, contexto }),
+    });
+    if (!res.ok) return null;
+
+    const datos = (await res.json()) as { disponible?: boolean; text?: string };
+    if (!datos.disponible || !datos.text?.trim()) return null;
+
+    return { text: datos.text.trim() };
+  } catch {
+    return null;
+  }
+}
+
 export default function ChatPage() {
-  const { active, activeId, appendMessage, clearChat } = useProjects();
+  const { active, activeId, appendMessage, clearChat, loading } = useProjects();
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const [ephemeral, setEphemeral] = useState<DisplayMessage[]>(() => loadDraft());
   const [confirmarBorrado, setConfirmarBorrado] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  // El asistente conversa sobre un resultado, así que pide al modelo el mismo
+  // resultado que el productor está viendo. Si no hay modelo detrás, la
+  // predicción queda en "sin servicio" y el chat sigue funcionando con las
+  // respuestas guionadas.
+  const seleccion = active?.selection;
+  const prediccion = usePrediccion(
+    seleccion?.temp !== undefined && seleccion?.humidity !== undefined
+      ? { temperatura: seleccion.temp, humedad: seleccion.humidity }
+      : null,
+  );
+
+  const contextoConsulta: ContextoConsulta | null = useMemo(() => {
+    if (!seleccion) return null;
+    const animal = ANIMALS.find((a) => a.id === seleccion.animalId);
+    const etapa = animal?.stages.find((e) => e.id === seleccion.stageId);
+    if (!animal || !etapa) return null;
+    if (seleccion.temp === undefined || seleccion.humidity === undefined) {
+      return null;
+    }
+    return {
+      animal: animal.name,
+      etapa: etapa.name,
+      proteinaMin: etapa.proteinMin,
+      proteinaMax: etapa.proteinMax,
+      temperatura: seleccion.temp,
+      humedad: seleccion.humidity,
+    };
+  }, [seleccion]);
+
+  const contextoModelo: ContextoModelo | null = useMemo(() => {
+    if (prediccion.estado !== "listo" || !seleccion) return null;
+    const animal = ANIMALS.find((a) => a.id === seleccion.animalId);
+    const etapa = animal?.stages.find((e) => e.id === seleccion.stageId);
+    if (!animal || !etapa) return null;
+
+    return {
+      animal: animal.name,
+      etapa: etapa.name,
+      proteinaMin: etapa.proteinMin,
+      proteinaMax: etapa.proteinMax,
+      temperatura: seleccion.temp as number,
+      humedad: seleccion.humidity as number,
+      resultados: prediccion.resultados,
+      datosSimulados: prediccion.modelo.datos_simulados,
+    };
+  }, [prediccion, seleccion]);
 
   const messages: DisplayMessage[] = active
     ? active.chat
@@ -105,7 +182,7 @@ export default function ChatPage() {
 
     setInput("");
     if (activeId) {
-      appendMessage(activeId, { role: "user", text: clean });
+      void appendMessage(activeId, { role: "user", text: clean });
     } else {
       setEphemeral((prev) => [
         ...prev,
@@ -114,13 +191,23 @@ export default function ChatPage() {
     }
     setThinking(true);
 
-    window.setTimeout(() => {
-      const ans = answerFor(clean);
+    void (async () => {
+      const historia = [
+        ...messages.map((m) => ({ role: m.role, text: m.text })),
+        { role: "user" as const, text: clean },
+      ];
+
+      // El asistente primero. Si no está disponible —sin llave, sin señal,
+      // OpenAI caído— se contesta con las respuestas guionadas, que es como
+      // funcionaba antes. El productor nunca se queda sin respuesta.
+      let respuesta = await preguntarAlAsistente(historia, contextoConsulta);
+      if (!respuesta) respuesta = answerFor(clean, contextoModelo);
+
       if (activeId) {
-        appendMessage(activeId, {
+        await appendMessage(activeId, {
           role: "assistant",
-          text: ans.text,
-          links: ans.links,
+          text: respuesta.text,
+          links: respuesta.links,
         });
       } else {
         setEphemeral((prev) => [
@@ -128,13 +215,13 @@ export default function ChatPage() {
           {
             id: `local_${Date.now()}_a`,
             role: "assistant",
-            text: ans.text,
-            links: ans.links,
+            text: respuesta.text,
+            links: respuesta.links,
           },
         ]);
       }
       setThinking(false);
-    }, 450);
+    })();
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -147,6 +234,28 @@ export default function ChatPage() {
   // El asistente conversa sobre un resultado. Sin una consulta terminada no
   // hay de qué hablar, así que en vez de un chat vacío mostramos el camino.
   const consultaLista = active ? tieneResultado(active) : false;
+
+  // Mientras llegan las consultas de la cuenta no sabemos todavía si hay una
+  // terminada; anunciar "primero haga su consulta" a alguien que sí la tiene
+  // sería un parpadeo desconcertante.
+  if (loading) {
+    return (
+      <main className="mx-auto flex min-h-[calc(100dvh-42px)] w-full max-w-[520px] flex-col px-6 pb-16 pt-5">
+        <header className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-[15px] font-semibold text-foreground/85 transition-colors hover:text-foreground"
+          >
+            <ChevronLeft className="size-5" />
+            Inicio
+          </Link>
+        </header>
+        <p className="mt-14 text-[16px] text-muted-foreground">
+          Cargando sus consultas...
+        </p>
+      </main>
+    );
+  }
 
   if (!consultaLista) {
     return (
@@ -304,7 +413,7 @@ export default function ChatPage() {
               No, dejarla
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => active && clearChat(active.id)}
+              onClick={() => active && void clearChat(active.id)}
               className="h-12 bg-destructive text-base text-white hover:bg-destructive/90"
             >
               Sí, borrarla

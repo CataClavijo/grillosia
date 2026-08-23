@@ -1,14 +1,14 @@
-# Guía de uso — GrillIA (versión en pruebas)
+# Guía de uso — GrillosIA (versión en pruebas)
 
 ## Qué es
 
-GrillIA es una aplicación web pensada para acompañarlo a usted, productor del campo, en la cría de grillos nativos del Piedemonte Llanero. La idea es que esos grillos se conviertan en una harina rica en proteína que sirva para alimentar sus tilapias, pollos o cerdos, sin depender de harinas importadas.
+GrillosIA es una aplicación web pensada para acompañarlo a usted, productor del campo, en la cría de grillos nativos del Piedemonte Llanero. La idea es que esos grillos se conviertan en una harina rica en proteína que sirva para alimentar sus tilapias, pollos o cerdos, sin depender de harinas importadas.
 
 Esta versión está en pruebas: sirve para que usted conozca la herramienta y nos ayude a mejorarla. Todavía no le damos una única respuesta, le mostramos comparaciones.
 
 ## Cómo entrar
 
-Abra **grilliaa.vercel.app** en el navegador de su celular. No necesita instalar nada ni crear una cuenta.
+Abra **grillosia.com** en el navegador de su celular. No necesita instalar nada ni crear una cuenta.
 
 Si quiere tenerla como una aplicación más en su teléfono, abra el menú del navegador y toque "Agregar a pantalla de inicio". Le queda el icono junto a sus otras apps.
 
@@ -26,7 +26,7 @@ Debajo de ese botón hay un enlace, **"Ver mis consultas guardadas"**, para volv
 
 Son tres pantallas cortas:
 
-1. **Bienvenido a GrillIA** — qué es esto y qué gana usted. Desde aquí puede ver los grillos del proyecto.
+1. **Bienvenido a GrillosIA** — qué es esto y qué gana usted. Desde aquí puede ver los grillos del proyecto.
 2. **Arme el espacio** — qué materiales necesita para la caja de cría. Desde aquí puede ver la guía completa de armado.
 3. **Las tres comidas** — cuáles estamos comparando y con qué base.
 
@@ -87,7 +87,7 @@ Si el chat no sabe algo, se lo dice honestamente y le ofrece los temas que sí m
 
 ## Preguntas frecuentes
 
-**¿Tengo que pagar por usar GrillIA?**
+**¿Tengo que pagar por usar GrillosIA?**
 No. Es gratis.
 
 **¿Necesito crear una cuenta?**
@@ -116,7 +116,7 @@ En el pie de la aplicación hay un enlace que dice **Restablecer**. Tóquelo una
 
 ## Aviso de versión en pruebas
 
-GrillIA está en pruebas. El modelo de inteligencia artificial todavía está aprendiendo, por eso hoy le sugerimos comparaciones, pero no le damos recomendaciones definitivas ni fechas exactas de cosecha. Antes de usar la harina para alimentar a sus animales, siempre conviene confirmar la calidad con un análisis de laboratorio.
+GrillosIA está en pruebas. El modelo de inteligencia artificial todavía está aprendiendo, por eso hoy le sugerimos comparaciones, pero no le damos recomendaciones definitivas ni fechas exactas de cosecha. Antes de usar la harina para alimentar a sus animales, siempre conviene confirmar la calidad con un análisis de laboratorio.
 
 Gracias por acompañarnos a construir esta herramienta.
 

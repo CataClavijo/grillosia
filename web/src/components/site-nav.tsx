@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { SessionBlock } from "@/components/session-block";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 /** El camino principal. Sin descripciones: la etiqueta ya lo dice. */
@@ -57,7 +58,7 @@ export function SiteNav({ variant = "full" }: { variant?: "full" | "focused" }) 
 
       <SheetContent side="right" className="w-full gap-0 sm:max-w-[340px]">
         <SheetHeader>
-          <SheetTitle className="text-base">GrillIA</SheetTitle>
+          <SheetTitle className="text-base">GrillosIA</SheetTitle>
           <SheetDescription className="sr-only">
             Navegación principal
           </SheetDescription>
@@ -99,9 +100,12 @@ export function SiteNav({ variant = "full" }: { variant?: "full" | "focused" }) 
           </ul>
         </nav>
 
-        <div className="flex min-h-16 items-center justify-between border-t px-4">
-          <span className="text-[16px] font-medium">Modo oscuro</span>
-          <ThemeToggle />
+        <div className="border-t">
+          <SessionBlock onNavigate={() => setOpen(false)} />
+          <div className="flex min-h-16 items-center justify-between border-t px-4">
+            <span className="text-[16px] font-medium">Modo oscuro</span>
+            <ThemeToggle />
+          </div>
         </div>
       </SheetContent>
     </Sheet>

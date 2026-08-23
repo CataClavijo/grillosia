@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /reset
 
-Sitemap: https://grilliaa.vercel.app/sitemap.xml
+Sitemap: https://grillosia.com/sitemap.xml

@@ -10,6 +10,7 @@ import { StepFooter } from "@/components/step-footer";
 import { ANIMALS, DIETS, HYDRATION_NOTE } from "@/lib/animals";
 import { useProjects } from "@/lib/projects-store";
 import { marcarPaso } from "@/lib/journey";
+import { usePrediccion } from "@/lib/prediccion";
 import {
   clearWizardDraft,
   loadWizardDraft,
@@ -125,7 +126,7 @@ export default function WizardPage() {
   const stage = animal?.stages.find((s) => s.id === stageId);
 
   const persist = (patch: Parameters<typeof updateSelection>[1]) => {
-    if (activeId) updateSelection(activeId, patch);
+    if (activeId) void updateSelection(activeId, patch);
   };
 
   // Guardado silencioso al llegar al resultado: no le pedimos al productor
@@ -135,15 +136,28 @@ export default function WizardPage() {
     if (!animal || !stage || temp === null || humidity === null) return;
     guardado.current = true;
     marcarPaso("listo");
-    if (activeId) {
-      updateSelection(activeId, { animalId, stageId, temp, humidity });
-      return;
-    }
-    const nombre = `${animal.name} · ${stage.name} · ${new Date().toLocaleDateString("es-CO", { day: "numeric", month: "short" })}`;
-    const id = create(nombre);
-    setActive(id);
-    updateSelection(id, { animalId, stageId, temp, humidity });
-    clearWizardDraft();
+
+    const seleccion = { animalId, stageId, temp, humidity };
+
+    void (async () => {
+      try {
+        if (activeId) {
+          await updateSelection(activeId, seleccion);
+          return;
+        }
+        const fecha = new Date().toLocaleDateString("es-CO", {
+          day: "numeric",
+          month: "short",
+        });
+        // create deja la consulta abierta, no hace falta setActive aparte.
+        await create(`${animal.name} · ${stage.name} · ${fecha}`, seleccion);
+        clearWizardDraft();
+      } catch {
+        // Si el guardado falló (sin señal, por ejemplo), permitimos que el
+        // siguiente render lo reintente en lugar de perder la consulta.
+        guardado.current = false;
+      }
+    })();
   }, [
     step,
     animal,
@@ -154,7 +168,6 @@ export default function WizardPage() {
     animalId,
     stageId,
     create,
-    setActive,
     updateSelection,
   ]);
 
@@ -450,6 +463,8 @@ function Resultado({
   onCambiar: () => void;
   onNueva: () => void;
 }) {
+  const prediccion = usePrediccion({ temperatura: temp, humedad: humidity });
+
   return (
     <section className="reveal" style={d(0)}>
       <h1 className="text-[1.85rem] font-bold leading-tight tracking-[-0.02em]">
@@ -492,41 +507,87 @@ function Resultado({
         </p>
       </div>
 
-      {/* La comparación: estructura lista, números pendientes del modelo */}
+      {/* La comparación. Los huecos se llenan si hay modelo entrenado
+          detrás; si no, siguen en "por confirmar". */}
       <p className="mt-8 text-[15px] font-semibold text-foreground/85">
         Las tres comidas que estamos comparando
       </p>
 
       <ul className="mt-3 flex flex-col gap-3">
-        {DIETS.map((diet) => (
-          <li key={diet.id} className="rounded-2xl border bg-card p-4">
-            <div className="flex items-baseline justify-between gap-3">
-              <p className="text-[17px] font-bold">{diet.name}</p>
-              <span className="shrink-0 rounded-md bg-muted px-2 py-0.5 text-[12px] font-bold tabular-nums text-muted-foreground">
-                {diet.id}
-              </span>
-            </div>
-            <p className="mt-1.5 text-[14px] leading-relaxed text-foreground/85">
-              {diet.composition}
-            </p>
+        {DIETS.map((diet) => {
+          const p =
+            prediccion.estado === "listo"
+              ? prediccion.resultados.find((r) => r.tipo_dieta === diet.id)
+              : undefined;
 
-            <div className="mt-3 flex items-center justify-between gap-3 border-t pt-3">
-              <span className="text-[13px] font-medium text-muted-foreground">
-                Proteína que daría la harina
-              </span>
-              <span className="text-[15px] font-bold text-muted-foreground">
-                Por confirmar
-              </span>
-            </div>
-          </li>
-        ))}
+          return (
+            <li key={diet.id} className="rounded-2xl border bg-card p-4">
+              <div className="flex items-baseline justify-between gap-3">
+                <p className="text-[17px] font-bold">{diet.name}</p>
+                <span className="shrink-0 rounded-md bg-muted px-2 py-0.5 text-[12px] font-bold tabular-nums text-muted-foreground">
+                  {diet.id}
+                </span>
+              </div>
+              <p className="mt-1.5 text-[14px] leading-relaxed text-foreground/85">
+                {diet.composition}
+              </p>
+
+              <div className="mt-3 flex items-center justify-between gap-3 border-t pt-3">
+                <span className="text-[13px] font-medium text-muted-foreground">
+                  Proteína que daría la harina
+                </span>
+                {p ? (
+                  <span className="text-[15px] font-bold tabular-nums text-primary">
+                    {p.proteina_harina} %
+                    <span className="ml-1 font-medium text-muted-foreground">
+                      ± {p.margen_proteina}
+                    </span>
+                  </span>
+                ) : (
+                  <span className="text-[15px] font-bold text-muted-foreground">
+                    {prediccion.estado === "cargando"
+                      ? "Calculando…"
+                      : "Por confirmar"}
+                  </span>
+                )}
+              </div>
+
+              {p?.tasa_supervivencia != null && (
+                <div className="mt-2 flex items-center justify-between gap-3">
+                  <span className="text-[13px] font-medium text-muted-foreground">
+                    Grillos que llegarían vivos
+                  </span>
+                  <span className="text-[14px] font-semibold tabular-nums text-foreground/85">
+                    {p.tasa_supervivencia} %
+                  </span>
+                </div>
+              )}
+            </li>
+          );
+        })}
       </ul>
 
       <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
         {HYDRATION_NOTE}
       </p>
 
+      {/* Un modelo entrenado con datos inventados no puede presentarse como
+          si no lo fuera, por muy bien que se vean los números. */}
+      {prediccion.estado === "listo" && prediccion.modelo.datos_simulados && (
+        <div className="mt-6 rounded-2xl border-2 border-demo-border bg-demo-bg p-4">
+          <p className="text-[14px] font-bold text-demo-foreground">
+            Estos números son de prueba
+          </p>
+          <p className="mt-1.5 text-[13.5px] leading-relaxed text-demo-foreground">
+            Salen de un modelo entrenado con datos simulados, mientras llegan
+            los análisis de laboratorio. Sirven para comprobar que el sistema
+            funciona; no para decidir qué darles de comer a sus grillos.
+          </p>
+        </div>
+      )}
+
       {/* Por qué no hay números todavía */}
+      {prediccion.estado !== "listo" && (
       <div className="mt-6 rounded-2xl border border-demo-border bg-demo-bg p-4">
         <p className="text-[14px] font-bold text-demo-foreground">
           ¿Por qué todavía no le decimos cuál es la mejor?
@@ -539,6 +600,7 @@ function Resultado({
           {animalName.toLowerCase()} necesita.
         </p>
       </div>
+      )}
 
       <p className="mt-4 text-[13px] text-muted-foreground">
         Guardado en Mis consultas.

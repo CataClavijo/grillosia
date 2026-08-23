@@ -2,7 +2,7 @@ export const dynamic = "force-static";
 export const revalidate = false;
 
 export const metadata = {
-  title: "Restableciendo GrillIA",
+  title: "Restableciendo GrillosIA",
   robots: { index: false, follow: false, nocache: true },
 };
 
@@ -54,7 +54,7 @@ export default function ResetPage() {
       }}
     >
       <h1 style={{ fontSize: "1.5rem", fontWeight: 700, margin: 0 }}>
-        Restableciendo GrillIA
+        Restableciendo GrillosIA
       </h1>
       <p style={{ maxWidth: "24rem", lineHeight: 1.6, opacity: 0.8, margin: 0 }}>
         Estamos limpiando los datos que su navegador tenía guardados. Esto

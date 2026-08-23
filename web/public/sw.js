@@ -1,4 +1,4 @@
-// KILL-SWITCH PERMANENTE — GRILLIA_SW_KILL_VERSION=4
+// KILL-SWITCH PERMANENTE — GRILLOSIA_SW_KILL_VERSION=4
 //
 // NO agregar lógica aquí. NO agregar fetch handler. NUNCA.
 //

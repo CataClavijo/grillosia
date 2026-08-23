@@ -1,8 +1,8 @@
-# Manual técnico — GrillIA (web/)
+# Manual técnico — GrillosIA (web/)
 
 ## Stack
 
-La aplicación web de GrillIA está construida sobre un stack moderno, ligero y orientado a rendimiento en dispositivos Android de gama media:
+La aplicación web de GrillosIA está construida sobre un stack moderno, ligero y orientado a rendimiento en dispositivos Android de gama media:
 
 - **Next.js 16** con el App Router y **Turbopack** como bundler de desarrollo.
 - **React 19** con Server Components por defecto.

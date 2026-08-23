@@ -1,8 +1,18 @@
 /**
- * Respuestas predefinidas del asistente informativo.
- * NO usa LLM: hace matching por palabras clave y devuelve texto guionado.
- * Es deliberadamente conservador: nunca da una recomendación definitiva.
+ * Respuestas del asistente informativo.
+ *
+ * NO usa LLM. Trabaja en dos capas:
+ *
+ *  1. Si la pregunta es sobre los números del resultado y hay una predicción
+ *     del modelo a la mano, se contesta con esos números. Nunca inventados:
+ *     salen del modelo entrenado, con su margen de duda y con el aviso de si
+ *     el modelo se entrenó con datos simulados.
+ *  2. Si no, se busca por palabras clave entre las respuestas guionadas.
+ *
+ * En las dos capas el tono es el mismo: se sugiere, no se receta.
  */
+
+import { DIETS } from "@/lib/animals";
 
 export interface KnowledgeLink {
   label: string;
@@ -37,7 +47,7 @@ const LINKS = {
   enclosure: { label: "Ver la guía de las cajas", href: "/como-armar" },
   wizard: { label: "Ir a la consulta paso a paso", href: "/wizard" },
   methodology: { label: "Ver metodología (técnica)", href: "/metodologia" },
-  project: { label: "Sobre GrillIA", href: "/proyecto" },
+  project: { label: "Sobre GrillosIA", href: "/proyecto" },
   projects: { label: "Mis consultas guardadas", href: "/proyectos" },
 } as const;
 
@@ -52,7 +62,7 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "de que se trata",
     ],
     answer: {
-      text: "GrillIA es un proyecto de la **Universidad de los Llanos** que estudia cómo criar mejor **grillos nativos del Piedemonte Llanero** para hacer harina rica en proteína. Esa harina se estudia para dársela a tilapia, pollo o cerdo, y así reemplazar la harina de pescado importada. El proyecto tiene apoyo de **Minciencias (Convocatoria 963 de 2025)**.",
+      text: "GrillosIA es un proyecto de la **Universidad de los Llanos** que estudia cómo criar mejor **grillos nativos del Piedemonte Llanero** para hacer harina rica en proteína. Esa harina se estudia para dársela a tilapia, pollo o cerdo, y así reemplazar la harina de pescado importada. El proyecto tiene apoyo de **Minciencias (Convocatoria 963 de 2025)**.",
       links: [LINKS.project, LINKS.tutorial],
     },
   },
@@ -347,6 +357,170 @@ const FALLBACK: KnowledgeAnswer = {
   ],
 };
 
+// ─────────────────────── Respuestas con números del modelo ───────────────────
+
+/** Una fila del resultado del modelo, tal como la devuelve la API. */
+export interface ResultadoModelo {
+  tipo_dieta: string;
+  proteina_harina: number;
+  lipidos_harina: number;
+  margen_proteina: number;
+  tasa_supervivencia: number | null;
+}
+
+/**
+ * Lo que el asistente sabe del resultado que el productor está mirando.
+ *
+ * Va aparte de la pregunta porque la misma pregunta se contesta distinto
+ * según haya o no predicción: sin ella, el asistente dice que todavía no hay
+ * números, en lugar de callarlo.
+ */
+export interface ContextoModelo {
+  animal: string;
+  etapa: string;
+  proteinaMin: number;
+  proteinaMax: number;
+  temperatura: number;
+  humedad: number;
+  resultados: ResultadoModelo[];
+  /** Si el modelo se entrenó con datos simulados, hay que decirlo. Siempre. */
+  datosSimulados: boolean;
+}
+
+const NOMBRE_DIETA = new Map<string, string>(
+  DIETS.map((d) => [d.id, d.name]),
+);
+
+function nombreDieta(id: string): string {
+  return NOMBRE_DIETA.get(id) ?? id;
+}
+
+/**
+ * El aviso que acompaña a cualquier número mientras el modelo esté entrenado
+ * con datos simulados. No es opcional: un número que se ve bien no debe poder
+ * pasar por real.
+ */
+const AVISO_SIMULADO =
+  "\n\nOjo: estos números salen de un modelo entrenado con datos de prueba, mientras llegan los análisis del laboratorio. Sirven para ver cómo va a funcionar el sistema, no para decidir todavía.";
+
+/** Cuánto se acerca una dieta a lo que el animal necesita. */
+function distanciaAlObjetivo(
+  proteina: number,
+  min: number,
+  max: number,
+): number {
+  if (proteina < min) return min - proteina;
+  if (proteina > max) return proteina - max;
+  return 0;
+}
+
+function listaDeDietas(ctx: ContextoModelo): string {
+  return ctx.resultados
+    .map(
+      (r) =>
+        `- **${nombreDieta(r.tipo_dieta)}** (${r.tipo_dieta}): ${r.proteina_harina} % de proteína, más o menos ${r.margen_proteina} puntos arriba o abajo.`,
+    )
+    .join("\n");
+}
+
+/**
+ * Contesta con los números del modelo cuando la pregunta va de eso.
+ *
+ * Devuelve `null` si la pregunta no es de este terreno, para que el llamador
+ * siga con las respuestas guionadas.
+ */
+function respuestaConNumeros(
+  q: string,
+  ctx: ContextoModelo,
+): KnowledgeAnswer | null {
+  const hay = (...palabras: string[]) =>
+    palabras.some((w) => matchesAsWord(q, normalize(w)));
+
+  const sobreDietas = hay(
+    "proteina",
+    "cual",
+    "mejor",
+    "comparar",
+    "comparacion",
+    "dieta",
+    "comida",
+    "d1",
+    "d2",
+    "d3",
+    "bore",
+    "boton de oro",
+    "salvado",
+  );
+  const sobreGrasa = hay("grasa", "lipidos", "lipido", "gordo");
+  const sobreVivos = hay(
+    "supervivencia",
+    "vivos",
+    "mueren",
+    "muertos",
+    "mortalidad",
+  );
+
+  if (!sobreDietas && !sobreGrasa && !sobreVivos) return null;
+  if (ctx.resultados.length === 0) return null;
+
+  const cola = ctx.datosSimulados ? AVISO_SIMULADO : "";
+
+  if (sobreVivos && !sobreDietas) {
+    const conDato = ctx.resultados.filter((r) => r.tasa_supervivencia !== null);
+    if (conDato.length === 0) return null;
+    const filas = conDato
+      .map(
+        (r) =>
+          `- **${nombreDieta(r.tipo_dieta)}**: llegarían vivos alrededor del ${r.tasa_supervivencia} %.`,
+      )
+      .join("\n");
+    return {
+      text: `A ${ctx.temperatura} °C y ${ctx.humedad} % de humedad, el modelo espera esto:\n\n${filas}\n\nLa humedad muy alta es lo que más nos ha costado en los ensayos: los lotes que criamos por encima del 74 % casi no llegaron vivos.${cola}`,
+      links: [LINKS.enclosure],
+    };
+  }
+
+  if (sobreGrasa && !sobreDietas) {
+    const filas = ctx.resultados
+      .map(
+        (r) =>
+          `- **${nombreDieta(r.tipo_dieta)}**: ${r.lipidos_harina} % de grasa.`,
+      )
+      .join("\n");
+    return {
+      text: `La grasa de la harina que esperaría el modelo con sus condiciones:\n\n${filas}\n\nLa grasa sube cuando la proteína baja, así que las dos van juntas. Para su ${ctx.animal.toLowerCase()} lo que manda es la proteína.${cola}`,
+      links: [LINKS.methodology],
+    };
+  }
+
+  // Pregunta sobre las dietas y la proteína: la más frecuente.
+  const ordenadas = [...ctx.resultados].sort(
+    (a, b) =>
+      distanciaAlObjetivo(a.proteina_harina, ctx.proteinaMin, ctx.proteinaMax) -
+      distanciaAlObjetivo(b.proteina_harina, ctx.proteinaMin, ctx.proteinaMax),
+  );
+  const cerca = ordenadas[0];
+  const distancia = distanciaAlObjetivo(
+    cerca.proteina_harina,
+    ctx.proteinaMin,
+    ctx.proteinaMax,
+  );
+
+  const encabezado = `Su ${ctx.animal.toLowerCase()} en etapa de ${ctx.etapa.toLowerCase()} necesita entre ${ctx.proteinaMin} y ${ctx.proteinaMax} % de proteína. Con ${ctx.temperatura} °C y ${ctx.humedad} % de humedad, el modelo espera:\n\n${listaDeDietas(ctx)}`;
+
+  const cierre =
+    distancia === 0
+      ? `\n\nDe las tres, **${nombreDieta(cerca.tipo_dieta)}** es la que le sugerimos mirar primero: cae dentro de lo que su animal necesita.`
+      : cerca.proteina_harina > ctx.proteinaMax
+        ? `\n\nLas tres quedan por encima de lo que su animal necesita, y la más cercana es **${nombreDieta(cerca.tipo_dieta)}**. Pasarse no se desperdicia: se mezcla la harina de grillo con salvado o maíz para bajarla al punto.`
+        : `\n\nNinguna de las tres alcanza sola lo que su animal necesita; la más cercana es **${nombreDieta(cerca.tipo_dieta)}**, a ${distancia.toFixed(1)} puntos. Habría que complementar con otra fuente de proteína.`;
+
+  return {
+    text: `${encabezado}${cierre}${cola}`,
+    links: [LINKS.methodology, LINKS.wizard],
+  };
+}
+
 function normalize(text: string): string {
   return text
     .toLowerCase()
@@ -366,9 +540,19 @@ function matchesAsWord(q: string, kw: string): boolean {
   return re.test(q);
 }
 
-export function answerFor(question: string): KnowledgeAnswer {
+export function answerFor(
+  question: string,
+  contexto?: ContextoModelo | null,
+): KnowledgeAnswer {
   const q = normalize(question);
   if (!q) return FALLBACK;
+
+  // Los números del modelo mandan sobre el texto guionado: si el productor
+  // pregunta por su resultado, hay que contestarle con su resultado.
+  if (contexto) {
+    const conNumeros = respuestaConNumeros(q, contexto);
+    if (conNumeros) return conNumeros;
+  }
 
   let bestEntry: KnowledgeEntry | null = null;
   let bestScore = 0;

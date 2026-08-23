@@ -48,3 +48,7 @@ next-env.d.ts
 data/literature/*.csv
 !data/literature/template.csv
 data/experimental/
+
+# Modelo entrenado: se regenera con backend/scripts/entrenar.py
+backend/ml/modelo.joblib
+backend/ml/modelo.json

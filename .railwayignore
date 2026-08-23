@@ -1,0 +1,7 @@
+# Lo que no necesita el servicio de predicción. La aplicación web se despliega
+# aparte, en Vercel.
+web/
+notebooks/
+docs/
+data/literature/
+.git/
