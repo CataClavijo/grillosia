@@ -94,7 +94,7 @@ export default function HowToBuildPage() {
                   <p className="text-[15px] leading-relaxed text-foreground/85">
                     {s.body}
                   </p>
-                  {s.figura && <Figura id={s.figura} />}
+                  {s.figura && <Figura id={s.figura} prioridad={s.number === 1} />}
                   {s.tip && (
                     <p className="text-[14px] italic leading-relaxed text-muted-foreground">
                       {s.tip}

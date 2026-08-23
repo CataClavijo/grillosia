@@ -13,7 +13,11 @@
 import { NextResponse } from "next/server";
 
 import { identificar, permitirPregunta } from "@/lib/rate-limit";
-import { SYSTEM_PROMPT, bloqueDeContexto } from "@/lib/system-prompt";
+import {
+  SYSTEM_PROMPT,
+  bloqueDeContexto,
+  bloqueDeFiguras,
+} from "@/lib/system-prompt";
 import type { ContextoConsulta } from "@/lib/system-prompt";
 
 /** Barato y suficiente: acierta la herramienta y respeta el tono. */
@@ -271,9 +275,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Sin mensajes." }, { status: 400 });
   }
 
-  const sistema = cuerpo.contexto
-    ? `${SYSTEM_PROMPT}\n\n${bloqueDeContexto(cuerpo.contexto)}`
-    : SYSTEM_PROMPT;
+  const partes = [SYSTEM_PROMPT, bloqueDeFiguras()];
+  if (cuerpo.contexto) partes.push(bloqueDeContexto(cuerpo.contexto));
+  const sistema = partes.join("\n\n");
 
   // Solo las últimas vueltas: la conversación de un productor es corta y así
   // no se dispara el costo por conversación larga.

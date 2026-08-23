@@ -43,6 +43,7 @@ import {
   type ChatMessage as StoreMessage,
 } from "@/lib/projects-store";
 import { inlineMarkdown } from "@/lib/markdown";
+import { textoConFiguras } from "@/lib/figuras-en-texto";
 import { StepFooter } from "@/components/step-footer";
 
 interface DisplayMessage {
@@ -444,7 +445,11 @@ function MessageBubble({ message }: { message: DisplayMessage }) {
             : "bg-card text-foreground"
         }`}
       >
-        <p className="whitespace-pre-wrap">{inlineMarkdown(message.text)}</p>
+        {isUser ? (
+          <p className="whitespace-pre-wrap">{inlineMarkdown(message.text)}</p>
+        ) : (
+          textoConFiguras(message.text)
+        )}
         {!isUser && message.links && message.links.length > 0 && (
           <ul className="mt-3 flex flex-col gap-2">
             {message.links.map((l) => {

@@ -10,6 +10,8 @@
  * que pregunta al modelo predictivo de verdad.
  */
 
+import { FIGURAS } from "@/components/figura";
+
 export const SYSTEM_PROMPT = `Eres el asistente de GrillosIA, un proyecto de la Universidad de los Llanos
 (Convocatoria Minciencias 963 de 2025) que estudia la cría de grillos para
 producir harina de proteína.
@@ -90,6 +92,28 @@ LO QUE SÍ SABEMOS DE LA CRÍA
 SI NO SABE
 Dígalo. Ofrezca que dejen sus datos en la página de contacto para que alguien
 del equipo les escriba. Es mejor eso que una respuesta inventada.`;
+
+/**
+ * Listado de figuras para el asistente.
+ *
+ * Se arma desde el mismo catalogo que usa la guia, asi no hay dos listas que
+ * se puedan desincronizar: si se agrega una figura, el asistente se entera.
+ */
+export function bloqueDeFiguras(): string {
+  const lineas = FIGURAS.map((f) => `- [figura:${f.id}] — ${f.cuando}`).join("\n");
+  return `DIBUJOS QUE PUEDE MOSTRAR
+Tiene estos dibujos de la guia. Para mostrar uno, escriba su marcador solo, en
+una linea aparte, dentro de la respuesta. El productor vera el dibujo ahi.
+
+${lineas}
+
+Reglas:
+- Un dibujo por respuesta como maximo, y solo si de verdad ayuda a entender.
+- Use los identificadores tal cual estan escritos arriba. No invente otros: si
+  escribe uno que no existe, no se pinta nada.
+- No anuncie el dibujo ("mire esta imagen"). Ponga el marcador y siga.
+- Para una pregunta que no sea de armado o manejo de la caja, no ponga ninguno.`;
+}
 
 /** Contexto de la consulta que el productor tiene abierta. */
 export interface ContextoConsulta {

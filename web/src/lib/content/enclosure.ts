@@ -76,6 +76,7 @@ export const MATERIALS: Material[] = [
 export const ENCLOSURE_STEPS: EnclosureStep[] = [
   {
     number: 1,
+    figura: "caja",
     title: "Preparar y limpiar la caja",
     body: "Lave la caja plástica con agua y jabón suave, sin cloro fuerte. Séquela muy bien al sol antes de usarla. Revise que no tenga huecos ni grietas por donde se puedan escapar los grillos.",
     tip: "Evite productos con olor fuerte como límpido puro. A los grillos les afectan los químicos.",
@@ -89,6 +90,7 @@ export const ENCLOSURE_STEPS: EnclosureStep[] = [
   },
   {
     number: 3,
+    figura: "sustrato",
     title: "Poner la cama o sustrato",
     body: "En el fondo de la caja, ponga una capa delgada de tierra seca, aserrín limpio o simplemente papel periódico. Esto ayuda a mantener la caja seca y facilita la limpieza. No use materiales húmedos ni con olor a moho.",
   },
@@ -101,11 +103,13 @@ export const ENCLOSURE_STEPS: EnclosureStep[] = [
   },
   {
     number: 5,
+    figura: "agua",
     title: "Colocar alimento y agua",
     body: "En una esquina, ponga una tapa con el alimento (la dieta que esté estudiando) y otra tapa con pedacitos de manzana fresca para la hidratación. Si usa bebedero, ponga algodón o piedritas para que no se ahoguen. Cambie el agua y la manzana cada dos días.",
   },
   {
     number: 6,
+    figura: "clima",
     title: "Controlar temperatura y humedad",
     body: "Ponga el termómetro-higrómetro adentro, en un lugar visible. Las condiciones objetivo son entre 24 y 34 grados centígrados de temperatura, y entre 50 y 80 por ciento de humedad. Ubique la caja en un lugar tranquilo, sin sol directo ni corrientes de aire frío.",
     tip: "Si hace mucho frío en la noche, cubra parte de la caja con un trapo.",
