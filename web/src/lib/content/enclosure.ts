@@ -13,6 +13,8 @@ export interface EnclosureStep {
   title: string;
   body: string;
   tip?: string;
+  /** Identificador de la figura que acompaña al paso, si tiene. */
+  figura?: string;
 }
 
 export const ENCLOSURE_INTRO =
@@ -80,6 +82,7 @@ export const ENCLOSURE_STEPS: EnclosureStep[] = [
   },
   {
     number: 2,
+    figura: "ventilacion",
     title: "Abrir ventilación con malla",
     body: "Con las tijeras o el cuchillo, recorte un cuadrado grande en la tapa de la caja, dejando un marco de unos 4 centímetros alrededor. Pegue la malla mosquitero por dentro de la tapa, bien estirada, cubriendo todo el hueco. Puede sujetarla con silicona o cinta resistente.",
     tip: "Sin buena ventilación se acumula humedad y los grillos se enferman.",
@@ -91,6 +94,7 @@ export const ENCLOSURE_STEPS: EnclosureStep[] = [
   },
   {
     number: 4,
+    figura: "refugios",
     title: "Armar los refugios con hueveras",
     body: "Coloque las hueveras de cartón paradas o cruzadas dentro de la caja, formando como pequeños túneles. Los grillos se esconden y trepan por ahí, y así aprovecha mejor el espacio. Deje libre una esquina para el alimento y el agua.",
     tip: "Entre más refugios, menos se pelean y mejor crecen.",

@@ -129,6 +129,30 @@ async function consultarModelo(
     const datos = await res.json();
     const simulados: boolean = datos.modelo?.datos_simulados ?? false;
 
+    // Con datos simulados el asistente NO recibe las cifras.
+    //
+    // No es lo mismo que en la pantalla de resultado, donde el numero aparece
+    // rotulado y dentro de un recuadro que avisa. En una conversacion, "D1:
+    // 57.6 %" se lee como una medicion, y ese decimal no existe: sale de una
+    // formula, no de un laboratorio. Ademas, sin orden entre las comidas esas
+    // cifras no sostienen ninguna decision, asi que no le sirven a nadie.
+    //
+    // Se le devuelve el estado, no los datos: asi no hay nada que citar.
+    if (simulados) {
+      return JSON.stringify({
+        disponible: false,
+        datos_simulados: true,
+        motivo:
+          "El modelo todavia esta entrenado con datos simulados, asi que no " +
+          "hay cifras que dar. Digale que las de proteina y lipidos de la " +
+          "harina llegan cuando el laboratorio termine los analisis.",
+        puede_hablar_de:
+          "Si puede darle los requerimientos de proteina de su animal, que " +
+          "salen de las tablas NRC y si son firmes, y ayudarle con el manejo " +
+          "de la cria: cajas, humedad, temperatura, alimentacion, mortalidad.",
+      });
+    }
+
     interface Fila {
       tipo_dieta: string;
       proteina_harina: number;
