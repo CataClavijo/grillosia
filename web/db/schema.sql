@@ -113,3 +113,20 @@ DROP TRIGGER IF EXISTS projects_touch_updated_at ON projects;
 CREATE TRIGGER projects_touch_updated_at
   BEFORE UPDATE ON projects
   FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
+
+-- ─────────────────────────── Limite de uso ───────────────────────────
+--
+-- El asistente cuesta plata en cada pregunta y su endpoint esta abierto a
+-- internet. Sin un tope, cualquiera puede scriptearlo y vaciar la cuenta.
+--
+-- El contador vive en la base y no en memoria porque en Vercel cada peticion
+-- puede caer en una instancia distinta, y un contador por instancia no seria
+-- un tope real.
+CREATE TABLE IF NOT EXISTS rate_limit (
+  clave        TEXT PRIMARY KEY,
+  conteo       INTEGER     NOT NULL DEFAULT 0,
+  ventana_abre TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Para poder barrer las ventanas viejas sin recorrer toda la tabla.
+CREATE INDEX IF NOT EXISTS rate_limit_ventana_idx ON rate_limit (ventana_abre);

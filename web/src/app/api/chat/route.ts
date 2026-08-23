@@ -12,6 +12,7 @@
 
 import { NextResponse } from "next/server";
 
+import { identificar, permitirPregunta } from "@/lib/rate-limit";
 import { SYSTEM_PROMPT, bloqueDeContexto } from "@/lib/system-prompt";
 import type { ContextoConsulta } from "@/lib/system-prompt";
 
@@ -208,6 +209,9 @@ async function preguntarAOpenAI(mensajes: unknown[], llave: string) {
       model: MODELO,
       messages: mensajes,
       tools: HERRAMIENTAS,
+      // Las respuestas son de cinco lineas; este techo solo evita que una
+      // llamada suelta se dispare, no recorta respuestas normales.
+      max_completion_tokens: 700,
     }),
   });
 
@@ -222,6 +226,12 @@ export async function POST(request: Request) {
   if (!llave) {
     // Sin llave la aplicación no se cae: el chat sigue con las respuestas
     // guionadas, que es como funcionaba antes.
+    return NextResponse.json({ disponible: false }, { status: 200 });
+  }
+
+  // Antes de gastar: si paso el tope, se devuelve "no disponible" y el cliente
+  // cae a las respuestas guionadas. Nadie ve un error.
+  if (!(await permitirPregunta(identificar(request)))) {
     return NextResponse.json({ disponible: false }, { status: 200 });
   }
 
