@@ -6,6 +6,7 @@ objetivo es producir harina de grillo con alto contenido de proteína para
 reemplazar las importaciones de harina de pescado en Colombia.
 
 > Aplicación web: **https://grillosia.com**
+> Servicio de predicción: **https://grillosia-api-production.up.railway.app**
 
 - **Financiación**: Minciencias, Convocatoria 963 de 2025 (Contrato 207-2025).
 - **Ejecutor**: Universidad de los Llanos.
