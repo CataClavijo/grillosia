@@ -7,7 +7,6 @@ import {
 } from "next/font/google";
 
 import "./globals.css";
-import { DemoBanner } from "@/components/demo-banner";
 import { SessionGate } from "@/components/session-gate";
 import { SiteFooter } from "@/components/site-footer";
 import { SubirConsultasLocales } from "@/components/subir-consultas-locales";
@@ -125,7 +124,6 @@ export default function RootLayout({
         <SessionGate>
           <SwKillBoot />
           <SubirConsultasLocales />
-          <DemoBanner />
           <div className="flex-1">{children}</div>
           <SiteFooter />
         </SessionGate>
