@@ -78,15 +78,36 @@ export function ManosLibres({
   const dictado = useDictado(alOir);
   const { empezar, parar, estado: estadoDictado, parcial } = dictado;
 
+  /**
+   * Vuelve a escuchar en cuanto termina de hablar.
+   *
+   * La pausa es corta a proposito: con casi un segundo, la conversacion se
+   * sentia como un intercambio de telegramas. Lo justo para que no pise el
+   * final de su propia frase.
+   */
   useEffect(() => {
     if (!abierto || fase !== "hablando") return;
     const t = window.setTimeout(() => {
       if (!vivo.current) return;
       setFase("escuchando");
       empezar();
-    }, 900);
+    }, 400);
     return () => window.clearTimeout(t);
   }, [abierto, fase, respuesta, empezar]);
+
+  /**
+   * Interrumpir: tocar mientras habla lo calla y pasa a escuchar.
+   *
+   * Sin esto hay que aguantar la respuesta entera aunque uno ya sepa que
+   * quiere preguntar. Se hace con un toque y no oyendo mientras habla,
+   * porque el microfono abierto durante la reproduccion se oye a si mismo.
+   */
+  const interrumpir = useCallback(() => {
+    if (fase !== "hablando") return;
+    callar();
+    setFase("escuchando");
+    empezar();
+  }, [fase, callar, empezar]);
 
   useEffect(() => {
     if (abierto) {
@@ -173,10 +194,26 @@ export function ManosLibres({
               </figcaption>
             </figure>
           ) : (
-            <OrbeVoz fase={fase} className="shrink-0" />
+            <button
+              type="button"
+              onClick={interrumpir}
+              aria-label={
+                fase === "hablando"
+                  ? "Interrumpir y hablar"
+                  : "Estado de la conversación"
+              }
+              className="shrink-0 rounded-full"
+            >
+              <OrbeVoz fase={fase} />
+            </button>
           )}
 
           <div className="flex flex-col items-center gap-3">
+            {fase === "hablando" && (
+              <span className="text-[13px] text-[#8E9683]">
+                Toque el círculo para interrumpir
+              </span>
+            )}
             <span className="rotulo flex items-center gap-2 text-[#A8C08F]">
               {figura && fase === "hablando" && (
                 <span className="size-2 animate-pulse rounded-full bg-[#F4F1E7]" />

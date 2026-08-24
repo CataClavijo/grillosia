@@ -65,16 +65,22 @@ export function useDictado(alTerminar: (texto: string) => void) {
   /** Evita enviar dos veces si `onend` llega despues de un envio manual. */
   const enviado = useRef(false);
   /**
-   * Corte por silencio.
+   * Corte por silencio, adaptativo.
    *
-   * El navegador decide solo cuando cerrar, y tarda distinto cada vez: a
-   * veces corta enseguida y a veces se queda esperando varios segundos con
-   * la frase ya dicha en pantalla. Eso se siente como que la aplicacion se
-   * colgo. Este temporizador cierra a los 1,4 s sin oir nada nuevo, que es
-   * una pausa natural al final de una frase.
+   * El corte no puede ser fijo. Quien empieza a hablar suele dudar —"cada
+   * cuanto... eh... le cambio el agua"— y una espera corta lo corta en mitad
+   * de la idea. Cuando ya lleva una frase armada, en cambio, esperar tanto se
+   * siente lento.
+   *
+   * Asi que se espera mas al principio y menos cuando ya hay algo dicho. El
+   * reloj se reinicia con cada palabra nueva, de modo que solo corre durante
+   * silencio de verdad.
    */
   const silencio = useRef<number | null>(null);
-  const SILENCIO_MS = 1400;
+  const ESPERA_INICIAL_MS = 2600;
+  const ESPERA_CORRIENTE_MS = 1700;
+  /** Cuando el navegador cierra solo pero seguimos queriendo escuchar. */
+  const queremosOir = useRef(false);
 
   useEffect(() => {
     setEstado(hayDictado() ? "inactivo" : "no-disponible");
@@ -83,6 +89,7 @@ export function useDictado(alTerminar: (texto: string) => void) {
   const parar = useCallback(() => {
     // Pulsar el boton significa "ya termine de hablar", no "cancela": el
     // texto que alcanzo a oirse se envia igual.
+    queremosOir.current = false;
     rec.current?.stop();
   }, []);
 
@@ -99,7 +106,9 @@ export function useDictado(alTerminar: (texto: string) => void) {
     enviado.current = false;
     setParcial("");
     r.lang = "es-CO";
-    r.continuous = false;
+    // Modo continuo: sin esto el navegador cierra por su cuenta en cuanto
+    // cree que termino un enunciado, y corta a quien encadena frases.
+    r.continuous = true;
     r.interimResults = true;
 
     r.onresult = (e: unknown) => {
@@ -119,18 +128,35 @@ export function useDictado(alTerminar: (texto: string) => void) {
       // Cada vez que llega algo nuevo se reinicia la cuenta del silencio.
       if (silencio.current) window.clearTimeout(silencio.current);
       if (visible) {
+        const palabras = visible.split(/\s+/).filter(Boolean).length;
+        const espera =
+          palabras < 4 ? ESPERA_INICIAL_MS : ESPERA_CORRIENTE_MS;
         silencio.current = window.setTimeout(() => {
+          queremosOir.current = false;
           rec.current?.stop();
-        }, SILENCIO_MS);
+        }, espera);
       }
     };
 
     r.onerror = () => {
       if (silencio.current) window.clearTimeout(silencio.current);
+      queremosOir.current = false;
       setEstado("inactivo");
     };
     r.onend = () => {
+      // El navegador cierra por su cuenta tras un rato de silencio absoluto.
+      // Si nadie llego a decir nada y seguimos queriendo oir, se reabre: de
+      // lo contrario el modo manos libres se queda mudo sin avisar.
+      if (queremosOir.current && !final.current.trim() && !ultimo.current) {
+        try {
+          r.start();
+          return;
+        } catch {
+          /* si no deja reabrir, se sigue al cierre normal */
+        }
+      }
       if (silencio.current) window.clearTimeout(silencio.current);
+      queremosOir.current = false;
       setEstado("inactivo");
       // Se toma lo definitivo si existe; si no, lo ultimo que se oyo.
       const texto = (final.current.trim() || ultimo.current).trim();
@@ -142,9 +168,11 @@ export function useDictado(alTerminar: (texto: string) => void) {
     };
 
     try {
+      queremosOir.current = true;
       r.start();
       setEstado("escuchando");
     } catch {
+      queremosOir.current = false;
       setEstado("inactivo");
     }
   }, [alTerminar]);
@@ -152,6 +180,7 @@ export function useDictado(alTerminar: (texto: string) => void) {
   useEffect(
     () => () => {
       if (silencio.current) window.clearTimeout(silencio.current);
+      queremosOir.current = false;
       rec.current?.stop();
     },
     [],
