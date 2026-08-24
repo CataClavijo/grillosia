@@ -171,7 +171,9 @@ export function ManosLibres({
       }
 
       setDicho(texto);
-      setRespuesta("");
+      // La respuesta anterior NO se borra: se queda hasta que llegue la nueva.
+      // Borrarla aqui dejaba la pantalla en blanco justo cuando uno se habia
+      // quedado a medias de leerla, y ya no habia forma de volver a verla.
       setFigura(undefined);
       setFase("pensando");
 
@@ -283,11 +285,31 @@ export function ManosLibres({
   const rotulo =
     fase === "escuchando"
       ? estadoDictado === "escuchando"
-        ? "Le escuchamos"
+        ? parcial
+          ? "Le escuchamos"
+          : respuesta
+            ? "Respuesta anterior"
+            : "Le escuchamos"
         : "Toque para hablar"
       : fase === "pensando"
         ? "Pensando"
         : "Respondiendo";
+
+  /**
+   * ¿Se resalta la linea que suena, o se deja la respuesta quieta para releer?
+   *
+   * Solo se sigue mientras esta hablando. Despues el resalte sobra: la persona
+   * no va detras de la voz, va leyendo a su ritmo.
+   */
+  const siguiendo = fase === "hablando";
+
+  /**
+   * Se muestra la respuesta —la de ahora o la anterior— siempre que haya una y
+   * la persona no este hablando. Mientras habla mandan sus palabras, que le
+   * confirman que se le oyo bien.
+   */
+  const mostrarLineas =
+    lineas.length > 0 && (siguiendo || (fase === "escuchando" && !parcial));
 
   const texto =
     fase === "escuchando"
@@ -394,18 +416,22 @@ export function ManosLibres({
                 figura ? "h-[9rem]" : "h-[30svh] min-h-[9rem]"
               }`}
             >
-              {fase === "hablando" && lineas.length > 0 ? (
+              {mostrarLineas ? (
                 <div className="flex flex-col gap-2 py-1">
                   {lineas.map((linea, i) => (
                     <p
                       key={i}
-                      data-suena={i === activa ? "si" : "no"}
+                      data-suena={siguiendo && i === activa ? "si" : "no"}
                       className={`text-center text-[17px] leading-relaxed transition-colors duration-300 ${
-                        i === activa
-                          ? "text-[#F4F1E7]"
-                          : i < activa
-                            ? "text-[#7C8472]"
-                            : "text-[#5E6555]"
+                        !siguiendo
+                          ? // Ya no suena: se puede releer entera, sin que una
+                            // linea resalte por encima de las demas.
+                            "text-[#B9B5A6]"
+                          : i === activa
+                            ? "text-[#F4F1E7]"
+                            : i < activa
+                              ? "text-[#7C8472]"
+                              : "text-[#5E6555]"
                       }`}
                     >
                       {linea}
