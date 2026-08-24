@@ -5,6 +5,7 @@ import Image from "next/image";
 import { X } from "lucide-react";
 
 import { FIGURAS } from "@/components/figura";
+import { OrbeVoz } from "@/components/orbe-voz";
 import { useDictado, useLectura } from "@/lib/voz";
 import { cn } from "@/lib/utils";
 
@@ -52,7 +53,7 @@ export function ManosLibres({
   const [figura, setFigura] = useState<(typeof FIGURAS)[number] | undefined>();
   const vivo = useRef(false);
 
-  const { leer, callar } = useLectura();
+  const { leer, callar, desbloquear } = useLectura();
 
   const alOir = useCallback(
     async (texto: string) => {
@@ -90,6 +91,9 @@ export function ManosLibres({
   useEffect(() => {
     if (abierto) {
       vivo.current = true;
+      // El toque que abrio esta capa es el unico momento en que el navegador
+      // movil deja desbloquear el audio. Despues ya es tarde.
+      desbloquear();
       setDicho("");
       setRespuesta("");
       setFigura(undefined);
@@ -169,41 +173,7 @@ export function ManosLibres({
               </figcaption>
             </figure>
           ) : (
-            <span className="relative flex size-44 shrink-0 items-center justify-center">
-              {/* Ondas que salen del centro mientras escucha: dicen "le estoy
-                  oyendo" sin depender de que el texto cambie. */}
-              {fase === "escuchando" && (
-                <>
-                  <span className="orbe-onda absolute inset-0 rounded-full border border-[#A8C08F]/50" />
-                  <span className="orbe-onda-2 absolute inset-0 rounded-full border border-[#A8C08F]/50" />
-                </>
-              )}
-
-              {/* Anillo que gira mientras piensa. */}
-              {fase === "pensando" && (
-                <span className="orbe-piensa absolute inset-0 rounded-full border-2 border-white/15 border-t-[#A8C08F]" />
-              )}
-
-              <span
-                className={cn(
-                  "flex size-32 items-center justify-center rounded-full border-2 transition-colors duration-500",
-                  fase === "escuchando" &&
-                    "orbe-escucha border-[#A8C08F]/70 bg-[#A8C08F]/12",
-                  fase === "pensando" && "border-white/20 bg-white/5",
-                  fase === "hablando" &&
-                    "orbe-habla border-[#F4F1E7]/60 bg-[#F4F1E7]/12",
-                )}
-              >
-                <span
-                  className={cn(
-                    "size-16 rounded-full transition-colors duration-500",
-                    fase === "escuchando" && "bg-[#A8C08F]/35",
-                    fase === "pensando" && "bg-white/20",
-                    fase === "hablando" && "bg-[#F4F1E7]/30",
-                  )}
-                />
-              </span>
-            </span>
+            <OrbeVoz fase={fase} className="shrink-0" />
           )}
 
           <div className="flex flex-col items-center gap-3">

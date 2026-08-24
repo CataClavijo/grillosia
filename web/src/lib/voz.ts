@@ -172,15 +172,58 @@ function paraLeer(texto: string): string {
 
 export type EstadoLectura = "quieto" | "cargando" | "hablando";
 
+/**
+ * Un WAV de silencio, minimo, en linea.
+ *
+ * Los navegadores moviles solo dejan sonar audio si la orden sale
+ * DIRECTAMENTE de un toque. En el modo manos libres el audio llega segundos
+ * despues, cuando contesta el modelo, y para entonces el toque ya no cuenta:
+ * la respuesta se quedaba muda.
+ *
+ * La forma de resolverlo es desbloquear un elemento de audio durante el toque
+ * —reproduciendo este silencio— y reutilizar SIEMPRE ese mismo elemento.
+ * Una vez desbloqueado, ya acepta reproducir sin gesto.
+ */
+const SILENCIO = "data:audio/wav;base64,UklGRmQGAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
 /** Lee un texto en voz alta. */
 export function useLectura() {
   const [estado, setEstado] = useState<EstadoLectura>("quieto");
   const [leyendo, setLeyendo] = useState<string | null>(null);
+  /** Elemento unico, desbloqueado por un toque y reutilizado siempre. */
   const audio = useRef<HTMLAudioElement | null>(null);
+  const desbloqueado = useRef(false);
+
+  /**
+   * Desbloquea el audio. Hay que llamarlo DENTRO del manejador del toque,
+   * no despues: fuera del gesto el navegador lo rechaza igual.
+   */
+  const desbloquear = useCallback(() => {
+    if (desbloqueado.current) return;
+    try {
+      const a = audio.current ?? new Audio();
+      a.src = SILENCIO;
+      a.volume = 0;
+      void a.play().then(() => {
+        a.pause();
+        a.volume = 1;
+        desbloqueado.current = true;
+      });
+      audio.current = a;
+
+      // La voz del sistema pide el mismo permiso, por si toca usarla.
+      if (typeof window !== "undefined" && window.speechSynthesis) {
+        const u = new SpeechSynthesisUtterance("");
+        u.volume = 0;
+        window.speechSynthesis.speak(u);
+      }
+    } catch {
+      /* si no se puede, se intentara igual al reproducir */
+    }
+  }, []);
 
   const callar = useCallback(() => {
     audio.current?.pause();
-    audio.current = null;
     if (typeof window !== "undefined") window.speechSynthesis?.cancel();
     setEstado("quieto");
     setLeyendo(null);
@@ -226,15 +269,25 @@ export function useLectura() {
         }
 
         const blob = await res.blob();
-        const a = new Audio(URL.createObjectURL(blob));
+        // Reutiliza el elemento desbloqueado; crear uno nuevo vuelve a
+        // toparse con el bloqueo del navegador.
+        const a = audio.current ?? new Audio();
         audio.current = a;
+        a.src = URL.createObjectURL(blob);
         a.onended = () => {
           setEstado("quieto");
           setLeyendo(null);
         };
         a.onerror = () => conElNavegador(limpio, id);
         setEstado("hablando");
-        await a.play();
+        try {
+          await a.play();
+        } catch (e) {
+          // Bloqueo de reproduccion: se avisa y se intenta con la voz del
+          // sistema, que a veces si pasa.
+          console.warn("[voz] el navegador bloqueo la reproduccion:", e);
+          conElNavegador(limpio, id);
+        }
       } catch {
         conElNavegador(limpio, id);
       }
@@ -244,5 +297,5 @@ export function useLectura() {
 
   useEffect(() => callar, [callar]);
 
-  return { estado, leyendo, leer, callar };
+  return { estado, leyendo, leer, callar, desbloquear };
 }

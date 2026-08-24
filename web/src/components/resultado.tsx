@@ -1,6 +1,7 @@
 "use client";
 
 import { DIETS, HYDRATION_NOTE } from "@/lib/animals";
+import { Analizando } from "@/components/analizando";
 import { usePrediccion } from "@/lib/prediccion";
 
 /**
@@ -84,6 +85,10 @@ export function Resultado({
         </p>
         <p className="rotulo mt-2 text-muted-foreground">Tablas NRC</p>
       </div>
+
+      {prediccion.estado === "cargando" && (
+        <Analizando etiqueta="El modelo está evaluando sus condiciones" />
+      )}
 
       {/* La base comun se dice UNA vez, no tres. */}
       <p className="mt-6 text-[15px] leading-relaxed text-foreground/85">

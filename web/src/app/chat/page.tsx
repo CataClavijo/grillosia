@@ -130,7 +130,7 @@ export default function ChatPage() {
 
   // Voz. El dictado envia en cuanto la persona termina de hablar: pedirle
   // que despues pulse "enviar" pierde justo a quien la funcion sirve.
-  const { estado: lectura, leyendo, leer, callar } = useLectura();
+  const { estado: lectura, leyendo, leer, callar, desbloquear } = useLectura();
   const dictado = useDictado((texto) => send(texto));
   const [manosLibres, setManosLibres] = useState(false);
 
@@ -383,6 +383,22 @@ export default function ChatPage() {
           <ChevronLeft className="size-5" />
         </Link>
         <h1 className="text-[17px] font-bold">Asistente</h1>
+        <div className="flex items-center gap-1">
+          {dictado.estado !== "no-disponible" && (
+            <button
+              type="button"
+              onClick={() => {
+                // Dentro del gesto, no despues: es el unico momento en que el
+                // navegador movil deja desbloquear la reproduccion del audio.
+                desbloquear();
+                setManosLibres(true);
+              }}
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-primary px-4 text-[14.5px] font-bold text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              <AudioLines className="size-4" />
+              Hablar
+            </button>
+          )}
         {hayMensajes && active ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -407,9 +423,10 @@ export default function ChatPage() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        ) : (
-          <span className="size-11" aria-hidden />
-        )}
+          ) : (
+            <span className="size-11" aria-hidden />
+          )}
+        </div>
       </header>
 
       {/* Hilo */}
@@ -470,18 +487,6 @@ export default function ChatPage() {
             className="h-12 flex-1 bg-transparent text-[16px] outline-none placeholder:text-muted-foreground"
             autoComplete="off"
           />
-          {dictado.estado !== "no-disponible" && (
-            <Button
-              type="button"
-              size="icon"
-              variant="ghost"
-              aria-label="Conversar sin escribir"
-              onClick={() => setManosLibres(true)}
-              className="size-12 shrink-0 rounded-full"
-            >
-              <AudioLines className="size-5" />
-            </Button>
-          )}
           {dictado.estado !== "no-disponible" && (
             <Button
               type="button"
