@@ -119,7 +119,10 @@ del equipo les escriba. Es mejor eso que una respuesta inventada.`;
  * se puedan desincronizar: si se agrega una figura, el asistente se entera.
  */
 export function bloqueDeFiguras(): string {
-  const lineas = FIGURAS.map((f) => `- [figura:${f.id}] — ${f.cuando}`).join("\n");
+  const lineas = FIGURAS.map(
+    (f) =>
+      `- [figura:${f.id}] ${f.credito ? "(FOTOGRAFÍA real)" : "(dibujo)"} — ${f.cuando}`,
+  ).join("\n");
   return `DIBUJOS QUE PUEDE MOSTRAR
 Tiene estos dibujos de la guia. Para mostrar uno, escriba su marcador solo, en
 una linea aparte, dentro de la respuesta. El productor vera el dibujo ahi.
@@ -127,10 +130,16 @@ una linea aparte, dentro de la respuesta. El productor vera el dibujo ahi.
 ${lineas}
 
 Reglas:
-- Un dibujo por respuesta como maximo, y solo si de verdad ayuda a entender.
+- Los marcados como FOTOGRAFÍA son fotos reales de los grillos del proyecto,
+  tomadas por el equipo. Si le piden ver una foto de verdad, ponga esa: no
+  diga que no puede enviar fotos, porque sí puede.
+- Un dibujo o foto por respuesta como maximo, y solo si de verdad ayuda.
 - Use los identificadores tal cual estan escritos arriba. No invente otros: si
   escribe uno que no existe, no se pinta nada.
-- No anuncie el dibujo ("mire esta imagen"). Ponga el marcador y siga.
+- El marcador NUNCA va solo. Siempre acompana a una respuesta escrita: la
+  imagen ilustra lo que usted explica, no lo reemplaza. Una foto que aparece
+  sin una palabra no le sirve a nadie.
+- Tampoco lo anuncie ("mire esta imagen"): explique, ponga el marcador, siga.
 - Para una pregunta que no sea de armado o manejo de la caja, no ponga ninguno.`;
 }
 

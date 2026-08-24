@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { CSSProperties } from "react";
@@ -317,33 +318,40 @@ function StepAnimal({
 }) {
   return (
     <section className="reveal" style={d(0)}>
-      <h1 className="text-[1.85rem] font-bold leading-tight tracking-[-0.02em]">
+      <h1 className="font-display text-[1.7rem] font-extrabold leading-[1.12] tracking-[-0.03em]">
         ¿A qué animal le va a dar la harina?
       </h1>
-      <ul className="mt-7 flex flex-col gap-3">
+      <ul className="mt-6 flex flex-col gap-2.5">
         {ANIMALS.map((a) => {
-          const Icon = ANIMAL_ICONS[a.id] ?? Fish;
           const min = a.stages[a.stages.length - 1].proteinMin;
           const max = a.stages[0].proteinMax;
-          const selected = value === a.id;
+          const sel = value === a.id;
           return (
             <li key={a.id}>
               <button
                 type="button"
                 onClick={() => onSelect(a.id)}
-                aria-pressed={selected}
-                className={`flex min-h-20 w-full items-center gap-4 rounded-2xl border p-4 text-left transition-colors ${
-                  selected
-                    ? "border-primary bg-primary/10"
+                aria-pressed={sel}
+                className={`flex min-h-[74px] w-full items-center gap-3 rounded-2xl border-2 px-3 py-2.5 text-left transition-colors ${
+                  sel
+                    ? "border-primary bg-primary/8"
                     : "border-border/70 bg-card hover:border-primary/40"
                 }`}
               >
-                <span className="flex size-16 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Icon className="size-8" strokeWidth={1.5} />
-                </span>
+                {/* La misma lamina grabada de la portada, partida en tres */}
+                <Image
+                  src={`/animales/${a.id}.webp`}
+                  alt=""
+                  width={280}
+                  height={200}
+                  aria-hidden
+                  className="lamina size-14 shrink-0 object-contain"
+                />
                 <span className="flex-1">
-                  <span className="block text-[20px] font-bold">{a.name}</span>
-                  <span className="mt-0.5 block text-[14px] font-medium text-muted-foreground">
+                  <span className="block font-display text-[18px] font-bold tracking-[-0.02em]">
+                    {a.name}
+                  </span>
+                  <span className="rotulo mt-0.5 block text-muted-foreground">
                     {min} a {max} % de proteína
                   </span>
                 </span>
@@ -367,10 +375,10 @@ function StepStage({
 }) {
   return (
     <section className="reveal" style={d(0)}>
-      <h1 className="text-[1.85rem] font-bold leading-tight tracking-[-0.02em]">
+      <h1 className="font-display text-[1.7rem] font-extrabold leading-[1.12] tracking-[-0.03em]">
         ¿En qué etapa está su {animal.name.toLowerCase()}?
       </h1>
-      <ul className="mt-7 flex flex-col gap-3">
+      <ul className="mt-6 flex flex-col gap-2.5">
         {animal.stages.map((s) => {
           const selected = value === s.id;
           return (
@@ -379,20 +387,22 @@ function StepStage({
                 type="button"
                 onClick={() => onSelect(s.id)}
                 aria-pressed={selected}
-                className={`flex min-h-18 w-full items-center justify-between gap-3 rounded-2xl border p-4 text-left transition-colors ${
+                className={`flex min-h-[68px] w-full items-center justify-between gap-3 rounded-2xl border-2 px-4 py-3 text-left transition-colors ${
                   selected
-                    ? "border-primary bg-primary/10"
+                    ? "border-primary bg-primary/8"
                     : "border-border/70 bg-card hover:border-primary/40"
                 }`}
               >
                 <span className="flex-1">
-                  <span className="block text-[18px] font-bold">{s.name}</span>
-                  <span className="mt-0.5 block text-[14px] text-muted-foreground">
+                  <span className="block font-display text-[17px] font-bold tracking-[-0.02em]">
+                    {s.name}
+                  </span>
+                  <span className="mt-0.5 block text-[13.5px] leading-snug text-muted-foreground">
                     {s.detail}
                   </span>
                 </span>
-                <span className="text-[14px] font-bold tabular-nums text-primary">
-                  {s.proteinMin} a {s.proteinMax} %
+                <span className="rotulo shrink-0 text-primary">
+                  {s.proteinMin}–{s.proteinMax} %
                 </span>
               </button>
             </li>
@@ -420,13 +430,13 @@ function StepClimate({
 }) {
   return (
     <section className="reveal" style={d(0)}>
-      <h1 className="text-[1.7rem] font-bold leading-tight tracking-[-0.015em]">
+      <h1 className="font-display text-[1.7rem] font-extrabold leading-[1.12] tracking-[-0.03em]">
         {title}
       </h1>
-      <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+      <p className="mt-2 text-[14.5px] leading-relaxed text-muted-foreground">
         {help}
       </p>
-      <div className="mt-7 grid grid-cols-2 gap-3">
+      <div className="mt-6 grid grid-cols-3 gap-2.5">
         {options.map((opt) => {
           const selected = value === opt.value;
           return (
@@ -435,19 +445,19 @@ function StepClimate({
               type="button"
               onClick={() => onSelect(opt.value)}
               aria-pressed={selected}
-              className={`flex min-h-22 flex-col items-center justify-center gap-1 rounded-2xl border py-4 transition-colors ${
+              className={`flex min-h-[76px] flex-col items-center justify-center gap-0.5 rounded-2xl border-2 py-3 transition-colors ${
                 selected
-                  ? "border-primary bg-primary/10"
+                  ? "border-primary bg-primary/8"
                   : "border-border/70 bg-card hover:border-primary/40"
               }`}
             >
-              <span className="text-[1.7rem] font-extrabold leading-none tabular-nums">
+              <span className="font-display text-[1.6rem] font-extrabold leading-none tabular-nums tracking-[-0.03em]">
                 {opt.value}
-                <span className="ml-0.5 text-[1rem] font-bold text-muted-foreground">
+                <span className="ml-0.5 text-[0.9rem] font-bold text-muted-foreground">
                   {unit}
                 </span>
               </span>
-              <span className="text-[13px] font-medium text-muted-foreground">
+              <span className="text-[12px] font-medium leading-tight text-muted-foreground">
                 {opt.label}
               </span>
             </button>

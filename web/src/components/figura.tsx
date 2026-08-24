@@ -45,6 +45,16 @@ export const LAMINAS_GENERICAS = new Set([
 
 export interface DefinicionFigura {
   id: string;
+  /**
+   * Ruta propia. Solo la usan las fotografias; las ilustraciones se resuelven
+   * por convencion desde /figuras/<id>.webp.
+   */
+  src?: string;
+  /**
+   * Autor de la fotografia. Cuando existe se muestra SIEMPRE bajo la imagen:
+   * es una atribucion, no un adorno, y omitirla no es una opcion.
+   */
+  credito?: string;
   /** Pie de foto, corto. */
   titulo: string;
   /** Descripcion para quien no ve la imagen. */
@@ -86,6 +96,24 @@ export const FIGURAS: DefinicionFigura[] = [
     alt: "Dentro de la caja, un plato bajito con alimento y una tapa plástica con agua y un pedazo de manzana.",
     cuando:
       "Cuando pregunten por el agua, los bebederos, la manzana, cómo darles de comer o si se ahogan.",
+  },
+  {
+    id: "grillo-real",
+    src: "/grillos/grillo-2.webp",
+    credito: "Sebastián Berrío",
+    titulo: "Un grillo del proyecto, visto de lado",
+    alt: "Grillo de la familia Gryllidae visto de lado, de color café oscuro, con las antenas largas hacia adelante.",
+    cuando:
+      "Cuando pregunten cómo se ven los grillos del proyecto, qué aspecto tienen o pidan una foto de verdad en vez de un dibujo.",
+  },
+  {
+    id: "grillo-antenas",
+    src: "/grillos/grillo-4.webp",
+    credito: "Catalina Clavijo-Agudelo",
+    titulo: "Las antenas pueden ser más largas que el cuerpo",
+    alt: "Grillo de la familia Gryllidae visto desde arriba sobre fondo blanco, con las antenas muy largas extendidas.",
+    cuando:
+      "Cuando pregunten por las antenas, o cuando una foto real ayude más que el dibujo comparativo para reconocer un grillo.",
   },
   {
     id: "donde-buscar",
@@ -153,13 +181,23 @@ export function Figura({
       {/* Claro en los dos temas: la ilustracion trae fondo blanco. En oscuro
           se le baja el brillo, porque un recuadro blanco a pantalla completa
           de noche deslumbra. */}
-      <div className="overflow-hidden rounded-2xl border border-[#E2DDCB] bg-[#FBF9F2] dark:border-[#2C3A2E]">
+      <div
+        className={cn(
+          "overflow-hidden rounded-2xl border",
+          figura.credito
+            ? "border-border"
+            : "border-[#E2DDCB] bg-[#FBF9F2] dark:border-[#2C3A2E]",
+        )}
+      >
         <Image
-          src={`/figuras/${figura.id}.webp`}
+          src={figura.src ?? `/figuras/${figura.id}.webp`}
           alt={figura.alt}
           width={900}
           height={600}
-          className="h-auto w-full dark:brightness-[0.88] dark:contrast-[1.03]"
+          className={cn(
+            "h-auto w-full",
+            !figura.credito && "dark:brightness-[0.88] dark:contrast-[1.03]",
+          )}
           priority={prioridad}
           loading={prioridad ? "eager" : "lazy"}
           sizes="(max-width: 520px) 100vw, 520px"
@@ -167,6 +205,11 @@ export function Figura({
       </div>
       <figcaption className="mt-2 text-[13.5px] leading-relaxed text-muted-foreground">
         {figura.titulo}
+        {figura.credito && (
+          <span className="mt-1 block text-[12.5px]">
+            Fotografía: {figura.credito}
+          </span>
+        )}
         {LAMINAS_GENERICAS.has(figura.id) && (
           <span className="mt-1 block text-[12.5px]">
             Ilustración general de la familia Gryllidae. No corresponde a una
