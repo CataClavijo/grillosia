@@ -13,8 +13,15 @@ import { query } from "@/lib/db";
  * grillos muriendose.
  */
 
-/** Preguntas al asistente por ventana. */
-const TOPE = Number(process.env.CHAT_TOPE_POR_VENTANA ?? 20);
+/**
+ * Preguntas al asistente por ventana.
+ *
+ * Eran 20 y se quedaban cortas: una tarde de pruebas las agota, y a partir de
+ * ahi hasta un "hola" caia en las respuestas guionadas, que es lo que hacia
+ * parecer que el asistente se habia roto. Con gpt-5.4-nano una pregunta sale
+ * por centimos, asi que 20 no protegia de nada que 60 no proteja igual.
+ */
+const TOPE = Number(process.env.CHAT_TOPE_POR_VENTANA ?? 60);
 
 /** Duracion de la ventana, en minutos. */
 const VENTANA_MIN = Number(process.env.CHAT_VENTANA_MINUTOS ?? 60);

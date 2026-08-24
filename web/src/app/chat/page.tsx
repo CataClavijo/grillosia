@@ -40,6 +40,9 @@ import {
   answerFor,
   type ContextoModelo,
   type KnowledgeLink,
+  esGenerica,
+  SIN_SERVICIO,
+  DEMASIADAS,
 } from "@/lib/chat-knowledge";
 import { ANIMALS } from "@/lib/animals";
 import type { ContextoConsulta } from "@/lib/system-prompt";
@@ -91,21 +94,30 @@ function saveDraft(messages: DisplayMessage[]) {
 async function preguntarAlAsistente(
   mensajes: { role: "user" | "assistant"; text: string }[],
   contexto: ContextoConsulta | null,
-): Promise<{ text: string; links?: KnowledgeLink[] } | null> {
+): Promise<{
+  text?: string;
+  links?: KnowledgeLink[];
+  motivo?: "tope" | "otro";
+} | null> {
   try {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ mensajes, contexto }),
     });
-    if (!res.ok) return null;
+    if (!res.ok) return { motivo: "otro" };
 
-    const datos = (await res.json()) as { disponible?: boolean; text?: string };
-    if (!datos.disponible || !datos.text?.trim()) return null;
+    const datos = (await res.json()) as {
+      disponible?: boolean;
+      text?: string;
+      motivo?: string;
+    };
+    if (!datos.disponible || !datos.text?.trim())
+      return { motivo: datos.motivo === "tope" ? "tope" : "otro" };
 
     return { text: datos.text.trim() };
   } catch {
-    return null;
+    return { motivo: "otro" };
   }
 }
 
@@ -203,8 +215,21 @@ export default function ChatPage() {
         ...messages.map((m) => ({ role: m.role, text: m.text })),
         { role: "user" as const, text: clean },
       ];
-      let r = await preguntarAlAsistente(historia, contextoConsulta);
-      if (!r) r = answerFor(clean, contextoModelo);
+      const delAsistente = await preguntarAlAsistente(
+        historia,
+        contextoConsulta,
+      );
+      let r: { text: string; links?: KnowledgeLink[] };
+      if (delAsistente?.text) {
+        r = { text: delAsistente.text, links: delAsistente.links };
+      } else {
+        const guionada = answerFor(clean, contextoModelo);
+        r = !esGenerica(guionada)
+          ? guionada
+          : delAsistente?.motivo === "tope"
+            ? DEMASIADAS
+            : SIN_SERVICIO;
+      }
 
       if (activeId)
         await appendMessage(activeId, {
@@ -258,8 +283,21 @@ export default function ChatPage() {
       // El asistente primero. Si no está disponible —sin llave, sin señal,
       // OpenAI caído— se contesta con las respuestas guionadas, que es como
       // funcionaba antes. El productor nunca se queda sin respuesta.
-      let respuesta = await preguntarAlAsistente(historia, contextoConsulta);
-      if (!respuesta) respuesta = answerFor(clean, contextoModelo);
+      const delAsistente = await preguntarAlAsistente(historia, contextoConsulta);
+      let respuesta: { text: string; links?: KnowledgeLink[] };
+      if (delAsistente?.text) {
+        respuesta = { text: delAsistente.text, links: delAsistente.links };
+      } else {
+        const guionada = answerFor(clean, contextoModelo);
+        // Si lo guionado sabe contestar, contesta. Si no, se dice lo que pasa
+        // de verdad en vez del "no sé" de siempre, que hacia parecer que el
+        // asistente era inutil cuando lo que ocurre es otra cosa.
+        respuesta = !esGenerica(guionada)
+          ? guionada
+          : delAsistente?.motivo === "tope"
+            ? DEMASIADAS
+            : SIN_SERVICIO;
+      }
 
       if (activeId) {
         await appendMessage(activeId, {

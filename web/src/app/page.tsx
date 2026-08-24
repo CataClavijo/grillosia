@@ -41,6 +41,19 @@ export default function Inicio() {
             <h2 className="mt-3 font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
               Una herramienta para decidir qué darles de comer
             </h2>
+            {/* La lamina va en ESTA columna, debajo del titulo.
+                Un titulo de dos lineas dejaba media pantalla en blanco a su
+                lado mientras la otra columna cargaba con todo el texto, y las
+                secciones quedaban de alturas dispares. Con la lamina aqui,
+                cada seccion se lee como un bloque. */}
+            <Image
+              src="/arte/grillo.webp"
+              alt=""
+              width={620}
+              height={413}
+              aria-hidden
+              className="lamina mt-7 h-auto w-full max-w-[300px] lg:mt-9 lg:max-w-[340px]"
+            />
           </div>
           <div className="flex flex-col gap-4 text-[16.5px] leading-relaxed text-foreground/85 lg:text-[17px]">
             <p>
@@ -62,19 +75,19 @@ export default function Inicio() {
             <h2 className="mt-3 font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
               La proteína del campo, criada en el campo
             </h2>
-          </div>
-          <div className="flex flex-col gap-4 text-[16.5px] leading-relaxed text-foreground/85 lg:text-[17px]">
-            {POR_QUE.map((t, i) => (
-              <p key={i}>{t}</p>
-            ))}
             <Image
               src="/arte/harina.webp"
               alt=""
               width={620}
               height={520}
               aria-hidden
-              className="lamina mx-auto mt-2 h-auto w-full max-w-[240px] lg:mx-0 lg:max-w-[280px]"
+              className="lamina mt-7 h-auto w-full max-w-[260px] lg:mt-9 lg:max-w-[290px]"
             />
+          </div>
+          <div className="flex flex-col gap-4 text-[16.5px] leading-relaxed text-foreground/85 lg:text-[17px]">
+            {POR_QUE.map((t, i) => (
+              <p key={i}>{t}</p>
+            ))}
           </div>
         </section>
 

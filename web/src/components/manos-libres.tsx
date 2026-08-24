@@ -137,6 +137,22 @@ function enLineas(texto: string): string[] {
   return salida;
 }
 
+/**
+ * Pinta las negritas de `**asi**`.
+ *
+ * El asistente escribe en markdown y el chat lo interpreta, pero aqui las
+ * lineas se pintaban en crudo: en pantalla salian los asteriscos. Se resuelve
+ * partiendo por el par de asteriscos —los trozos impares son los resaltados—
+ * en vez de traer un interprete entero de markdown por una sola marca.
+ */
+function conNegritas(linea: string) {
+  const partes = linea.split(/\*\*/);
+  if (partes.length < 3) return linea;
+  return partes.map((trozo, i) =>
+    i % 2 === 1 ? <strong key={i} className="font-semibold">{trozo}</strong> : trozo,
+  );
+}
+
 export function ManosLibres({
   abierto,
   onCerrar,
@@ -434,13 +450,13 @@ export function ManosLibres({
                               : "text-[#5E6555]"
                       }`}
                     >
-                      {linea}
+                      {conNegritas(linea)}
                     </p>
                   ))}
                 </div>
               ) : (
                 <p className="text-center text-[17px] leading-relaxed text-[#F4F1E7]">
-                  {texto}
+                  {conNegritas(texto)}
                 </p>
               )}
             </div>

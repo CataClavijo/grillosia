@@ -337,7 +337,13 @@ export async function POST(request: Request) {
   // Antes de gastar: si paso el tope, se devuelve "no disponible" y el cliente
   // cae a las respuestas guionadas. Nadie ve un error.
   if (!(await permitirPregunta(identificar(request)))) {
-    return NextResponse.json({ disponible: false }, { status: 200 });
+    // Se distingue del resto: no es lo mismo "ha preguntado mucho en poco
+    // rato" que "el asistente no esta". Al productor le sirve saber cual de
+    // las dos, porque una se arregla esperando y la otra no.
+    return NextResponse.json(
+      { disponible: false, motivo: "tope" },
+      { status: 200 },
+    );
   }
 
   let cuerpo: { mensajes?: MensajeEntrada[]; contexto?: ContextoConsulta };

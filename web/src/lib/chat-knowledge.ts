@@ -348,8 +348,29 @@ const KNOWLEDGE: KnowledgeEntry[] = [
   },
 ];
 
+/**
+ * Cuando el asistente no esta disponible.
+ *
+ * Antes esto se disimulaba: se devolvia una respuesta guionada cualquiera y
+ * parecia que el asistente no sabia nada. Vale mas decir lo que pasa, que asi
+ * la persona sabe que puede volver, en vez de pensar que la aplicacion esta
+ * rota o que el asistente es inutil.
+ */
+export const DEMASIADAS: KnowledgeAnswer = {
+  text: "Ha hecho muchas preguntas seguidas y necesito un descanso. Espere un rato y vuelva a preguntar.",
+  links: [],
+};
+
+export const SIN_SERVICIO: KnowledgeAnswer = {
+  text: "Ahora mismo no puedo contestar preguntas nuevas. Vuelva a intentarlo en un rato.",
+  links: [],
+};
+
 const FALLBACK: KnowledgeAnswer = {
-  text: "Esa pregunta todavía no la sé responder bien. Puedo ayudarle con temas de **grillos**, **cajas de cría**, **comidas** o **clima**. Si prefiere que le responda una persona del equipo, déjenos sus datos y le escribimos.",
+  // Sin la promesa de que alguien le escribira: eso hacia pensar que del otro
+  // lado hay una persona pendiente, y no la hay. El enlace de contacto sigue
+  // abajo, que ahi si se ve que es una pagina y no un mensaje que se manda.
+  text: "Esa pregunta todavía no la sé responder bien. Puedo ayudarle con la cría de grillos, las cajas, las comidas y el clima.",
   links: [
     LINKS.tutorial,
     LINKS.enclosure,
@@ -538,6 +559,11 @@ function escapeRegex(s: string): string {
 function matchesAsWord(q: string, kw: string): boolean {
   const re = new RegExp(`(^|\\W)${escapeRegex(kw)}(\\W|$)`);
   return re.test(q);
+}
+
+/** ¿Es la respuesta de "no sé", o una de verdad? */
+export function esGenerica(respuesta: KnowledgeAnswer) {
+  return respuesta === FALLBACK;
 }
 
 export function answerFor(
