@@ -94,6 +94,32 @@ const llano = (t: string) =>
     .replace(/\s+/g, " ")
     .trim();
 
+/**
+ * Le pone tope de tiempo a una promesa.
+ *
+ * Una peticion que nunca responde congelaba el modo igual que un error: sin
+ * tope, el turno se quedaba esperando para siempre y el microfono no volvia a
+ * abrirse. Mejor rendirse y dejar preguntar otra vez.
+ */
+function conTope<T>(promesa: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((listo, falla) => {
+    const reloj = window.setTimeout(
+      () => falla(new Error(`sin respuesta en ${ms} ms`)),
+      ms,
+    );
+    promesa.then(
+      (v) => {
+        window.clearTimeout(reloj);
+        listo(v);
+      },
+      (e) => {
+        window.clearTimeout(reloj);
+        falla(e);
+      },
+    );
+  });
+}
+
 function esEco(oido: string, dicho: string) {
   const a = llano(oido);
   if (a.split(" ").filter(Boolean).length < 5) return false;
@@ -261,26 +287,43 @@ export function ManosLibres({
       // quedado a medias de leerla, y ya no habia forma de volver a verla.
       setFase("pensando");
 
-      const bruto = await preguntar(texto);
-      if (!vivo.current) return;
+      // TODO el turno va protegido, y el regreso a escuchar va en `finally`.
+      //
+      // Sin esto, un solo fallo dejaba el modo muerto para siempre: si
+      // `preguntar` lanzaba —escribe en la base de datos por red, basta con
+      // quedarse sin senal un momento— la funcion se cortaba a mitad y nadie
+      // volvia a abrir el microfono. Quedaba en "Pensando" sin decir nada, y
+      // desde fuera se ve como que dejo de reconocer la voz.
+      try {
+        const bruto = await conTope(preguntar(texto), 40000);
+        if (!vivo.current) return;
 
-      // Se guarda EN CRUDO, con los marcadores: de ahi sale el guion que
-      // sincroniza cada dibujo con su linea.
-      setRespuesta(bruto);
-      ultimoDicho.current = sinMarcas(bruto);
-      setFase("hablando");
+        // Se guarda EN CRUDO, con los marcadores: de ahi sale el guion que
+        // sincroniza cada dibujo con su linea.
+        setRespuesta(bruto);
+        ultimoDicho.current = sinMarcas(bruto);
+        setFase("hablando");
 
-      // Se espera a que ACABE de sonar. Antes se reabria el microfono 400 ms
-      // despues de empezar a hablar, y se oia a si mismo.
-      await leer(bruto, "manos-libres", { servicio: true });
-      if (!vivo.current) return;
-
-      // Pausa corta: lo justo para no pisar el final de su propia frase.
-      await new Promise((listo) => window.setTimeout(listo, 400));
-      if (!vivo.current) return;
-
-      setFase("escuchando");
-      volverAOir.current();
+        // Se espera a que ACABE de sonar. Antes se reabria el microfono 400 ms
+        // despues de empezar a hablar, y se oia a si mismo.
+        await leer(bruto, "manos-libres", { servicio: true });
+      } catch (e) {
+        console.warn("[voz] el turno no se pudo completar:", e);
+        if (vivo.current) {
+          const aviso = "No le pude responder esta vez. Vuelva a preguntar.";
+          setRespuesta(aviso);
+          ultimoDicho.current = aviso;
+        }
+      } finally {
+        if (vivo.current) {
+          // Pausa corta: lo justo para no pisar el final de su propia frase.
+          await new Promise((listo) => window.setTimeout(listo, 400));
+          if (vivo.current) {
+            setFase("escuchando");
+            volverAOir.current();
+          }
+        }
+      }
     },
     [preguntar, leer],
   );
