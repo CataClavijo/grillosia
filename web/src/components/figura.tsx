@@ -46,8 +46,9 @@ export const LAMINAS_GENERICAS = new Set([
 export interface DefinicionFigura {
   id: string;
   /**
-   * Ruta propia. Solo la usan las fotografias; las ilustraciones se resuelven
-   * por convencion desde /figuras/<id>.webp.
+   * Ruta propia, para lo que no vive en /figuras: las fotografias y las
+   * laminas grabadas de /arte. El resto se resuelve por convencion desde
+   * /figuras/<id>.webp.
    */
   src?: string;
   /**
@@ -69,6 +70,17 @@ export const FIGURAS: DefinicionFigura[] = [
     titulo: "La caja y su tapa, limpias y listas",
     alt: "Una caja plástica rectangular transparente y, al lado, su tapa.",
     cuando: "Cuando pregunten qué caja sirve, de qué tamaño, o cómo empezar.",
+  },
+  {
+    // La caja YA MONTADA, con todo dentro. Es otra cosa que `caja`, que es el
+    // recipiente vacio: esta responde a "¿como se ve un grillero?", que se
+    // pregunta antes de saber que hace falta cada pieza por separado.
+    id: "grillero",
+    src: "/arte/caja-cria.webp",
+    titulo: "Un grillero montado, con todo dentro",
+    alt: "Corte de una caja de cría vista por dentro: hueveras de cartón paradas como acordeón, un bebedero, un plato con alimento y cama en el fondo. Al lado, la tapa perforada.",
+    cuando:
+      "Cuando pregunten cómo se ve un grillero, cómo queda la caja una vez armada, o pidan un ejemplo del montaje completo antes de entrar en cada pieza.",
   },
   {
     id: "ventilacion",
