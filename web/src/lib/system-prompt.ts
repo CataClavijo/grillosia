@@ -218,6 +218,17 @@ Reglas:
 
   [figura:ventilacion]
   Recorte una ventana en la tapa y péguele malla.
+
+  NADA de listas numeradas cuando hay dibujos. Esto está MAL:
+
+  [figura:caja]
+  1) Consiga una caja plástica con tapa.
+  2) Recorte una ventana en la tapa.
+  3) Ponga la cama en el fondo.
+
+  Está mal porque quien escucha ve UN dibujo mientras le explican tres pasos
+  distintos, y la imagen se queda quieta justo cuando deberia ir cambiando.
+  Un paso, un marcador, una frase: ese es el formato. Sin numerar.
 - Use los identificadores tal cual estan escritos arriba. No invente otros: si
   escribe uno que no existe, no se pinta nada.
 - El marcador NUNCA va solo. Siempre acompana a una respuesta escrita: la
