@@ -28,10 +28,13 @@ import { identificar, permitirPregunta } from "@/lib/rate-limit";
  * las voces de catalogo de ElevenLabs.
  *
  * Se lee con `eleven_multilingual_v2`, que es lo que le permite hablar
- * espanol. Si algun dia se cambia por una voz con acento latino, tiene que
- * seguir siendo de mujer.
+ * espanol. Si algun dia se cambia, tiene que seguir siendo de mujer.
+ *
+ * La eligio Daniel en la biblioteca de ElevenLabs. Se comprobo que responde
+ * con audio antes de dejarla puesta: un identificador que no existe devuelve
+ * 400 y la aplicacion cae a la voz del navegador sin decir por que.
  */
-const VOZ = process.env.ELEVENLABS_VOICE_ID ?? "21m00Tcm4TlvDq8ikWAM";
+const VOZ = process.env.ELEVENLABS_VOICE_ID ?? "k7v2xzj8pZoayBVu9pvq";
 
 /** Tope de caracteres por peticion: una respuesta del asistente son ~600. */
 const MAX_CARACTERES = 900;

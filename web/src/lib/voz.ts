@@ -115,12 +115,21 @@ export function useDictado(alTerminar: (texto: string) => void) {
       const ev = e as {
         results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal: boolean }>;
       };
+      // Se REHACE la frase entera en cada evento, no se va sumando.
+      //
+      // En modo continuo el navegador reentrega TODOS los resultados desde el
+      // principio cada vez que llega algo nuevo. Sumando, lo ya dicho se
+      // volvia a pegar una y otra vez y salia "con 20 grillos puedo
+      // alimentarcon 20 grillos puedo alimentar...". Rehacerlo es ademas
+      // idempotente: da igual cuantas veces llegue el mismo evento.
+      let definitivo = "";
       let enCurso = "";
       for (let i = 0; i < ev.results.length; i++) {
         const alt = ev.results[i][0]?.transcript ?? "";
-        if (ev.results[i].isFinal) final.current += alt;
+        if (ev.results[i].isFinal) definitivo += alt;
         else enCurso += alt;
       }
+      final.current = definitivo;
       const visible = (final.current + enCurso).trim();
       if (visible) ultimo.current = visible;
       setParcial(final.current + enCurso);

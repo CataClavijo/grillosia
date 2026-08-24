@@ -373,6 +373,30 @@
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
+   Barra de desplazamiento discreta, para el modo manos libres.
+   La del sistema sale blanca y gruesa sobre el fondo oscuro y se lleva toda
+   la atencion, compitiendo con el texto que uno intenta leer. Aqui va fina y
+   translucida: se ve lo justo para saber que hay mas abajo.
+   ────────────────────────────────────────────────────────────────────── */
+.barra-fina {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(244, 241, 231, 0.22) transparent;
+}
+.barra-fina::-webkit-scrollbar {
+  width: 4px;
+}
+.barra-fina::-webkit-scrollbar-track {
+  background: transparent;
+}
+.barra-fina::-webkit-scrollbar-thumb {
+  background-color: rgba(244, 241, 231, 0.22);
+  border-radius: 999px;
+}
+.barra-fina::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(244, 241, 231, 0.38);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
    Orbe del modo manos libres.
    Se anima con keyframes propios y no con utilidades genericas: cambiar el
    tamano del elemento en cada estado hacia saltar la maqueta y parecia un

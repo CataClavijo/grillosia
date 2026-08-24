@@ -32,7 +32,7 @@ const DIETAS = ["D1", "D2", "D3"];
 const MAX_VUELTAS = 2;
 
 /**
- * Respuesta fija para lo que no es del tema.
+ * Respuestas para lo que no es del tema.
  *
  * La escribe el codigo, no el modelo. Al modelo solo se le pide que
  * CLASIFIQUE —una tarea facil— y el texto del rechazo queda fuera de su
@@ -43,10 +43,53 @@ const MAX_VUELTAS = 2;
  * proyecto de Minciencias haciendo tareas de calculo no solo desentona:
  * gasta plata y deja mal al proyecto.
  */
-const FUERA_DE_TEMA =
-  "Yo solo sé de la cría de grillos y de la harina que producen: las cajas, " +
-  "el clima, la comida, los cuidados y para qué animal sirve cada una. " +
-  "De eso pregúnteme lo que quiera.";
+const RECHAZOS = [
+  "Yo solo sé de la cría de grillos y de la harina que producen. De eso " +
+    "pregúnteme lo que quiera.",
+  "Eso se me sale de lo mío. Le ayudo con los grillos: las cajas, el clima, " +
+    "la comida y los cuidados.",
+  "De eso no le puedo hablar. Lo que sé es criar grillos y sacar la harina " +
+    "que dan.",
+  "Ahí no le sirvo. Pregúnteme por sus grillos y con gusto le ayudo.",
+];
+
+/**
+ * Por donde venia la conversacion, para no cortarla en seco.
+ *
+ * Se busca de atras hacia adelante: manda lo ultimo que se hablo, no lo
+ * primero que se menciono.
+ */
+const HILOS: Array<[RegExp, string]> = [
+  [/cerdo|marran/i, "¿Seguimos con lo de sus cerdos?"],
+  [/tilapia|pescad|pez|peces/i, "¿Seguimos con lo de su tilapia?"],
+  [/pollo|gallin|ave/i, "¿Seguimos con lo de sus pollos?"],
+  [/caja|refugi|huevera/i, "¿Seguimos con lo de su caja?"],
+  [/comida|dieta|aliment/i, "¿Seguimos con lo de la comida?"],
+  [/temperatura|humedad|clima|grados/i, "¿Seguimos con lo del clima?"],
+];
+
+/**
+ * Arma el rechazo.
+ *
+ * Sigue escribiendolo el codigo: al modelo solo se le pide que CLASIFIQUE. Lo
+ * que cambia es que ya no es una sola frase repetida palabra por palabra, que
+ * se sentia como un muro. Se alterna segun el numero de turnos —sin azar, para
+ * que la misma conversacion se comporte siempre igual— y se engancha con lo
+ * ultimo que la persona haya mencionado.
+ */
+function fueraDeTema(historia: Array<{ role: string; content: string }>) {
+  const suyos = historia.filter((m) => m.role === "user");
+  let texto = RECHAZOS[suyos.length % RECHAZOS.length];
+
+  for (let i = suyos.length - 1; i >= 0; i--) {
+    const hilo = HILOS.find(([patron]) => patron.test(suyos[i].content ?? ""));
+    if (hilo) {
+      texto += " " + hilo[1];
+      break;
+    }
+  }
+  return texto;
+}
 
 /** Marca con que el modelo senala que la pregunta no es del tema. */
 const MARCA_FUERA = /\[fuera-de-tema\]/i;
@@ -335,7 +378,10 @@ export async function POST(request: Request) {
       if (llamadas.length === 0) {
         const bruto = (mensaje.content ?? "").trim();
         if (MARCA_FUERA.test(bruto)) {
-          return NextResponse.json({ disponible: true, text: FUERA_DE_TEMA });
+          return NextResponse.json({
+            disponible: true,
+            text: fueraDeTema(historia),
+          });
         }
         return NextResponse.json({ disponible: true, text: limpiar(bruto) });
       }

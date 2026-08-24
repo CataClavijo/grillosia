@@ -412,7 +412,7 @@ export function ManosLibres({
             <div
               ref={caja}
               aria-live="polite"
-              className={`w-full max-w-[36ch] overflow-y-auto ${
+              className={`barra-fina w-full max-w-[36ch] overflow-y-auto ${
                 figura ? "h-[9rem]" : "h-[30svh] min-h-[9rem]"
               }`}
             >
