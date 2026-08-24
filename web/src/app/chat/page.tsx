@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -8,6 +8,7 @@ import { Barra } from "@/components/barra";
 import {
   ChevronLeft,
   ChevronRight,
+  AudioLines,
   Mic,
   MoreVertical,
   Send,
@@ -50,6 +51,7 @@ import {
 } from "@/lib/projects-store";
 import { inlineMarkdown } from "@/lib/markdown";
 import { textoConFiguras } from "@/lib/figuras-en-texto";
+import { ManosLibres } from "@/components/manos-libres";
 import { useDictado, useLectura } from "@/lib/voz";
 import { StepFooter } from "@/components/step-footer";
 
@@ -130,6 +132,8 @@ export default function ChatPage() {
   // que despues pulse "enviar" pierde justo a quien la funcion sirve.
   const { estado: lectura, leyendo, leer, callar } = useLectura();
   const dictado = useDictado((texto) => send(texto));
+  const [manosLibres, setManosLibres] = useState(false);
+
 
   const contextoConsulta: ContextoConsulta | null = useMemo(() => {
     if (!seleccion) return null;
@@ -177,6 +181,47 @@ export default function ChatPage() {
           links: m.links,
         }))
     : ephemeral;
+
+  /**
+   * Pregunta y devuelve la respuesta. Es el mismo camino del chat escrito:
+   * se guarda en la conversacion igual, para que al salir del modo voz quede
+   * todo el historial.
+   */
+  const preguntarEnVoz = useCallback(
+    async (texto: string): Promise<string> => {
+      const clean = texto.trim();
+      if (!clean) return "";
+
+      if (activeId) await appendMessage(activeId, { role: "user", text: clean });
+      else
+        setEphemeral((prev) => [
+          ...prev,
+          { id: `local_${Date.now()}`, role: "user", text: clean },
+        ]);
+
+      const historia = [
+        ...messages.map((m) => ({ role: m.role, text: m.text })),
+        { role: "user" as const, text: clean },
+      ];
+      let r = await preguntarAlAsistente(historia, contextoConsulta);
+      if (!r) r = answerFor(clean, contextoModelo);
+
+      if (activeId)
+        await appendMessage(activeId, {
+          role: "assistant",
+          text: r.text,
+          links: r.links,
+        });
+      else
+        setEphemeral((prev) => [
+          ...prev,
+          { id: `local_${Date.now()}_a`, role: "assistant", text: r.text },
+        ]);
+
+      return r.text;
+    },
+    [activeId, appendMessage, messages, contextoConsulta, contextoModelo],
+  );
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
@@ -429,6 +474,18 @@ export default function ChatPage() {
             <Button
               type="button"
               size="icon"
+              variant="ghost"
+              aria-label="Conversar sin escribir"
+              onClick={() => setManosLibres(true)}
+              className="size-12 shrink-0 rounded-full"
+            >
+              <AudioLines className="size-5" />
+            </Button>
+          )}
+          {dictado.estado !== "no-disponible" && (
+            <Button
+              type="button"
+              size="icon"
               variant={dictado.estado === "escuchando" ? "default" : "ghost"}
               aria-label={
                 dictado.estado === "escuchando"
@@ -483,6 +540,11 @@ export default function ChatPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <ManosLibres
+        abierto={manosLibres}
+        onCerrar={() => setManosLibres(false)}
+        preguntar={preguntarEnVoz}
+      />
     </main>
     </>
   );

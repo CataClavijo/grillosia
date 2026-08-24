@@ -52,12 +52,26 @@ export function useDictado(alTerminar: (texto: string) => void) {
   const [parcial, setParcial] = useState("");
   const rec = useRef<Reconocedor | null>(null);
   const final = useRef("");
+  /**
+   * Ultimo texto provisional.
+   *
+   * Chrome no siempre marca un resultado como definitivo antes de cerrar el
+   * reconocimiento: a veces todo se queda en provisional y `final` llega
+   * vacio. Sin esto, el productor habla, ve su frase en pantalla, calla, y no
+   * se envia nada. Guardar lo provisional es la diferencia entre que la
+   * funcion sirva o no.
+   */
+  const ultimo = useRef("");
+  /** Evita enviar dos veces si `onend` llega despues de un envio manual. */
+  const enviado = useRef(false);
 
   useEffect(() => {
     setEstado(hayDictado() ? "inactivo" : "no-disponible");
   }, []);
 
   const parar = useCallback(() => {
+    // Pulsar el boton significa "ya termine de hablar", no "cancela": el
+    // texto que alcanzo a oirse se envia igual.
     rec.current?.stop();
   }, []);
 
@@ -69,6 +83,8 @@ export function useDictado(alTerminar: (texto: string) => void) {
     }
     rec.current = r;
     final.current = "";
+    ultimo.current = "";
+    enviado.current = false;
     setParcial("");
     r.lang = "es-CO";
     r.continuous = false;
@@ -84,15 +100,21 @@ export function useDictado(alTerminar: (texto: string) => void) {
         if (ev.results[i].isFinal) final.current += alt;
         else enCurso += alt;
       }
+      const visible = (final.current + enCurso).trim();
+      if (visible) ultimo.current = visible;
       setParcial(final.current + enCurso);
     };
 
     r.onerror = () => setEstado("inactivo");
     r.onend = () => {
       setEstado("inactivo");
-      const texto = final.current.trim();
+      // Se toma lo definitivo si existe; si no, lo ultimo que se oyo.
+      const texto = (final.current.trim() || ultimo.current).trim();
       setParcial("");
-      if (texto) alTerminar(texto);
+      if (texto && !enviado.current) {
+        enviado.current = true;
+        alTerminar(texto);
+      }
     };
 
     try {
