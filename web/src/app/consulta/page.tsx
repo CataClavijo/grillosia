@@ -89,17 +89,37 @@ export default function WizardPage() {
 
   // Hidratación: proyecto activo primero, si no el borrador.
   useEffect(() => {
+    /**
+     * ¿Vino a cambiar sus respuestas?
+     *
+     * Sin esto, entrar con una consulta ya contestada saltaba al paso 4, que
+     * a su vez empuja a /resultado: el boton "cambiar" mandaba aqui y rebotaba
+     * de vuelta al instante, asi que parecia que no hacia nada. Se lee de la
+     * URL ya montado, no con `useSearchParams`, para no obligar a envolver la
+     * pagina en un Suspense por un dato que solo importa en el navegador.
+     */
+    const editar =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).has("editar");
+
     if (active && active.selection.animalId) {
       setAnimalId(active.selection.animalId);
       setStageId(active.selection.stageId ?? "");
       setTemp(active.selection.temp ?? null);
       setHumidity(active.selection.humidity ?? null);
       if (
+        !editar &&
         active.selection.stageId &&
         active.selection.temp !== undefined &&
         active.selection.humidity !== undefined
       ) {
         setStep(5);
+      }
+      // Al venir a cambiar se empieza por la primera pregunta, con lo
+      // contestado ya puesto: se toca solo lo que se quiere mover.
+      if (editar) {
+        guardado.current = false;
+        setStep(1);
       }
       return;
     }

@@ -186,6 +186,10 @@
      de `.lamina` ya tiene con que mezclar. */
   html {
     background-color: var(--background);
+    /* Alto de la barra del sitio. Estaba escrito a mano como 68px en varios
+       sitios, y el chat se olvido de restarlo: pedia 100dvh CON la barra
+       encima, asi que el campo de escribir caia fuera de la pantalla. */
+    --alto-barra: 68px;
   }
   body {
     @apply bg-background text-foreground;

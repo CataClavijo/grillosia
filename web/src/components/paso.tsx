@@ -49,9 +49,7 @@ export function Paso({
           cuanto se bajaba. La barra del paso se quedaba pegada a 68 px del
           borde y por esa franja se colaba el contenido. */}
       <div className="sticky top-0 z-30 bg-background/95 backdrop-blur">
-        <div className="hidden lg:block">
-          <Barra />
-        </div>
+        <Barra className="hidden lg:block" />
         <div className="mx-auto w-full max-w-[760px]">
           <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-3 lg:px-8">
             <Link

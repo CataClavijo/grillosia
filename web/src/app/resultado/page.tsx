@@ -75,7 +75,9 @@ export default function PaginaResultado() {
         proteinMax={etapa.proteinMax}
         temp={sel.temp as number}
         humidity={sel.humidity as number}
-        onCambiar={() => router.push("/consulta")}
+        // Con `editar`: sin eso, la consulta ya contestada salta sola al
+        // paso 4 y rebota de vuelta aqui, y el boton parecia muerto.
+        onCambiar={() => router.push("/consulta?editar=1")}
         onNueva={nuevaConsulta}
       />
 

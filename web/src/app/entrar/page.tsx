@@ -23,10 +23,8 @@ export default function EntrarPage() {
     <>
       {/* En escritorio hay sitio para la navegacion completa; en celular
           bastan la flecha de atras y el menu. */}
-      <div className="hidden lg:block">
-        <Barra />
-      </div>
-    <main className="mx-auto flex min-h-[calc(100dvh-42px)] w-full max-w-[560px] flex-col px-6 pb-16 pt-5">
+      <Barra className="hidden lg:block" />
+    <main className="mx-auto flex min-h-[calc(100dvh_-_var(--alto-barra))] w-full max-w-[560px] flex-col px-6 pb-16 pt-5">
       <header>
         <Link
           href="/"

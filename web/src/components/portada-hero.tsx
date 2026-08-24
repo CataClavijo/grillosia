@@ -27,7 +27,7 @@ import Link from "next/link";
  */
 export function PortadaHero({ href, cta }: { href: string; cta: string }) {
   return (
-    <section className="relative isolate -mt-[68px] flex min-h-[100svh] flex-col overflow-hidden bg-[#12180F] pt-[68px]">
+    <section className="relative isolate -mt-[var(--alto-barra)] flex min-h-[100svh] flex-col overflow-hidden bg-[#12180F] pt-[var(--alto-barra)]">
       <Image
         src="/arte/llanura.webp"
         alt=""

@@ -299,9 +299,7 @@ export default function ChatPage() {
   if (loading) {
     return (
     <>
-      <div className="hidden lg:block">
-        <Barra />
-      </div>
+      <Barra className="hidden lg:block" />
       <main className="mx-auto flex min-h-[100dvh] w-full max-w-[820px] flex-col px-5 pb-16 pt-5 lg:px-8">
         <header className="flex items-center justify-between">
           <Link
@@ -323,9 +321,7 @@ export default function ChatPage() {
   if (!consultaLista) {
     return (
     <>
-      <div className="hidden lg:block">
-        <Barra />
-      </div>
+      <Barra className="hidden lg:block" />
       <main className="mx-auto flex min-h-[100dvh] w-full max-w-[820px] flex-col px-5 pb-16 pt-5 lg:px-8">
         <header className="flex items-center justify-between">
           <Link
@@ -369,10 +365,11 @@ export default function ChatPage() {
     <>
       {/* En escritorio hay sitio para la navegacion completa; en celular
           bastan la flecha de atras y el menu. */}
-      <div className="hidden lg:block">
-        <Barra />
-      </div>
-    <main className="mx-auto flex h-[100dvh] w-full max-w-[820px] flex-col overflow-hidden px-5 pt-5 lg:px-8">
+      <Barra className="hidden lg:block" />
+    {/* En celular no hay barra y la pantalla entera es del chat; en escritorio
+        hay que descontarla, o el campo de escribir queda por debajo del borde
+        inferior. */}
+    <main className="mx-auto flex h-[100dvh] w-full max-w-[820px] flex-col overflow-hidden px-5 pt-5 lg:h-[calc(100dvh_-_var(--alto-barra))] lg:px-8">
       {/* Cabecera mínima: atrás · título · tres puntos */}
       <header className="flex items-center justify-between">
         <Link
