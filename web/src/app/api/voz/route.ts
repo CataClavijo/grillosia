@@ -19,7 +19,18 @@ import { identificar, permitirPregunta } from "@/lib/rate-limit";
  *    lee con su propia voz. Nadie se queda sin oir.
  */
 
-/** Voz multilingue de ElevenLabs. */
+/**
+ * Voz de MUJER, a proposito.
+ *
+ * Es un proyecto de Minciencias con la Universidad de los Llanos y lo hacen
+ * dos investigadoras; la voz que lo representa acompana esa decision, no es
+ * un valor que quedo por defecto. `21m00Tcm4TlvDq8ikWAM` es Rachel, una de
+ * las voces de catalogo de ElevenLabs.
+ *
+ * Se lee con `eleven_multilingual_v2`, que es lo que le permite hablar
+ * espanol. Si algun dia se cambia por una voz con acento latino, tiene que
+ * seguir siendo de mujer.
+ */
 const VOZ = process.env.ELEVENLABS_VOICE_ID ?? "21m00Tcm4TlvDq8ikWAM";
 
 /** Tope de caracteres por peticion: una respuesta del asistente son ~600. */
