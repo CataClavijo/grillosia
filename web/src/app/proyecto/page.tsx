@@ -11,12 +11,12 @@ import {
   Users,
 } from "lucide-react";
 
+import Image from "next/image";
 import { InterestForm } from "@/components/interest-form";
 import { renderMarkdownBlock } from "@/lib/markdown";
 import { SiteNav } from "@/components/site-nav";
 import {
   METHODOLOGY_SECTIONS,
-  REFERENCES,
 } from "@/lib/content/methodology";
 
 export const metadata = {
@@ -155,20 +155,16 @@ export default function ProjectPage() {
         </ul>
       </section>
 
-      {/* Estado */}
-      <section className="mt-12 rounded-2xl border border-demo-border bg-demo-bg p-5">
-        <p className="text-[13px] font-bold uppercase tracking-wider text-demo-foreground">
-          Fase actual
-        </p>
-        <p className="mt-2 text-[15px] leading-relaxed text-demo-foreground">
-          El proyecto se encuentra en fase demostrativa. El modelo de IA sigue
-          en entrenamiento y los ensayos experimentales están en curso. Todo
-          lo que ve en la plataforma es orientativo hasta que los datos
-          bromatológicos finales estén disponibles.
-        </p>
-      </section>
-
       {/* Créditos de las fotografías */}
+      <Image
+        src="/arte/caja-cria.webp"
+        alt=""
+        width={760}
+        height={560}
+        aria-hidden
+        className="lamina mx-auto mt-10 h-auto w-full max-w-[380px]"
+      />
+
       {/* Metodologia: vivia en su propia ruta y competia con la tarea desde
           el pie de todas las pantallas. Aqui es una seccion mas. */}
       <section className="mt-12">
@@ -188,16 +184,6 @@ export default function ProjectPage() {
             </details>
           ))}
         </div>
-        <details className="mt-3 rounded-2xl border bg-card/60 p-4">
-          <summary className="cursor-pointer text-[16px] font-semibold">
-            Referencias
-          </summary>
-          <ul className="mt-2 flex flex-col gap-2.5 text-[13.5px] leading-relaxed text-muted-foreground">
-            {REFERENCES.map((r, i) => (
-              <li key={i}>{r.citation}</li>
-            ))}
-          </ul>
-        </details>
       </section>
 
       {/* Contacto: era una ruta entera para un formulario. */}
@@ -229,27 +215,7 @@ export default function ProjectPage() {
       <section className="mt-6 rounded-2xl border border-border/70 bg-card/60 p-5">
         <h2 className="text-[15px] font-bold">Recursos y contacto</h2>
         <ul className="mt-4 space-y-3 text-[14px]">
-          <li>
-            <Link
-              href="/metodologia"
-              className="inline-flex items-center gap-2 font-semibold text-primary hover:underline"
-            >
-              <FlaskConical className="h-4 w-4" strokeWidth={2} /> Ver la
-              metodología completa
-            </Link>
-          </li>
-          <li>
-            <a
-              href="https://github.com/CataClavijo/grillia"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 font-semibold text-primary hover:underline"
-            >
-              <ExternalLink className="h-4 w-4" strokeWidth={2} /> Repositorio
-              del proyecto en GitHub
-            </a>
-          </li>
-          <li>
+                    <li>
             <a
               href="https://www.unillanos.edu.co"
               target="_blank"

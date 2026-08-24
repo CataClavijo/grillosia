@@ -4,181 +4,220 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { PortadaHero } from "@/components/portada-hero";
-import { SiteNav } from "@/components/site-nav";
 import { ANIMALS } from "@/lib/animals";
 import { CAMINO } from "@/lib/camino";
+import { CIFRAS, OBJETIVOS, POR_QUE } from "@/lib/content/landing";
 import { usePaso } from "@/lib/use-paso";
 
 /**
- * Inicio.
+ * Portada.
  *
- * Antes ofrecia nueve salidas: nueve decisiones antes de hacer nada. Ahora
- * ofrece una accion, y debajo el contexto que un visitante nuevo necesita
- * para confiar antes de empezar: que es esto, por que existe, para que sirve
- * y quien lo hace.
+ * Pensada para las dos anchuras: una columna en celular, rejilla en
+ * escritorio. Antes era una pantalla de celular estirada, que en un monitor
+ * se veia como una tira de texto en el centro.
  *
- * Las cuatro paradas se listan para que se vea el camino de una ojeada, pero
- * no compiten con el boton: son texto numerado, no botones.
+ * El orden sigue el de Campus MAS Agro, que resuelve bien el problema de un
+ * visitante que no sabe nada: que es, por que existe, que se propone, para
+ * quien, y quien responde por ello.
  */
 export default function Inicio() {
   const { siguiente } = usePaso();
   const empezando = siguiente.n === 1;
 
   return (
-    <main className="mx-auto flex w-full max-w-[560px] flex-col px-5 pb-4">
-      <header className="flex items-center justify-between pt-4">
-        <span className="flex items-center gap-2">
-          <Image src="/logo.png" alt="" width={38} height={38} priority />
-          <span className="font-display text-[19px] font-bold tracking-[-0.02em]">
-            GrillosIA
-          </span>
-        </span>
-        <SiteNav />
-      </header>
-
+    <>
       <PortadaHero
         href={siguiente.href}
         cta={empezando ? "Empezar por el paso 1" : `Seguir en el paso ${siguiente.n}`}
       />
 
-      {/* ── Qué es ──────────────────────────────────────────── */}
-      <section className="pt-8">
-        <p className="rotulo text-muted-foreground">Qué es</p>
-        <h2 className="mt-2 font-display text-[1.5rem] font-extrabold leading-[1.15] tracking-[-0.025em]">
-          Una herramienta para decidir qué darles de comer
-        </h2>
-        <p className="mt-3 text-[16px] leading-relaxed text-foreground/85">
-          Estamos comparando tres comidas para grillos y midiendo qué harina da
-          cada una. Con eso, la aplicación le sugiere cuál se acerca más a lo
-          que su animal necesita, según su clima y su etapa de cría.
-        </p>
-        <p className="mt-3 text-[16px] leading-relaxed text-foreground/85">
-          Es un proyecto de investigación de la Universidad de los Llanos, y
-          está abierto para que usted lo use mientras aprendemos.
-        </p>
-      </section>
+      <main className="mx-auto w-full max-w-[1180px] px-5 lg:px-8">
+        {/* ── Qué es ─────────────────────────────────────────── */}
+        <section className="grid gap-8 border-b py-14 lg:grid-cols-[1fr_1.1fr] lg:gap-16 lg:py-20">
+          <div>
+            <p className="rotulo text-muted-foreground">Qué es</p>
+            <h2 className="mt-3 font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
+              Una herramienta para decidir qué darles de comer
+            </h2>
+          </div>
+          <div className="flex flex-col gap-4 text-[16.5px] leading-relaxed text-foreground/85 lg:text-[17px]">
+            <p>
+              Estamos comparando tres comidas para grillos y midiendo qué harina
+              da cada una. Con eso, la aplicación le sugiere cuál se acerca más a
+              lo que su animal necesita, según su clima y su etapa de cría.
+            </p>
+            <p>
+              Es una investigación de la Universidad de los Llanos, abierta para
+              que usted la use mientras aprendemos.
+            </p>
+          </div>
+        </section>
 
-      {/* ── Por qué ─────────────────────────────────────────── */}
-      <section className="pt-9">
-        <p className="rotulo text-muted-foreground">Por qué</p>
-        <h2 className="mt-2 font-display text-[1.5rem] font-extrabold leading-[1.15] tracking-[-0.025em]">
-          La proteína del campo, criada en el campo
-        </h2>
-        <p className="mt-3 text-[16px] leading-relaxed text-foreground/85">
-          Buena parte de la harina que alimenta a los peces y las aves del país
-          viene de afuera y cuesta cara. El grillo se cría en poco espacio, come
-          poco y da una harina rica en proteína.
-        </p>
-        <p className="mt-3 text-[16px] leading-relaxed text-foreground/85">
-          Lo que falta es saber, con números, qué comida conviene darle a los
-          grillos para cada caso. En eso estamos.
-        </p>
-      </section>
+        {/* ── Por qué surge ──────────────────────────────────── */}
+        <section className="grid gap-8 border-b py-14 lg:grid-cols-[1fr_1.1fr] lg:gap-16 lg:py-20">
+          <div>
+            <p className="rotulo text-muted-foreground">Por qué surge</p>
+            <h2 className="mt-3 font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
+              La proteína del campo, criada en el campo
+            </h2>
+          </div>
+          <div className="flex flex-col gap-4 text-[16.5px] leading-relaxed text-foreground/85 lg:text-[17px]">
+            {POR_QUE.map((t, i) => (
+              <p key={i}>{t}</p>
+            ))}
+            <Image
+              src="/arte/harina.webp"
+              alt=""
+              width={620}
+              height={520}
+              aria-hidden
+              className="lamina mx-auto mt-2 h-auto w-full max-w-[240px] lg:mx-0 lg:max-w-[280px]"
+            />
+          </div>
+        </section>
 
-      <div className="flex justify-center pt-6">
-        <Image
-          src="/arte/harina.webp"
-          alt=""
-          width={620}
-          height={520}
-          aria-hidden
-          className="lamina h-auto w-full max-w-[250px]"
-        />
-      </div>
-
-      {/* ── El camino ───────────────────────────────────────── */}
-      <section className="pt-4">
-        <p className="rotulo text-muted-foreground">El camino</p>
-        <h2 className="mt-2 font-display text-[1.5rem] font-extrabold leading-[1.15] tracking-[-0.025em]">
-          Cuatro pasos, en orden
-        </h2>
-        <ol className="mt-4 flex flex-col">
-          {CAMINO.map((p) => (
-            <li key={p.n} className="flex gap-3.5 border-t py-4">
-              <span className="rotulo mt-1 w-7 shrink-0 text-primary">
-                0{p.n}
-              </span>
-              <span>
-                <span className="block font-display text-[16.5px] font-bold tracking-[-0.015em]">
-                  {p.titulo}
-                </span>
-                <span className="mt-0.5 block text-[14.5px] leading-relaxed text-muted-foreground">
-                  {p.resumen}
-                </span>
-              </span>
-            </li>
-          ))}
-        </ol>
-        {empezando && (
-          <p className="mt-5 text-center text-[14.5px] text-muted-foreground">
-            ¿Ya tiene sus grillos criados?{" "}
-            <Link
-              href="/consulta"
-              className="font-semibold text-primary underline underline-offset-2"
-            >
-              Vaya directo a la consulta
-            </Link>
-          </p>
-        )}
-      </section>
-
-      {/* ── Para qué animales ───────────────────────────────── */}
-      <section className="pt-9">
-        <p className="rotulo text-muted-foreground">Para qué animales</p>
-        <h2 className="mt-2 font-display text-[1.5rem] font-extrabold leading-[1.15] tracking-[-0.025em]">
-          Tilapia, pollo y cerdo
-        </h2>
-        <Image
-          src="/arte/animales.webp"
-          alt=""
-          width={900}
-          height={300}
-          aria-hidden
-          className="lamina mt-4 h-auto w-full"
-        />
-        <ul className="mt-4 flex flex-col gap-2.5">
-          {ANIMALS.map((a) => {
-            const min = Math.min(...a.stages.map((e) => e.proteinMin));
-            const max = Math.max(...a.stages.map((e) => e.proteinMax));
-            return (
-              <li
-                key={a.id}
-                className="flex items-baseline justify-between gap-3 rounded-2xl border bg-card px-4 py-3.5"
-              >
-                <span className="font-display text-[16.5px] font-bold tracking-[-0.015em]">
-                  {a.name}
-                </span>
-                <span className="rotulo text-muted-foreground">
-                  {min}–{max} % proteína
-                </span>
+        {/* ── Objetivos ──────────────────────────────────────── */}
+        <section className="border-b py-14 lg:py-20">
+          <p className="rotulo text-muted-foreground">Qué nos proponemos</p>
+          <h2 className="mt-3 max-w-[18ch] font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
+            Cuatro objetivos
+          </h2>
+          <ul className="mt-8 grid gap-x-10 gap-y-7 sm:grid-cols-2">
+            {OBJETIVOS.map((o) => (
+              <li key={o.n} className="border-t pt-4">
+                <span className="rotulo text-primary">{o.n}</span>
+                <h3 className="mt-2 font-display text-[17.5px] font-bold tracking-[-0.015em]">
+                  {o.titulo}
+                </h3>
+                <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
+                  {o.cuerpo}
+                </p>
               </li>
-            );
-          })}
-        </ul>
-        <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
-          Los requerimientos vienen de las tablas de referencia NRC para
-          alimentación animal.
-        </p>
-      </section>
+            ))}
+          </ul>
+        </section>
 
-      {/* ── Quién lo hace ───────────────────────────────────── */}
-      <section className="pt-9 pb-2">
-        <p className="rotulo text-muted-foreground">Quién lo hace</p>
-        <h2 className="mt-2 font-display text-[1.5rem] font-extrabold leading-[1.15] tracking-[-0.025em]">
-          Universidad de los Llanos
-        </h2>
-        <p className="mt-3 text-[16px] leading-relaxed text-foreground/85">
-          Con financiación de Minciencias, convocatoria 963 de 2025. Lo
-          hacemos dos personas: la Dra. Mónica Paola Higuera-Díaz dirige la
-          investigación, y Catalina Clavijo Agudelo creó esta página.
-        </p>
-        <Link
-          href="/proyecto"
-          className="mt-4 inline-flex min-h-12 items-center rounded-full border-2 border-primary px-5 text-[15.5px] font-bold text-primary transition-colors hover:bg-primary/5"
-        >
-          Conozca el proyecto
-        </Link>
-      </section>
-    </main>
+        {/* ── El camino ──────────────────────────────────────── */}
+        <section className="border-b py-14 lg:py-20">
+          <p className="rotulo text-muted-foreground">Cómo se usa</p>
+          <h2 className="mt-3 font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
+            Cuatro pasos, en orden
+          </h2>
+          <ol className="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+            {CAMINO.map((p) => (
+              <li key={p.n} className="border-t pt-4">
+                <span className="rotulo text-primary">0{p.n}</span>
+                <Link
+                  href={p.href}
+                  className="mt-2 block font-display text-[17.5px] font-bold tracking-[-0.015em] hover:text-primary"
+                >
+                  {p.titulo}
+                </Link>
+                <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
+                  {p.resumen}
+                </p>
+              </li>
+            ))}
+          </ol>
+          {empezando && (
+            <p className="mt-8 text-[15px] text-muted-foreground">
+              ¿Ya tiene sus grillos criados?{" "}
+              <Link
+                href="/consulta"
+                className="font-semibold text-primary underline underline-offset-2"
+              >
+                Vaya directo a la consulta
+              </Link>
+            </p>
+          )}
+        </section>
+
+        {/* ── Para qué animales ──────────────────────────────── */}
+        <section className="grid gap-8 border-b py-14 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16 lg:py-20">
+          <div>
+            <p className="rotulo text-muted-foreground">Para qué animales</p>
+            <h2 className="mt-3 font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
+              Tilapia, pollo y cerdo
+            </h2>
+            <ul className="mt-6 flex flex-col gap-2.5">
+              {ANIMALS.map((a) => {
+                const min = Math.min(...a.stages.map((e) => e.proteinMin));
+                const max = Math.max(...a.stages.map((e) => e.proteinMax));
+                return (
+                  <li
+                    key={a.id}
+                    className="flex items-baseline justify-between gap-3 rounded-2xl border bg-card px-4 py-3.5"
+                  >
+                    <span className="font-display text-[16.5px] font-bold tracking-[-0.015em]">
+                      {a.name}
+                    </span>
+                    <span className="rotulo text-muted-foreground">
+                      {min}–{max} % proteína
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
+              Los requerimientos vienen de las tablas de referencia NRC para
+              alimentación animal.
+            </p>
+          </div>
+          <Image
+            src="/arte/animales.webp"
+            alt=""
+            width={900}
+            height={300}
+            aria-hidden
+            className="lamina h-auto w-full"
+          />
+        </section>
+
+        {/* ── Cifras ─────────────────────────────────────────── */}
+        <section className="border-b py-14 lg:py-20">
+          <p className="rotulo text-muted-foreground">El proyecto en números</p>
+          <dl className="mt-7 grid grid-cols-2 gap-x-8 gap-y-8 lg:grid-cols-4">
+            {CIFRAS.map((c) => (
+              <div key={c.rotulo} className="border-t pt-4">
+                <dt className="font-display text-[2.6rem] font-extrabold leading-none tracking-[-0.035em] text-primary lg:text-[3.2rem]">
+                  {c.valor}
+                </dt>
+                <dd className="mt-2 text-[14.5px] leading-snug text-muted-foreground">
+                  {c.rotulo}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        {/* ── Quién lo hace ──────────────────────────────────── */}
+        <section className="grid gap-8 py-14 lg:grid-cols-[1fr_1.1fr] lg:gap-16 lg:py-20">
+          <div>
+            <p className="rotulo text-muted-foreground">Quién lo hace</p>
+            <h2 className="mt-3 font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
+              Universidad de los Llanos
+            </h2>
+          </div>
+          <div className="flex flex-col gap-4 text-[16.5px] leading-relaxed text-foreground/85 lg:text-[17px]">
+            <p>
+              Con financiación de Minciencias, convocatoria 963 de 2025. Lo
+              hacemos dos personas: la Dra. Mónica Paola Higuera-Díaz dirige la
+              investigación, y Catalina Clavijo Agudelo creó esta página.
+            </p>
+            <p>
+              Los ensayos se hacen en Villavicencio, con grillos nativos del
+              Piedemonte Llanero.
+            </p>
+            <Link
+              href="/proyecto"
+              className="mt-1 inline-flex min-h-12 w-fit items-center rounded-full border-2 border-primary px-5 text-[15.5px] font-bold text-primary transition-colors hover:bg-primary/5"
+            >
+              Conozca el proyecto
+            </Link>
+          </div>
+        </section>
+      </main>
+
+    </>
   );
 }

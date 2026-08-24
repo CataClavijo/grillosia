@@ -20,7 +20,14 @@ import { BIBLIOTECA, CAMINO } from "@/lib/camino";
  * No se dibuja en las pantallas del camino: alli la accion hacia adelante
  * vive fija abajo y el pie la estorbaria.
  */
-const SIN_PIE = ["/chat", "/reset", "/consulta", "/caja", "/grillos", "/resultado"];
+const SIN_PIE = [
+  "/chat",
+  "/reset",
+  "/consulta",
+  "/caja",
+  "/grillos",
+  "/resultado",
+];
 
 export function SiteFooter() {
   const pathname = usePathname();
@@ -28,7 +35,7 @@ export function SiteFooter() {
 
   return (
     <footer className="mt-auto border-t">
-      <div className="mx-auto w-full max-w-[560px] px-5 pb-9 pt-8">
+      <div className="mx-auto w-full max-w-[1180px] px-5 pb-10 pt-9 lg:px-8">
         <div className="flex items-center gap-2.5">
           <Image src="/logo.png" alt="" width={34} height={34} />
           <span className="font-display text-[17px] font-bold tracking-[-0.02em]">
@@ -36,7 +43,7 @@ export function SiteFooter() {
           </span>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-2">
+        <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-4">
           <nav>
             <ul className="flex flex-col gap-2">
               {CAMINO.map((p) => (

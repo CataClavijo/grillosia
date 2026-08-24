@@ -19,9 +19,9 @@ import { SessionBlock } from "@/components/session-block";
 import { ThemeToggle, useTemaOscuro } from "@/components/theme-toggle";
 
 /**
- * El menu repite el camino, numerado igual que en las pantallas, para que
- * abrirlo no sea entrar a otro sistema de navegacion sino ver el mismo de
- * arriba. Debajo, la biblioteca: lo que se consulta y no se recorre.
+ * El menu repite las mismas secciones que la barra de escritorio, sin
+ * numerar: navegar no es avanzar en el camino. Debajo, la biblioteca: lo que
+ * se consulta y no se recorre.
  */
 const CAMINO = [
   { href: "/", label: "Inicio", n: null as number | null },
@@ -82,13 +82,8 @@ export function SiteNav({ variant = "full" }: { variant?: "full" | "focused" }) 
                 <SheetClose asChild>
                   <Link
                     href={item.href}
-                    className="flex min-h-14 items-center gap-3 rounded-xl px-4 text-[17px] font-semibold transition-colors hover:bg-muted"
+                    className="flex min-h-14 items-center rounded-xl px-4 text-[17px] font-semibold transition-colors hover:bg-muted"
                   >
-                    {/* El mismo numero que muestra la pantalla: abrir el menu
-                        no cambia de sistema de navegacion. */}
-                    <span className="rotulo w-8 shrink-0 text-primary">
-                      {item.n ? `0${item.n}` : ""}
-                    </span>
                     {item.label}
                   </Link>
                 </SheetClose>
