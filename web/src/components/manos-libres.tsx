@@ -29,13 +29,46 @@ type Fase = "escuchando" | "pensando" | "hablando";
 
 const POR_ID = new Map(FIGURAS.map((f) => [f.id, f]));
 
-/** Saca el marcador de figura del texto y devuelve las dos cosas por separado. */
-function partir(texto: string) {
-  const m = texto.match(/\[figura:([a-z-]{1,32})\]/);
-  return {
-    figura: m ? POR_ID.get(m[1]) : undefined,
-    limpio: texto.replace(/\[figura:[a-z-]+\]/g, "").trim(),
-  };
+/** Marcador con que el asistente pide mostrar un dibujo. */
+const MARCA = /\[figura:([a-z-]{1,32})\]/g;
+
+/** El texto tal como se lee y se muestra, sin los marcadores. */
+function sinMarcas(texto: string) {
+  return texto.replace(MARCA, "").replace(/\n{3,}/g, "\n\n").trim();
+}
+
+/**
+ * Arma el guion: cada linea con el dibujo que le toca.
+ *
+ * Antes se cogia SOLO el primer dibujo de la respuesta y se dejaba fijo
+ * mientras hablaba. Para un "¿como armo la caja?" eso desperdicia lo que el
+ * asistente ya sabe hacer: nombra la caja, la ventilacion, la cama, las
+ * hueveras y el agua, cada una con su dibujo. Atando cada dibujo a su linea,
+ * la imagen va cambiando al ritmo de la voz y se ve el paso a paso.
+ *
+ * Se parte primero por saltos de linea porque el marcador viene en una linea
+ * suya; solo despues se parte en frases. El dibujo vale desde donde aparece
+ * hacia adelante, hasta que llegue otro.
+ */
+function guionar(texto: string) {
+  const lineas: string[] = [];
+  const dibujos: Array<(typeof FIGURAS)[number] | undefined> = [];
+  let actual: (typeof FIGURAS)[number] | undefined;
+
+  for (const bloque of texto.split("\n")) {
+    const marcas = [...bloque.matchAll(MARCA)];
+    if (marcas.length) {
+      const ultima = POR_ID.get(marcas[marcas.length - 1][1]);
+      if (ultima) actual = ultima;
+    }
+    const limpio = bloque.replace(MARCA, "").trim();
+    if (!limpio) continue;
+    for (const linea of enLineas(limpio)) {
+      lineas.push(linea);
+      dibujos.push(actual);
+    }
+  }
+  return { lineas, dibujos };
 }
 
 /**
@@ -165,7 +198,6 @@ export function ManosLibres({
   const [fase, setFase] = useState<Fase>("escuchando");
   const [dicho, setDicho] = useState("");
   const [respuesta, setRespuesta] = useState("");
-  const [figura, setFigura] = useState<(typeof FIGURAS)[number] | undefined>();
   const vivo = useRef(false);
 
   const { leer, callar, desbloquear, avance } = useLectura();
@@ -190,21 +222,20 @@ export function ManosLibres({
       // La respuesta anterior NO se borra: se queda hasta que llegue la nueva.
       // Borrarla aqui dejaba la pantalla en blanco justo cuando uno se habia
       // quedado a medias de leerla, y ya no habia forma de volver a verla.
-      setFigura(undefined);
       setFase("pensando");
 
       const bruto = await preguntar(texto);
       if (!vivo.current) return;
 
-      const { figura: f, limpio } = partir(bruto);
-      setFigura(f);
-      setRespuesta(limpio);
-      ultimoDicho.current = limpio;
+      // Se guarda EN CRUDO, con los marcadores: de ahi sale el guion que
+      // sincroniza cada dibujo con su linea.
+      setRespuesta(bruto);
+      ultimoDicho.current = sinMarcas(bruto);
       setFase("hablando");
 
       // Se espera a que ACABE de sonar. Antes se reabria el microfono 400 ms
       // despues de empezar a hablar, y se oia a si mismo.
-      await leer(limpio, "manos-libres", { servicio: true });
+      await leer(bruto, "manos-libres", { servicio: true });
       if (!vivo.current) return;
 
       // Pausa corta: lo justo para no pisar el final de su propia frase.
@@ -217,7 +248,8 @@ export function ManosLibres({
     [preguntar, leer],
   );
 
-  const lineas = useMemo(() => enLineas(respuesta), [respuesta]);
+  const guion = useMemo(() => guionar(respuesta), [respuesta]);
+  const lineas = guion.lineas;
 
   /**
    * Cual de las lineas se esta diciendo.
@@ -237,6 +269,15 @@ export function ManosLibres({
     }
     return lineas.length - 1;
   }, [lineas, avance]);
+
+  /**
+   * El dibujo que toca AHORA, segun la linea que se esta diciendo.
+   *
+   * Mientras habla va cambiando con la voz. Cuando ya no suena se deja el
+   * ultimo que salio, para que quede algo que mirar mientras se relee.
+   */
+  const figura =
+    guion.dibujos[activa] ?? [...guion.dibujos].reverse().find(Boolean);
 
   const caja = useRef<HTMLDivElement>(null);
 
@@ -282,7 +323,6 @@ export function ManosLibres({
       desbloquear();
       setDicho("");
       setRespuesta("");
-      setFigura(undefined);
       setFase("escuchando");
       empezar();
     } else {
@@ -372,7 +412,11 @@ export function ManosLibres({
               aria-label="Interrumpir y hablar"
               className="w-full max-w-[420px] text-left"
             >
-              <figure>
+              {/* `key` con el id: al cambiar de dibujo React monta uno nuevo y
+                  la animacion vuelve a correr. Sin eso el cambio es un salto
+                  seco, y ahora que la imagen va siguiendo a la voz eso pasa
+                  varias veces en una misma respuesta. */}
+              <figure key={figura.id} className="animate-in fade-in duration-500">
                 <div className="overflow-hidden rounded-2xl border border-white/15 bg-[#FBF9F2]">
                   <Image
                     src={figura.src ?? `/figuras/${figura.id}.webp`}
