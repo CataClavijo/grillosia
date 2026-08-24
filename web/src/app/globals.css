@@ -337,3 +337,85 @@
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Laminas al pie: se funden por arriba en vez de cortarse en seco.
+   Una lamina anclada abajo termina en un borde recto que se lee como un
+   recorte mal hecho. El degradado la disuelve hacia el fondo y la convierte
+   en horizonte.
+   ────────────────────────────────────────────────────────────────────── */
+.lamina-fundida {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.35) 22%,
+    #000 55%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.35) 22%,
+    #000 55%
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Orbe del modo manos libres.
+   Se anima con keyframes propios y no con utilidades genericas: cambiar el
+   tamano del elemento en cada estado hacia saltar la maqueta y parecia un
+   fallo. Aqui el elemento no cambia de tamano nunca; lo que respira es una
+   transformacion, que no toca el flujo.
+   ────────────────────────────────────────────────────────────────────── */
+@keyframes orbe-respira {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.09);
+    opacity: 1;
+  }
+}
+@keyframes orbe-onda {
+  0% {
+    transform: scale(0.82);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+@keyframes orbe-gira {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orbe-escucha {
+  animation: orbe-respira 2.4s ease-in-out infinite;
+}
+.orbe-onda {
+  animation: orbe-onda 2.4s ease-out infinite;
+}
+.orbe-onda-2 {
+  animation: orbe-onda 2.4s ease-out infinite;
+  animation-delay: 1.2s;
+}
+.orbe-piensa {
+  animation: orbe-gira 1.15s linear infinite;
+}
+.orbe-habla {
+  animation: orbe-respira 1.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbe-escucha,
+  .orbe-onda,
+  .orbe-onda-2,
+  .orbe-piensa,
+  .orbe-habla {
+    animation: none;
+  }
+}

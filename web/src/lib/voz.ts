@@ -64,6 +64,17 @@ export function useDictado(alTerminar: (texto: string) => void) {
   const ultimo = useRef("");
   /** Evita enviar dos veces si `onend` llega despues de un envio manual. */
   const enviado = useRef(false);
+  /**
+   * Corte por silencio.
+   *
+   * El navegador decide solo cuando cerrar, y tarda distinto cada vez: a
+   * veces corta enseguida y a veces se queda esperando varios segundos con
+   * la frase ya dicha en pantalla. Eso se siente como que la aplicacion se
+   * colgo. Este temporizador cierra a los 1,4 s sin oir nada nuevo, que es
+   * una pausa natural al final de una frase.
+   */
+  const silencio = useRef<number | null>(null);
+  const SILENCIO_MS = 1400;
 
   useEffect(() => {
     setEstado(hayDictado() ? "inactivo" : "no-disponible");
@@ -82,6 +93,7 @@ export function useDictado(alTerminar: (texto: string) => void) {
       return;
     }
     rec.current = r;
+    if (silencio.current) window.clearTimeout(silencio.current);
     final.current = "";
     ultimo.current = "";
     enviado.current = false;
@@ -103,10 +115,22 @@ export function useDictado(alTerminar: (texto: string) => void) {
       const visible = (final.current + enCurso).trim();
       if (visible) ultimo.current = visible;
       setParcial(final.current + enCurso);
+
+      // Cada vez que llega algo nuevo se reinicia la cuenta del silencio.
+      if (silencio.current) window.clearTimeout(silencio.current);
+      if (visible) {
+        silencio.current = window.setTimeout(() => {
+          rec.current?.stop();
+        }, SILENCIO_MS);
+      }
     };
 
-    r.onerror = () => setEstado("inactivo");
+    r.onerror = () => {
+      if (silencio.current) window.clearTimeout(silencio.current);
+      setEstado("inactivo");
+    };
     r.onend = () => {
+      if (silencio.current) window.clearTimeout(silencio.current);
       setEstado("inactivo");
       // Se toma lo definitivo si existe; si no, lo ultimo que se oyo.
       const texto = (final.current.trim() || ultimo.current).trim();
@@ -124,6 +148,14 @@ export function useDictado(alTerminar: (texto: string) => void) {
       setEstado("inactivo");
     }
   }, [alTerminar]);
+
+  useEffect(
+    () => () => {
+      if (silencio.current) window.clearTimeout(silencio.current);
+      rec.current?.stop();
+    },
+    [],
+  );
 
   return { estado, parcial, empezar, parar };
 }

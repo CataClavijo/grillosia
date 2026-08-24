@@ -31,6 +31,40 @@ const DIETAS = ["D1", "D2", "D3"];
 /** Tope de vueltas de herramienta. Con una basta; dos es margen. */
 const MAX_VUELTAS = 2;
 
+/**
+ * Respuesta fija para lo que no es del tema.
+ *
+ * La escribe el codigo, no el modelo. Al modelo solo se le pide que
+ * CLASIFIQUE —una tarea facil— y el texto del rechazo queda fuera de su
+ * alcance. Es el mismo metodo que se uso con las cifras y con el orden de
+ * las comidas: darle al modelo el trabajo mas pequeno posible.
+ *
+ * Hizo falta porque estaba resolviendo integrales. Un asistente de un
+ * proyecto de Minciencias haciendo tareas de calculo no solo desentona:
+ * gasta plata y deja mal al proyecto.
+ */
+const FUERA_DE_TEMA =
+  "Yo solo sé de la cría de grillos y de la harina que producen: las cajas, " +
+  "el clima, la comida, los cuidados y para qué animal sirve cada una. " +
+  "De eso pregúnteme lo que quiera.";
+
+/** Marca con que el modelo senala que la pregunta no es del tema. */
+const MARCA_FUERA = /\[fuera-de-tema\]/i;
+
+/**
+ * Quita notacion matematica y bloques de codigo. Red de seguridad: si algo
+ * se cuela pese al prompt, al menos no llega como LaTeX en crudo, que en
+ * pantalla se ve como basura.
+ */
+function limpiar(texto: string): string {
+  return texto
+    .replace(/\\[\[\]()]/g, "")
+    .replace(/\$\$?[^$]*\$\$?/g, "")
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 interface MensajeEntrada {
   role: "user" | "assistant";
   text: string;
@@ -299,10 +333,11 @@ export async function POST(request: Request) {
 
       const llamadas = mensaje.tool_calls ?? [];
       if (llamadas.length === 0) {
-        return NextResponse.json({
-          disponible: true,
-          text: (mensaje.content ?? "").trim(),
-        });
+        const bruto = (mensaje.content ?? "").trim();
+        if (MARCA_FUERA.test(bruto)) {
+          return NextResponse.json({ disponible: true, text: FUERA_DE_TEMA });
+        }
+        return NextResponse.json({ disponible: true, text: limpiar(bruto) });
       }
 
       mensajes.push(mensaje);

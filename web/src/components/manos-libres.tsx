@@ -134,7 +134,7 @@ export function ManosLibres({
         width={1000}
         height={547}
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 w-full max-w-none opacity-[0.18] mix-blend-screen invert"
+        className="lamina-fundida pointer-events-none absolute inset-x-0 bottom-0 w-full max-w-none opacity-[0.22] mix-blend-screen invert"
       />
 
       <div className="relative flex flex-1 flex-col px-6 pb-[max(env(safe-area-inset-bottom),20px)] pt-[max(env(safe-area-inset-top),14px)]">
@@ -169,26 +169,40 @@ export function ManosLibres({
               </figcaption>
             </figure>
           ) : (
-            <span
-              className={cn(
-                "flex items-center justify-center rounded-full border-2 transition-all duration-700",
-                fase === "escuchando"
-                  ? "size-44 animate-pulse border-[#A8C08F]/70 bg-[#A8C08F]/10"
-                  : fase === "pensando"
-                    ? "size-32 border-white/25 bg-white/5"
-                    : "size-44 border-[#F4F1E7]/60 bg-[#F4F1E7]/10",
+            <span className="relative flex size-44 shrink-0 items-center justify-center">
+              {/* Ondas que salen del centro mientras escucha: dicen "le estoy
+                  oyendo" sin depender de que el texto cambie. */}
+              {fase === "escuchando" && (
+                <>
+                  <span className="orbe-onda absolute inset-0 rounded-full border border-[#A8C08F]/50" />
+                  <span className="orbe-onda-2 absolute inset-0 rounded-full border border-[#A8C08F]/50" />
+                </>
               )}
-            >
+
+              {/* Anillo que gira mientras piensa. */}
+              {fase === "pensando" && (
+                <span className="orbe-piensa absolute inset-0 rounded-full border-2 border-white/15 border-t-[#A8C08F]" />
+              )}
+
               <span
                 className={cn(
-                  "rounded-full transition-all duration-700",
-                  fase === "escuchando"
-                    ? "size-24 bg-[#A8C08F]/35"
-                    : fase === "pensando"
-                      ? "size-8 animate-ping bg-white/40"
-                      : "size-28 bg-[#F4F1E7]/30",
+                  "flex size-32 items-center justify-center rounded-full border-2 transition-colors duration-500",
+                  fase === "escuchando" &&
+                    "orbe-escucha border-[#A8C08F]/70 bg-[#A8C08F]/12",
+                  fase === "pensando" && "border-white/20 bg-white/5",
+                  fase === "hablando" &&
+                    "orbe-habla border-[#F4F1E7]/60 bg-[#F4F1E7]/12",
                 )}
-              />
+              >
+                <span
+                  className={cn(
+                    "size-16 rounded-full transition-colors duration-500",
+                    fase === "escuchando" && "bg-[#A8C08F]/35",
+                    fase === "pensando" && "bg-white/20",
+                    fase === "hablando" && "bg-[#F4F1E7]/30",
+                  )}
+                />
+              </span>
             </span>
           )}
 
@@ -199,11 +213,14 @@ export function ManosLibres({
               )}
               {rotulo}
             </span>
+            {/* Alto fijo: mientras el productor habla, el texto crece linea a
+                linea, y si la caja crece con el, el orbe salta. Eso era lo que
+                se veia como un fallo. */}
             <p
               aria-live="polite"
-              className="min-h-[4.5rem] max-w-[36ch] text-center text-[17px] leading-relaxed text-[#F4F1E7]"
+              className="flex h-[6.5rem] max-w-[36ch] items-start justify-center overflow-hidden text-center text-[17px] leading-relaxed text-[#F4F1E7]"
             >
-              {texto}
+              <span className="line-clamp-4">{texto}</span>
             </p>
           </div>
         </div>
