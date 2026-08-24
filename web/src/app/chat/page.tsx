@@ -6,8 +6,12 @@ import {
   Bot,
   ChevronLeft,
   ChevronRight,
+  Mic,
   MoreVertical,
   Send,
+  Square,
+  Volume2,
+  VolumeX,
   User,
 } from "lucide-react";
 
@@ -44,6 +48,7 @@ import {
 } from "@/lib/projects-store";
 import { inlineMarkdown } from "@/lib/markdown";
 import { textoConFiguras } from "@/lib/figuras-en-texto";
+import { useDictado, useLectura } from "@/lib/voz";
 import { StepFooter } from "@/components/step-footer";
 
 interface DisplayMessage {
@@ -118,6 +123,11 @@ export default function ChatPage() {
       ? { temperatura: seleccion.temp, humedad: seleccion.humidity }
       : null,
   );
+
+  // Voz. El dictado envia en cuanto la persona termina de hablar: pedirle
+  // que despues pulse "enviar" pierde justo a quien la funcion sirve.
+  const { estado: lectura, leyendo, leer, callar } = useLectura();
+  const dictado = useDictado((texto) => send(texto));
 
   const contextoConsulta: ContextoConsulta | null = useMemo(() => {
     if (!seleccion) return null;
@@ -369,7 +379,11 @@ export default function ChatPage() {
         )}
 
         {messages.map((m) => (
-          <MessageBubble key={m.id} message={m} />
+          <MessageBubble
+              key={m.id}
+              message={m}
+              voz={{ estado: lectura, leyendo, leer, callar }}
+            />
         ))}
         {thinking && <TypingBubble />}
       </div>
@@ -381,13 +395,42 @@ export default function ChatPage() {
       >
         <div className="flex items-center gap-2 rounded-full border bg-card py-1 pl-4 pr-1.5 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/15">
           <input
-            value={input}
+            value={dictado.estado === "escuchando" ? dictado.parcial : input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Escríbanos su pregunta"
+            placeholder={
+              dictado.estado === "escuchando"
+                ? "Le escuchamos..."
+                : "Escríbanos su pregunta"
+            }
+            readOnly={dictado.estado === "escuchando"}
             aria-label="Escriba su pregunta"
             className="h-12 flex-1 bg-transparent text-[16px] outline-none placeholder:text-muted-foreground"
             autoComplete="off"
           />
+          {dictado.estado !== "no-disponible" && (
+            <Button
+              type="button"
+              size="icon"
+              variant={dictado.estado === "escuchando" ? "default" : "ghost"}
+              aria-label={
+                dictado.estado === "escuchando"
+                  ? "Dejar de hablar"
+                  : "Hablar en vez de escribir"
+              }
+              onClick={() =>
+                dictado.estado === "escuchando"
+                  ? dictado.parar()
+                  : dictado.empezar()
+              }
+              className="size-12 shrink-0 rounded-full"
+            >
+              {dictado.estado === "escuchando" ? (
+                <Square className="size-4 fill-current" />
+              ) : (
+                <Mic className="size-5" />
+              )}
+            </Button>
+          )}
           <Button
             type="submit"
             size="icon"
@@ -428,8 +471,20 @@ export default function ChatPage() {
 
 /* ────────────────────────────────────────────────────────────────────────── */
 
-function MessageBubble({ message }: { message: DisplayMessage }) {
+function MessageBubble({
+  message,
+  voz,
+}: {
+  message: DisplayMessage;
+  voz?: {
+    estado: "quieto" | "cargando" | "hablando";
+    leyendo: string | null;
+    leer: (texto: string, id: string) => void;
+    callar: () => void;
+  };
+}) {
   const isUser = message.role === "user";
+  const sonando = voz?.leyendo === message.id;
 
   return (
     <div className={`flex gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
@@ -449,6 +504,28 @@ function MessageBubble({ message }: { message: DisplayMessage }) {
           <p className="whitespace-pre-wrap">{inlineMarkdown(message.text)}</p>
         ) : (
           textoConFiguras(message.text)
+        )}
+        {!isUser && voz && (
+          <button
+            type="button"
+            onClick={() =>
+              sonando ? voz.callar() : voz.leer(message.text, message.id)
+            }
+            aria-label={sonando ? "Dejar de leer" : "Escuchar esta respuesta"}
+            className="mt-2.5 inline-flex min-h-9 items-center gap-1.5 rounded-full bg-background/70 px-3 text-[13.5px] font-semibold text-foreground/75 transition-colors hover:text-foreground"
+          >
+            {sonando ? (
+              <>
+                <VolumeX className="size-4" />
+                {voz.estado === "cargando" ? "Preparando..." : "Detener"}
+              </>
+            ) : (
+              <>
+                <Volume2 className="size-4" />
+                Escuchar
+              </>
+            )}
+          </button>
         )}
         {!isUser && message.links && message.links.length > 0 && (
           <ul className="mt-3 flex flex-col gap-2">
