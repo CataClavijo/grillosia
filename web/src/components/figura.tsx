@@ -41,6 +41,9 @@ export const LAMINAS_GENERICAS = new Set([
   "identificar",
   "macho-hembra",
   "ciclo",
+  "trampa-vaso",
+  "atrapar-mano",
+  "trampa-carton",
 ]);
 
 export interface DefinicionFigura {
@@ -133,6 +136,27 @@ export const FIGURAS: DefinicionFigura[] = [
     alt: "Un rincón de patio con hojarasca acumulada, leña vieja apilada y un muro bajo de piedra, alumbrado por una linterna.",
     cuando:
       "Cuando pregunten dónde conseguir grillos, dónde buscarlos, cómo atraparlos o a qué hora salen.",
+  },
+  {
+    id: "trampa-vaso",
+    titulo: "Trampa de vaso enterrado",
+    alt: "Corte del suelo: un vaso plástico enterrado a ras de tierra con un pedazo de fruta dentro, y encima una teja apoyada en dos piedras que deja un hueco de entrada y tapa la lluvia.",
+    cuando:
+      "Cuando pregunten cómo atrapar grillos, qué trampa poner, cómo hacer una trampa casera o cómo conseguirlos sin comprarlos.",
+  },
+  {
+    id: "atrapar-mano",
+    titulo: "Atraparlos a mano, sin apretar",
+    alt: "Dos manos: una baja ahuecada sobre un grillo posado en el suelo y la otra espera al lado para cerrar el hueco entre ambas.",
+    cuando:
+      "Cuando pregunten cómo cogerlos con la mano, cómo agarrarlos sin lastimarlos o si se pueden tomar con los dedos.",
+  },
+  {
+    id: "trampa-carton",
+    titulo: "Cartón enrollado y huevera como refugio",
+    alt: "Un pedazo de cartón corrugado enrollado y una huevera de cartón, con grillos metidos entre los pliegues.",
+    cuando:
+      "Cuando pregunten por trampas de refugio, cómo juntarlos con cartón o huevera, o cómo atraerlos a un sitio para recogerlos.",
   },
   {
     id: "identificar",

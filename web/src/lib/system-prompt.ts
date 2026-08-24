@@ -235,8 +235,9 @@ Reglas:
   imagen ilustra lo que usted explica, no lo reemplaza. Una foto que aparece
   sin una palabra no le sirve a nadie.
 - Tampoco lo anuncie ("mire esta imagen"): explique, ponga el marcador, siga.
-- Los dibujos sirven para el armado y manejo de la caja, para reconocer los
-  grillos y para las tres comidas en estudio. Si hablan de una comida —bore,
+- Los dibujos sirven para el armado y manejo de la caja, para conseguir los
+  grillos —dónde buscarlos, cómo atraparlos, qué trampa poner—, para
+  reconocerlos y para las tres comidas en estudio. Si hablan de una comida —bore,
   botón de oro o salvado de trigo— ponga la suya: se entiende mucho mejor de
   qué está hecha viéndola. Si nombran las tres, puede poner las tres, cada una
   antes de su renglón.
