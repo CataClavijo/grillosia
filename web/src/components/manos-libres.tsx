@@ -128,6 +128,40 @@ function enLineas(texto: string): string[] {
 
   const espacio = (c: string | undefined) => c !== undefined && /\s/.test(c);
 
+  /**
+   * Abreviaturas que NO terminan frase.
+   *
+   * "Dra." parecia un final y partia la linea en mitad de "**Dra. Monica
+   * Paola Higuera-Diaz**": la negrita quedaba a caballo entre dos lineas y
+   * los asteriscos salian a la vista.
+   */
+  const ABREVIATURAS = new Set([
+    "dr",
+    "dra",
+    "sr",
+    "sra",
+    "srta",
+    "ing",
+    "lic",
+    "prof",
+    "aprox",
+    "etc",
+    "ej",
+    "no",
+    "pag",
+  ]);
+
+  /** La palabra que acaba en `i` (sin contar el punto). */
+  const abrevia = (i: number) => {
+    let j = i - 1;
+    let palabra = "";
+    while (j >= 0 && /[\p{L}]/u.test(texto[j])) {
+      palabra = texto[j] + palabra;
+      j--;
+    }
+    return palabra.length > 0 && ABREVIATURAS.has(palabra.toLowerCase());
+  };
+
   for (let i = 0; i < texto.length; i++) {
     const c = texto[i];
 
@@ -142,8 +176,8 @@ function enLineas(texto: string): string[] {
     actual += c;
 
     // Corte DESPUES del final de frase, solo si le sigue un espacio: asi
-    // "D3." al final no parte, y "2.5" tampoco.
-    if (".!?:".includes(c) && espacio(texto[i + 1])) {
+    // "D3." al final no parte, y "2.5" tampoco. Y tampoco tras "Dra.".
+    if (".!?:".includes(c) && espacio(texto[i + 1]) && !(c === "." && abrevia(i))) {
       crudas.push(actual.trim());
       actual = "";
     }
@@ -180,7 +214,10 @@ function enLineas(texto: string): string[] {
  */
 function conNegritas(linea: string) {
   const partes = linea.split(/\*\*/);
-  if (partes.length < 3) return linea;
+  // Un solo asterisco doble suelto: la negrita quedo partida entre dos
+  // lineas. No se puede resaltar, pero MOSTRAR el asterisco es peor que
+  // quitarlo, asi que se quita.
+  if (partes.length < 3) return partes.join("");
   return partes.map((trozo, i) =>
     i % 2 === 1 ? <strong key={i} className="font-semibold">{trozo}</strong> : trozo,
   );
