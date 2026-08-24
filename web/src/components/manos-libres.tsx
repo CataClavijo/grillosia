@@ -79,10 +79,43 @@ function esEco(oido: string, dicho: string) {
  * lectura.
  */
 function enLineas(texto: string): string[] {
-  const crudas = texto
-    .split(/(?<=[.!?:])\s+|\s+(?=\d\))/)
-    .map((l) => l.trim())
-    .filter(Boolean);
+  // Se recorre a mano y no con una expresion regular con `lookbehind`:
+  // el `lookbehind` no existe en Safari anterior a la 16.4, y un patron que el
+  // navegador no entiende no falla al usarlo, sino que impide leer el archivo
+  // entero. Un telefono de 2022 sin actualizar dejaba muerta toda la pagina.
+  const crudas: string[] = [];
+  let actual = "";
+
+  /** Si en `i` empieza un punto de lista: "1)", "2)", "10)". */
+  const abreLista = (i: number) => {
+    let j = i;
+    while (j < texto.length && texto[j] >= "0" && texto[j] <= "9") j++;
+    return j > i && texto[j] === ")";
+  };
+
+  const espacio = (c: string | undefined) => c !== undefined && /\s/.test(c);
+
+  for (let i = 0; i < texto.length; i++) {
+    const c = texto[i];
+
+    // Corte ANTES del punto de lista: el asistente enumera mucho, y sin esto
+    // una lista entera quedaba de una sola linea larguisima.
+    if (espacio(c) && abreLista(i + 1)) {
+      if (actual.trim()) crudas.push(actual.trim());
+      actual = "";
+      continue;
+    }
+
+    actual += c;
+
+    // Corte DESPUES del final de frase, solo si le sigue un espacio: asi
+    // "D3." al final no parte, y "2.5" tampoco.
+    if (".!?:".includes(c) && espacio(texto[i + 1])) {
+      crudas.push(actual.trim());
+      actual = "";
+    }
+  }
+  if (actual.trim()) crudas.push(actual.trim());
 
   const salida: string[] = [];
   for (const linea of crudas) {
@@ -204,18 +237,24 @@ export function ManosLibres({
   }, [empezar]);
 
   /**
-   * Interrumpir: tocar mientras habla lo calla y pasa a escuchar.
+   * El toque hace lo unico sensato en cada momento.
    *
-   * Sin esto hay que aguantar la respuesta entera aunque uno ya sepa que
-   * quiere preguntar. Se hace con un toque y no oyendo mientras habla,
-   * porque el microfono abierto durante la reproduccion se oye a si mismo.
+   * Hablando: lo calla. `callar` corta el audio, con lo que `leer` resuelve y
+   * el ciclo de `alOir` reabre el microfono por su cuenta.
+   *
+   * Callado sin estar oyendo: abre el microfono. Esta rama es la importante.
+   * Reabrir el reconocimiento sin que medie un toque no esta garantizado
+   * -Safari en iPhone lo restringe-, y si falla, el modo se queda mudo sin
+   * decir nada y no hay manera de salir del atasco. Con esto siempre queda
+   * una salida a un toque.
    */
-  const interrumpir = useCallback(() => {
-    if (fase !== "hablando") return;
-    // `callar` corta el audio, con lo que `leer` resuelve y el ciclo de
-    // `alOir` reabre el microfono por su cuenta.
-    callar();
-  }, [fase, callar]);
+  const alTocar = useCallback(() => {
+    if (fase === "hablando") {
+      callar();
+      return;
+    }
+    if (estadoDictado !== "escuchando") empezar();
+  }, [fase, callar, empezar, estadoDictado]);
 
   useEffect(() => {
     if (abierto) {
@@ -245,7 +284,7 @@ export function ManosLibres({
     fase === "escuchando"
       ? estadoDictado === "escuchando"
         ? "Le escuchamos"
-        : "Un momento"
+        : "Toque para hablar"
       : fase === "pensando"
         ? "Pensando"
         : "Respondiendo";
@@ -291,7 +330,7 @@ export function ManosLibres({
                respuesta entera. */
             <button
               type="button"
-              onClick={interrumpir}
+              onClick={alTocar}
               aria-label="Interrumpir y hablar"
               className="w-full max-w-[420px] text-left"
             >
@@ -314,11 +353,9 @@ export function ManosLibres({
           ) : (
             <button
               type="button"
-              onClick={interrumpir}
+              onClick={alTocar}
               aria-label={
-                fase === "hablando"
-                  ? "Interrumpir y hablar"
-                  : "Estado de la conversación"
+                fase === "hablando" ? "Interrumpir y hablar" : "Hablar"
               }
               className="shrink-0 rounded-full"
             >
@@ -327,11 +364,14 @@ export function ManosLibres({
           )}
 
           <div className="flex flex-col items-center gap-3">
-            {fase === "hablando" && (
+            {(fase === "hablando" ||
+              (fase === "escuchando" && estadoDictado !== "escuchando")) && (
               <span className="text-[13px] text-[#8E9683]">
-                {figura
-                  ? "Toque la imagen para interrumpir"
-                  : "Toque el círculo para interrumpir"}
+                {fase !== "hablando"
+                  ? "Toque el círculo para hablar"
+                  : figura
+                    ? "Toque la imagen para interrumpir"
+                    : "Toque el círculo para interrumpir"}
               </span>
             )}
             <span className="rotulo flex items-center gap-2 text-[#A8C08F]">
