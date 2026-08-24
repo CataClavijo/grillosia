@@ -107,6 +107,27 @@ export function useDictado(alTerminar: (texto: string) => void) {
       setEstado("no-disponible");
       return;
     }
+
+    // Se CIERRA el anterior antes de abrir otro.
+    //
+    // Cada turno creaba uno nuevo y abandonaba el de antes, vivo y con sus
+    // manejadores puestos. Se iban acumulando, y como el navegador solo deja
+    // un reconocimiento a la vez, llegaba un momento en que el `start()` del
+    // nuevo fallaba porque el viejo seguia ocupando el microfono. El fallo se
+    // tragaba en el `catch` de abajo y el modo se apagaba sin decir nada:
+    // funcionaba un rato y de pronto dejaba de oir.
+    const anterior = rec.current;
+    if (anterior) {
+      anterior.onresult = null;
+      anterior.onerror = null;
+      anterior.onend = null;
+      try {
+        anterior.stop();
+      } catch {
+        /* ya estaba cerrado */
+      }
+    }
+
     rec.current = r;
     if (silencio.current) window.clearTimeout(silencio.current);
     final.current = "";
@@ -177,6 +198,10 @@ export function useDictado(alTerminar: (texto: string) => void) {
       setEstado("inactivo");
     };
     r.onend = () => {
+      // Si este ya no es el reconocedor vigente, no hace nada: reabrir o
+      // entregar texto desde uno superado pisa al que esta trabajando.
+      if (rec.current !== r) return;
+
       // El navegador cierra por su cuenta tras un rato de silencio absoluto.
       // Si nadie llego a decir nada y seguimos queriendo oir, se reabre: de
       // lo contrario el modo manos libres se queda mudo sin avisar.
@@ -204,7 +229,10 @@ export function useDictado(alTerminar: (texto: string) => void) {
       queremosOir.current = true;
       r.start();
       setEstado("escuchando");
-    } catch {
+    } catch (e) {
+      // Antes esto se tragaba en silencio y no habia forma de saber por que
+      // el modo dejaba de oir.
+      console.warn("[voz] no se pudo abrir el microfono:", e);
       queremosOir.current = false;
       setEstado("inactivo");
     }
@@ -509,7 +537,8 @@ export function useLectura() {
         // toparse con el bloqueo del navegador.
         const a = audio.current ?? new Audio();
         audio.current = a;
-        a.src = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
+        a.src = url;
 
         let cerrado = false;
         const terminar = (bien: boolean) => {
@@ -517,6 +546,10 @@ export function useLectura() {
           cerrado = true;
           cortar.current = null;
           a.ontimeupdate = null;
+          // Se suelta la memoria del audio. Al leer por frases son varios
+          // trozos por respuesta y ninguno se liberaba: en una conversacion
+          // larga, en un telefono, eso se acumula hasta pesar.
+          URL.revokeObjectURL(url);
           listo(bien);
         };
         cortar.current = () => terminar(false);
