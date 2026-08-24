@@ -310,11 +310,12 @@ export function ManosLibres({
   /**
    * El dibujo que toca AHORA, segun la linea que se esta diciendo.
    *
-   * Mientras habla va cambiando con la voz. Cuando ya no suena se deja el
-   * ultimo que salio, para que quede algo que mirar mientras se relee.
+   * Mientras habla va cambiando con la voz. Cuando la linea no tiene dibujo
+   * propio —porque la respuesta arranca con una frase antes del primer
+   * marcador— se cae al PRIMERO, no al ultimo: al empezar a oir un paso a
+   * paso lo coherente es ver el primer paso, no el final.
    */
-  const figura =
-    guion.dibujos[activa] ?? [...guion.dibujos].reverse().find(Boolean);
+  const figura = guion.dibujos[activa] ?? guion.dibujos.find(Boolean);
 
   const caja = useRef<HTMLDivElement>(null);
 

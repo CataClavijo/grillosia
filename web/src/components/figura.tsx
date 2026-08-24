@@ -163,6 +163,27 @@ export const FIGURAS: DefinicionFigura[] = [
       "Cuando pregunten cómo cosechar, cómo separar los grillos del sustrato o en qué guardarlos.",
   },
   {
+    id: "dieta-bore",
+    titulo: "D1: harina de bore",
+    alt: "Un cuenco con harina fina y, al lado, una hoja grande de bore con su nervadura y un trozo de tallo.",
+    cuando:
+      "Cuando pregunten por la dieta D1, por el bore, o pidan ver de qué está hecha esa comida.",
+  },
+  {
+    id: "dieta-boton-oro",
+    titulo: "D2: harina de botón de oro",
+    alt: "Un cuenco con harina fina y, al lado, una rama de botón de oro con dos flores abiertas y hojas lobuladas.",
+    cuando:
+      "Cuando pregunten por la dieta D2, por el botón de oro, o pidan ver de qué está hecha esa comida.",
+  },
+  {
+    id: "dieta-salvado",
+    titulo: "D3: salvado de trigo",
+    alt: "Un cuenco con salvado de trigo en escamas y, al lado, tres espigas de trigo con sus granos y una cuchara de madera.",
+    cuando:
+      "Cuando pregunten por la dieta D3, por el salvado de trigo, o pidan ver de qué está hecha esa comida.",
+  },
+  {
     id: "clima",
     titulo: "El termómetro colgado adentro",
     alt: "Un termómetro-higrómetro digital pequeño colgado en la pared interior de la caja.",

@@ -147,6 +147,40 @@ export default function ProjectPage() {
         </ul>
       </section>
 
+      {/* Las tres comidas, para que se vean y no solo se nombren.
+          Arriba se leen como códigos —D1, D2, D3— y un código no dice nada:
+          viendo la planta al lado del cuenco se entiende de qué está hecha
+          cada una sin leer una linea mas. */}
+      <section className="mt-12">
+        <h2 className="font-display text-[1.35rem] font-extrabold tracking-[-0.02em]">
+          Las tres comidas en estudio
+        </h2>
+        <ul className="mt-6 grid gap-6 border-t pt-8 sm:grid-cols-3">
+          {[
+            { id: "dieta-bore", codigo: "D1", nombre: "Harina de bore" },
+            { id: "dieta-boton-oro", codigo: "D2", nombre: "Harina de botón de oro" },
+            { id: "dieta-salvado", codigo: "D3", nombre: "Salvado de trigo" },
+          ].map((d) => (
+            <li key={d.id}>
+              <Image
+                src={`/figuras/${d.id}.webp`}
+                alt=""
+                width={780}
+                height={540}
+                aria-hidden
+                className="lamina h-auto w-full"
+              />
+              <p className="rotulo mt-2 text-primary">{d.codigo}</p>
+              <p className="mt-1 text-[15px] font-semibold">{d.nombre}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-5 text-[14px] leading-relaxed text-muted-foreground">
+          Las tres llevan la misma base: 10 % de harina de choclo y 10 % de
+          avena en hojuelas. Lo que cambia es el 80 % principal.
+        </p>
+      </section>
+
       {/* Créditos de las fotografías */}
       <Image
         src="/arte/caja-cria.webp"

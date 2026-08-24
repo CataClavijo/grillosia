@@ -77,10 +77,16 @@ export function useDictado(alTerminar: (texto: string) => void) {
    * silencio de verdad.
    */
   const silencio = useRef<number | null>(null);
-  const ESPERA_INICIAL_MS = 1800;
-  const ESPERA_CORRIENTE_MS = 1000;
-  /** Cuando el navegador ya dio la frase por cerrada. */
-  const ESPERA_TRAS_CIERRE_MS = 550;
+  const ESPERA_INICIAL_MS = 2000;
+  const ESPERA_CORRIENTE_MS = 1200;
+  /**
+   * Cuando el navegador ya dio la frase por cerrada.
+   *
+   * A mitad de camino: 550 ms resultaron demasiado vivos —cortaba antes de
+   * que uno terminara de pensar la frase— y los 1700 de antes se sentian
+   * lentos. Este valor es el que se ajusta si vuelve a desbalancearse.
+   */
+  const ESPERA_TRAS_CIERRE_MS = 850;
   /** Cuando el navegador cierra solo pero seguimos queriendo escuchar. */
   const queremosOir = useRef(false);
 

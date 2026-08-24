@@ -235,7 +235,12 @@ Reglas:
   imagen ilustra lo que usted explica, no lo reemplaza. Una foto que aparece
   sin una palabra no le sirve a nadie.
 - Tampoco lo anuncie ("mire esta imagen"): explique, ponga el marcador, siga.
-- Para una pregunta que no sea de armado o manejo de la caja, no ponga ninguno.`;
+- Los dibujos sirven para el armado y manejo de la caja, para reconocer los
+  grillos y para las tres comidas en estudio. Si hablan de una comida —bore,
+  botón de oro o salvado de trigo— ponga la suya: se entiende mucho mejor de
+  qué está hecha viéndola. Si nombran las tres, puede poner las tres, cada una
+  antes de su renglón.
+- Para lo demás, no ponga ninguno.`;
 }
 
 /** Contexto de la consulta que el productor tiene abierta. */
