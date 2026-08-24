@@ -77,8 +77,10 @@ export function useDictado(alTerminar: (texto: string) => void) {
    * silencio de verdad.
    */
   const silencio = useRef<number | null>(null);
-  const ESPERA_INICIAL_MS = 1900;
-  const ESPERA_CORRIENTE_MS = 1100;
+  const ESPERA_INICIAL_MS = 1800;
+  const ESPERA_CORRIENTE_MS = 1000;
+  /** Cuando el navegador ya dio la frase por cerrada. */
+  const ESPERA_TRAS_CIERRE_MS = 550;
   /** Cuando el navegador cierra solo pero seguimos queriendo escuchar. */
   const queremosOir = useRef(false);
 
@@ -137,9 +139,25 @@ export function useDictado(alTerminar: (texto: string) => void) {
       // Cada vez que llega algo nuevo se reinicia la cuenta del silencio.
       if (silencio.current) window.clearTimeout(silencio.current);
       if (visible) {
+        // ¿El navegador ya dio el enunciado por cerrado?
+        //
+        // Cuando marca un resultado como definitivo es porque SU detector de
+        // fin de frase lo decidio, oyendo la senal: entonacion, pausa, energia.
+        // Eso es mucho mejor que un cronometro a ciegas, asi que en ese caso
+        // se espera lo justo por si la persona encadena otra frase. Antes se
+        // ignoraba esa senal y se aguantaba el mismo tiempo largo siempre.
+        const cerrado = ev.results[ev.results.length - 1]?.isFinal === true;
         const palabras = visible.split(/\s+/).filter(Boolean).length;
+        // El atajo pide ADEMAS que haya frase. Un "cada cuanto" de dos
+        // palabras que el navegador da por cerrado casi siempre es alguien
+        // pensando a mitad de la idea, no una pregunta terminada: cortar ahi
+        // a los 550 ms enviaria media pregunta.
         const espera =
-          palabras < 4 ? ESPERA_INICIAL_MS : ESPERA_CORRIENTE_MS;
+          cerrado && palabras >= 4
+            ? ESPERA_TRAS_CIERRE_MS
+            : palabras < 4
+              ? ESPERA_INICIAL_MS
+              : ESPERA_CORRIENTE_MS;
         silencio.current = window.setTimeout(() => {
           queremosOir.current = false;
           rec.current?.stop();
