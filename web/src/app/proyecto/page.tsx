@@ -14,7 +14,7 @@ import {
 import Image from "next/image";
 import { InterestForm } from "@/components/interest-form";
 import { renderMarkdownBlock } from "@/lib/markdown";
-import { SiteNav } from "@/components/site-nav";
+import { Barra } from "@/components/barra";
 import {
   METHODOLOGY_SECTIONS,
 } from "@/lib/content/methodology";
@@ -68,17 +68,9 @@ const LINES = [
 
 export default function ProjectPage() {
   return (
-    <main className="relative mx-auto flex w-full max-w-[560px] flex-col px-6 pb-16 pt-5">
-      <header className="flex items-center justify-between">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[14px] font-semibold text-foreground/70 transition-colors hover:text-foreground"
-        >
-          <ChevronLeft className="h-5 w-5" />
-          Inicio
-        </Link>
-        <SiteNav />
-      </header>
+    <>
+      <Barra />
+      <main className="relative mx-auto flex w-full max-w-[560px] flex-col px-6 pb-16 pt-5">
 
       <section className="mt-8">
         <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
@@ -240,5 +232,6 @@ export default function ProjectPage() {
         </ul>
       </section>
     </main>
+    </>
   );
 }

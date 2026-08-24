@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { SiteNav } from "@/components/site-nav";
+import { Barra } from "@/components/barra";
 import { StepFooter } from "@/components/step-footer";
 import { ANIMALS } from "@/lib/animals";
 import { useProjects } from "@/lib/projects-store";
@@ -55,17 +55,9 @@ export default function ProjectsPage() {
   };
 
   return (
-    <main className="mx-auto flex w-full max-w-[520px] flex-col gap-8 px-6 pb-16 pt-5">
-      <header className="flex items-center justify-between">
-        <Link
-          href="/"
-          className="inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-[15px] font-semibold text-foreground/85 transition-colors hover:text-foreground"
-        >
-          <ChevronLeft className="size-5" />
-          Inicio
-        </Link>
-        <SiteNav />
-      </header>
+    <>
+      <Barra />
+      <main className="mx-auto flex w-full max-w-[520px] flex-col gap-8 px-6 pb-16 pt-5">
 
       <h1 className="text-[2rem] font-bold leading-tight tracking-[-0.02em]">
         Mis consultas
@@ -163,5 +155,6 @@ export default function ProjectsPage() {
         primary={{ label: "Hacer una consulta nueva", onClick: nuevaConsulta }}
       />
     </main>
+    </>
   );
 }
