@@ -38,6 +38,35 @@ function partir(texto: string) {
   };
 }
 
+/**
+ * Red de seguridad contra el eco.
+ *
+ * El navegador no dice quien hablo: `SpeechRecognition` entrega texto, no
+ * identidad. Lo que usan los asistentes de verdad es cancelacion de eco, que
+ * necesita la senal de lo que suena como referencia, y la API abre su propio
+ * microfono sin dejar pasarle nada. Asi que la defensa principal es no oir
+ * mientras habla; esto solo cubre la fuga que quede al interrumpir o cuando
+ * la voz del sistema se arrastra un instante.
+ *
+ * Compara por subcadena y pide cinco palabras: el eco devuelve un trozo
+ * literal de lo dicho. Contar palabras sueltas descartaria preguntas reales
+ * -"y la tilapia que"- por repetir terminos que el asistente acababa de usar.
+ */
+const llano = (t: string) =>
+  t
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+function esEco(oido: string, dicho: string) {
+  const a = llano(oido);
+  if (a.split(" ").filter(Boolean).length < 5) return false;
+  return llano(dicho).includes(a);
+}
+
 export function ManosLibres({
   abierto,
   onCerrar,
@@ -55,9 +84,22 @@ export function ManosLibres({
 
   const { leer, callar, desbloquear } = useLectura();
 
+  // `empezar` nace mas abajo (depende de `alOir`), asi que se alcanza por
+  // referencia para poder volver a escuchar al terminar de hablar.
+  const volverAOir = useRef<() => void>(() => {});
+
+  /** Lo ultimo que se leyo en voz alta, para reconocer el eco. */
+  const ultimoDicho = useRef("");
+
   const alOir = useCallback(
     async (texto: string) => {
       if (!vivo.current) return;
+
+      if (esEco(texto, ultimoDicho.current)) {
+        volverAOir.current();
+        return;
+      }
+
       setDicho(texto);
       setRespuesta("");
       setFigura(undefined);
@@ -69,8 +111,20 @@ export function ManosLibres({
       const { figura: f, limpio } = partir(bruto);
       setFigura(f);
       setRespuesta(limpio);
+      ultimoDicho.current = limpio;
       setFase("hablando");
+
+      // Se espera a que ACABE de sonar. Antes se reabria el microfono 400 ms
+      // despues de empezar a hablar, y se oia a si mismo.
       await leer(limpio, "manos-libres");
+      if (!vivo.current) return;
+
+      // Pausa corta: lo justo para no pisar el final de su propia frase.
+      await new Promise((listo) => window.setTimeout(listo, 400));
+      if (!vivo.current) return;
+
+      setFase("escuchando");
+      volverAOir.current();
     },
     [preguntar, leer],
   );
@@ -78,22 +132,9 @@ export function ManosLibres({
   const dictado = useDictado(alOir);
   const { empezar, parar, estado: estadoDictado, parcial } = dictado;
 
-  /**
-   * Vuelve a escuchar en cuanto termina de hablar.
-   *
-   * La pausa es corta a proposito: con casi un segundo, la conversacion se
-   * sentia como un intercambio de telegramas. Lo justo para que no pise el
-   * final de su propia frase.
-   */
   useEffect(() => {
-    if (!abierto || fase !== "hablando") return;
-    const t = window.setTimeout(() => {
-      if (!vivo.current) return;
-      setFase("escuchando");
-      empezar();
-    }, 400);
-    return () => window.clearTimeout(t);
-  }, [abierto, fase, respuesta, empezar]);
+    volverAOir.current = empezar;
+  }, [empezar]);
 
   /**
    * Interrumpir: tocar mientras habla lo calla y pasa a escuchar.
@@ -104,10 +145,10 @@ export function ManosLibres({
    */
   const interrumpir = useCallback(() => {
     if (fase !== "hablando") return;
+    // `callar` corta el audio, con lo que `leer` resuelve y el ciclo de
+    // `alOir` reabre el microfono por su cuenta.
     callar();
-    setFase("escuchando");
-    empezar();
-  }, [fase, callar, empezar]);
+  }, [fase, callar]);
 
   useEffect(() => {
     if (abierto) {

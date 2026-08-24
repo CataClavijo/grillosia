@@ -13,6 +13,10 @@ import Link from "next/link";
  * y no `100vh` porque en un celular la barra del navegador aparece y
  * desaparece, y con `vh` el heroe queda cortado por debajo justo al cargar.
  *
+ * La lamina lleva `lamina-fundida`: sin eso su borde de arriba corta en seco
+ * contra el fondo y se lee como un recorte mal pegado. El degradado de la
+ * seccion no alcanza a taparlo, porque a esa altura ya va casi transparente.
+ *
  * La lamina se ancla abajo y se ve entera: es un paisaje, y recortarle el
  * suelo le quita el horizonte, que es lo unico que lo hace legible como
  * paisaje. El contenido se empuja hacia arriba para dejarle ese espacio.
@@ -31,7 +35,7 @@ export function PortadaHero({ href, cta }: { href: string; cta: string }) {
         height={547}
         priority
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 w-full max-w-none opacity-[0.45] mix-blend-screen invert"
+        className="lamina-fundida pointer-events-none absolute inset-x-0 bottom-0 w-full max-w-none opacity-[0.45] mix-blend-screen invert"
       />
       <span
         aria-hidden

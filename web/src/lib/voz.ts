@@ -251,29 +251,51 @@ export function useLectura() {
     }
   }, []);
 
+  /**
+   * Cierra la lectura en curso desde fuera.
+   *
+   * `pause()` no dispara `onended`, asi que sin esto interrumpir dejaba la
+   * promesa de `leer` colgada y el modo manos libres se quedaba mudo.
+   */
+  const cortar = useRef<(() => void) | null>(null);
+
   const callar = useCallback(() => {
     audio.current?.pause();
+    cortar.current?.();
     if (typeof window !== "undefined") window.speechSynthesis?.cancel();
     setEstado("quieto");
     setLeyendo(null);
   }, []);
 
-  const conElNavegador = useCallback((texto: string, id: string) => {
-    if (typeof window === "undefined" || !window.speechSynthesis) {
-      setEstado("quieto");
-      return;
-    }
-    const u = new SpeechSynthesisUtterance(texto);
-    u.lang = "es-CO";
-    u.rate = 0.95;
-    u.onend = () => {
-      setEstado("quieto");
-      setLeyendo(null);
-    };
-    setEstado("hablando");
-    setLeyendo(id);
-    window.speechSynthesis.speak(u);
-  }, []);
+  const conElNavegador = useCallback(
+    (texto: string, id: string) =>
+      new Promise<void>((listo) => {
+        if (typeof window === "undefined" || !window.speechSynthesis) {
+          setEstado("quieto");
+          listo();
+          return;
+        }
+        const u = new SpeechSynthesisUtterance(texto);
+        u.lang = "es-CO";
+        u.rate = 0.95;
+        let cerrado = false;
+        const terminar = () => {
+          if (cerrado) return;
+          cerrado = true;
+          cortar.current = null;
+          setEstado("quieto");
+          setLeyendo(null);
+          listo();
+        };
+        cortar.current = terminar;
+        u.onend = terminar;
+        u.onerror = terminar;
+        setEstado("hablando");
+        setLeyendo(id);
+        window.speechSynthesis.speak(u);
+      }),
+    [],
+  );
 
   const leer = useCallback(
     async (texto: string, id: string) => {
@@ -293,7 +315,7 @@ export function useLectura() {
 
         if (!res.ok) {
           // 503 es lo esperado cuando no hay servicio o se paso el tope.
-          conElNavegador(limpio, id);
+          await conElNavegador(limpio, id);
           return;
         }
 
@@ -303,22 +325,37 @@ export function useLectura() {
         const a = audio.current ?? new Audio();
         audio.current = a;
         a.src = URL.createObjectURL(blob);
-        a.onended = () => {
-          setEstado("quieto");
-          setLeyendo(null);
-        };
-        a.onerror = () => conElNavegador(limpio, id);
         setEstado("hablando");
-        try {
-          await a.play();
-        } catch (e) {
-          // Bloqueo de reproduccion: se avisa y se intenta con la voz del
-          // sistema, que a veces si pasa.
-          console.warn("[voz] el navegador bloqueo la reproduccion:", e);
-          conElNavegador(limpio, id);
-        }
+
+        // Se espera al FINAL de la reproduccion, no al comienzo. Resolver al
+        // empezar hacia que el modo manos libres volviera a escuchar con el
+        // audio todavia sonando, y el microfono se oia a si mismo.
+        await new Promise<void>((listo) => {
+          let cerrado = false;
+          const terminar = () => {
+            if (cerrado) return;
+            cerrado = true;
+            cortar.current = null;
+            setEstado("quieto");
+            setLeyendo(null);
+            listo();
+          };
+          cortar.current = terminar;
+          a.onended = terminar;
+          a.onerror = () => {
+            if (cerrado) return;
+            cerrado = true;
+            void conElNavegador(limpio, id).then(listo);
+          };
+          void a.play().catch((e) => {
+            if (cerrado) return;
+            cerrado = true;
+            console.warn("[voz] el navegador bloqueo la reproduccion:", e);
+            void conElNavegador(limpio, id).then(listo);
+          });
+        });
       } catch {
-        conElNavegador(limpio, id);
+        await conElNavegador(limpio, id);
       }
     },
     [callar, conElNavegador],
