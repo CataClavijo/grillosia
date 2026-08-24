@@ -429,7 +429,7 @@ export default function ChatPage() {
       {/* Hilo */}
       <div
         ref={scrollRef}
-        className="mt-6 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pb-4"
+        className="mt-6 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overflow-x-hidden pb-4"
         aria-live="polite"
       >
         {!hayMensajes && !thinking && (
@@ -580,8 +580,15 @@ function MessageBubble({
           className="mt-0.5 size-8 shrink-0"
         />
       )}
+      {/* `overflow-wrap: anywhere` y no `break-all`.
+          `break-all` parte cualquier palabra por donde sea, y el texto normal
+          en espanol queda cortado a mitad sin motivo. `anywhere` solo parte lo
+          que de verdad no cabe, y a diferencia de `break-word` tambien reduce
+          el ancho minimo de la caja: sin eso la burbuja se ensancha igual y
+          arrastra toda la conversacion en horizontal, que era el fallo.
+          `min-w-0` deja que el hijo del flex encoja. */}
       <div
-        className={`max-w-[82%] rounded-2xl lg:max-w-[70%] px-4 py-3 text-[15px] leading-relaxed ${
+        className={`min-w-0 max-w-[82%] [overflow-wrap:anywhere] rounded-2xl lg:max-w-[70%] px-4 py-3 text-[15px] leading-relaxed ${
           isUser
             ? "bg-primary text-primary-foreground"
             : "bg-card text-foreground"
