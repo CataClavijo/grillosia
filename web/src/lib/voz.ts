@@ -259,6 +259,16 @@ export function useLectura() {
    */
   const cortar = useRef<(() => void) | null>(null);
 
+  /**
+   * Por donde va la lectura, de 0 a 1.
+   *
+   * Sirve para ir mostrando en pantalla lo que se esta diciendo. Es una
+   * fraccion y no un indice de caracter a proposito: el texto que se lee en
+   * voz alta pasa por `paraLeer` y no mide igual que el que se ve, asi que
+   * un indice absoluto apuntaria al sitio equivocado.
+   */
+  const [avance, setAvance] = useState(0);
+
   const callar = useCallback(() => {
     audio.current?.pause();
     cortar.current?.();
@@ -283,6 +293,7 @@ export function useLectura() {
           if (cerrado) return;
           cerrado = true;
           cortar.current = null;
+          setAvance(1);
           setEstado("quieto");
           setLeyendo(null);
           listo();
@@ -290,6 +301,10 @@ export function useLectura() {
         cortar.current = terminar;
         u.onend = terminar;
         u.onerror = terminar;
+        // `onboundary` da la posicion de verdad, palabra por palabra.
+        u.onboundary = (e) => {
+          if (texto.length) setAvance(e.charIndex / texto.length);
+        };
         setEstado("hablando");
         setLeyendo(id);
         window.speechSynthesis.speak(u);
@@ -305,6 +320,7 @@ export function useLectura() {
 
       setEstado("cargando");
       setLeyendo(id);
+      setAvance(0);
 
       try {
         const res = await fetch("/api/voz", {
@@ -336,11 +352,18 @@ export function useLectura() {
             if (cerrado) return;
             cerrado = true;
             cortar.current = null;
+            a.ontimeupdate = null;
+            setAvance(1);
             setEstado("quieto");
             setLeyendo(null);
             listo();
           };
           cortar.current = terminar;
+          // Con el audio no hay marcas de palabra, asi que se reparte por
+          // tiempo. Es una estimacion, pero va atada a la reproduccion real.
+          a.ontimeupdate = () => {
+            if (a.duration > 0) setAvance(a.currentTime / a.duration);
+          };
           a.onended = terminar;
           a.onerror = () => {
             if (cerrado) return;
@@ -363,5 +386,5 @@ export function useLectura() {
 
   useEffect(() => callar, [callar]);
 
-  return { estado, leyendo, leer, callar, desbloquear };
+  return { estado, leyendo, avance, leer, callar, desbloquear };
 }

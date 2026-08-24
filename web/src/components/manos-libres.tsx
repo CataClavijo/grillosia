@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
 
@@ -67,6 +67,43 @@ function esEco(oido: string, dicho: string) {
   return llano(dicho).includes(a);
 }
 
+/**
+ * Parte la respuesta en lineas para irlas mostrando mientras suena.
+ *
+ * Corta por final de frase y tambien antes de "1)", "2)": el asistente
+ * enumera mucho, y sin eso una lista entera quedaba de una sola linea
+ * larguisima que no se podia seguir.
+ *
+ * Lo que pasa de 95 caracteres se vuelve a partir por comas o punto y coma;
+ * una linea que no cabe en la pantalla del telefono no sirve para seguir la
+ * lectura.
+ */
+function enLineas(texto: string): string[] {
+  const crudas = texto
+    .split(/(?<=[.!?:])\s+|\s+(?=\d\))/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  const salida: string[] = [];
+  for (const linea of crudas) {
+    if (linea.length <= 95) {
+      salida.push(linea);
+      continue;
+    }
+    let resto = linea;
+    while (resto.length > 95) {
+      const corte = resto.lastIndexOf(", ", 95);
+      const punto = resto.lastIndexOf("; ", 95);
+      const donde = Math.max(corte, punto);
+      if (donde < 30) break;
+      salida.push(resto.slice(0, donde + 1).trim());
+      resto = resto.slice(donde + 1).trim();
+    }
+    if (resto) salida.push(resto);
+  }
+  return salida;
+}
+
 export function ManosLibres({
   abierto,
   onCerrar,
@@ -82,7 +119,7 @@ export function ManosLibres({
   const [figura, setFigura] = useState<(typeof FIGURAS)[number] | undefined>();
   const vivo = useRef(false);
 
-  const { leer, callar, desbloquear } = useLectura();
+  const { leer, callar, desbloquear, avance } = useLectura();
 
   // `empezar` nace mas abajo (depende de `alOir`), asi que se alcanza por
   // referencia para poder volver a escuchar al terminar de hablar.
@@ -128,6 +165,36 @@ export function ManosLibres({
     },
     [preguntar, leer],
   );
+
+  const lineas = useMemo(() => enLineas(respuesta), [respuesta]);
+
+  /**
+   * Cual de las lineas se esta diciendo.
+   *
+   * Se reparte el avance por numero de caracteres. Con la voz del sistema la
+   * marca es exacta; con el audio es una estimacion, pero atada al tiempo real
+   * de reproduccion, no a un cronometro suelto.
+   */
+  const activa = useMemo(() => {
+    if (!lineas.length) return 0;
+    const total = lineas.reduce((n, l) => n + l.length, 0);
+    const meta = avance * total;
+    let suma = 0;
+    for (let i = 0; i < lineas.length; i++) {
+      suma += lineas[i].length;
+      if (meta < suma) return i;
+    }
+    return lineas.length - 1;
+  }, [lineas, avance]);
+
+  const caja = useRef<HTMLDivElement>(null);
+
+  // Arrastra la linea que suena a la vista. `nearest` y no `center`: centrar
+  // mueve la caja entera en cada frase y marea.
+  useEffect(() => {
+    const el = caja.current?.querySelector<HTMLElement>('[data-suena="si"]');
+    el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [activa]);
 
   const dictado = useDictado(alOir);
   const { empezar, parar, estado: estadoDictado, parcial } = dictado;
@@ -219,21 +286,31 @@ export function ManosLibres({
           {figura && fase === "hablando" ? (
             /* Cuando hay dibujo, manda el dibujo: el circulo se reduce a una
                senal pequena para no competir con el. */
-            <figure className="w-full max-w-[420px]">
-              <div className="overflow-hidden rounded-2xl border border-white/15 bg-[#FBF9F2]">
-                <Image
-                  src={figura.src ?? `/figuras/${figura.id}.webp`}
-                  alt={figura.alt}
-                  width={900}
-                  height={600}
-                  className="h-auto w-full"
-                />
-              </div>
-              <figcaption className="mt-2.5 text-center text-[13.5px] leading-snug text-[#B9B5A6]">
-                {figura.titulo}
-                {figura.credito && <> · Fotografía: {figura.credito}</>}
-              </figcaption>
-            </figure>
+            /* El dibujo ES el boton de interrumpir. Cuando ocupaba el sitio
+               del circulo no quedaba nada que tocar, y habia que aguantar la
+               respuesta entera. */
+            <button
+              type="button"
+              onClick={interrumpir}
+              aria-label="Interrumpir y hablar"
+              className="w-full max-w-[420px] text-left"
+            >
+              <figure>
+                <div className="overflow-hidden rounded-2xl border border-white/15 bg-[#FBF9F2]">
+                  <Image
+                    src={figura.src ?? `/figuras/${figura.id}.webp`}
+                    alt={figura.alt}
+                    width={900}
+                    height={600}
+                    className="h-auto w-full"
+                  />
+                </div>
+                <figcaption className="mt-2.5 text-center text-[13.5px] leading-snug text-[#B9B5A6]">
+                  {figura.titulo}
+                  {figura.credito && <> · Fotografía: {figura.credito}</>}
+                </figcaption>
+              </figure>
+            </button>
           ) : (
             <button
               type="button"
@@ -252,7 +329,9 @@ export function ManosLibres({
           <div className="flex flex-col items-center gap-3">
             {fase === "hablando" && (
               <span className="text-[13px] text-[#8E9683]">
-                Toque el círculo para interrumpir
+                {figura
+                  ? "Toque la imagen para interrumpir"
+                  : "Toque el círculo para interrumpir"}
               </span>
             )}
             <span className="rotulo flex items-center gap-2 text-[#A8C08F]">
@@ -261,15 +340,44 @@ export function ManosLibres({
               )}
               {rotulo}
             </span>
-            {/* Alto fijo: mientras el productor habla, el texto crece linea a
-                linea, y si la caja crece con el, el orbe salta. Eso era lo que
-                se veia como un fallo. */}
-            <p
+            {/* Alto fijo: si la caja crece con el texto, el circulo salta, y
+                eso se veia como un fallo. Con dibujo se reserva menos, que el
+                dibujo ya ocupa lo suyo.
+
+                Mientras habla se muestran TODAS las lineas y se resalta la que
+                suena. Antes se recortaban a cuatro con puntos suspensivos y no
+                habia manera de leer el resto. */}
+            <div
+              ref={caja}
               aria-live="polite"
-              className="flex h-[6.5rem] max-w-[36ch] items-start justify-center overflow-hidden text-center text-[17px] leading-relaxed text-[#F4F1E7]"
+              className={`w-full max-w-[36ch] overflow-y-auto ${
+                figura ? "h-[9rem]" : "h-[30svh] min-h-[9rem]"
+              }`}
             >
-              <span className="line-clamp-4">{texto}</span>
-            </p>
+              {fase === "hablando" && lineas.length > 0 ? (
+                <div className="flex flex-col gap-2 py-1">
+                  {lineas.map((linea, i) => (
+                    <p
+                      key={i}
+                      data-suena={i === activa ? "si" : "no"}
+                      className={`text-center text-[17px] leading-relaxed transition-colors duration-300 ${
+                        i === activa
+                          ? "text-[#F4F1E7]"
+                          : i < activa
+                            ? "text-[#7C8472]"
+                            : "text-[#5E6555]"
+                      }`}
+                    >
+                      {linea}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-[17px] leading-relaxed text-[#F4F1E7]">
+                  {texto}
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
