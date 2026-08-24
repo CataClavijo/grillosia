@@ -69,9 +69,13 @@ export function Resultado({
         </button>
       </p>
 
-      {/* Lo firme va primero: sale de las tablas NRC, no del modelo. */}
-      <div className="mt-4 rounded-2xl border-2 border-primary/30 bg-primary/5 p-4">
-        <p className="text-[14.5px] leading-snug text-foreground/85">
+      {/* Lo firme va primero: sale de las tablas NRC, no del modelo.
+          Sin recuadro verde. Era el elemento mas ruidoso de la pantalla, y
+          solo es el contexto: la respuesta son las tres comidas de abajo. El
+          borde de 2 px sobre el crema, ademas, ensuciaba el color. Ahora pesa
+          por el tamano del numero, no por el fondo. */}
+      <div className="mt-5">
+        <p className="text-[14.5px] leading-snug text-muted-foreground">
           Su {animalName.toLowerCase()} en {stageName.toLowerCase()} necesita
         </p>
         <p className="mt-1 flex items-baseline gap-2">
@@ -83,7 +87,7 @@ export function Resultado({
           </span>
           <span className="text-[14px] text-muted-foreground">de proteína</span>
         </p>
-        <p className="rotulo mt-2 text-muted-foreground">Tablas NRC</p>
+        <p className="rotulo mt-1.5 text-muted-foreground">Tablas NRC</p>
       </div>
 
       {prediccion.estado === "cargando" && (
@@ -91,7 +95,7 @@ export function Resultado({
       )}
 
       {/* La base comun se dice UNA vez, no tres. */}
-      <p className="mt-6 text-[15px] leading-relaxed text-foreground/85">
+      <p className="mt-7 text-[15px] leading-relaxed text-foreground/85">
         Las tres comidas llevan lo mismo en un 20 %: harina de choclo y avena en
         hojuelas. Lo que cambia es el 80 % principal.
       </p>
@@ -153,7 +157,7 @@ export function Resultado({
         </p>
       )}
 
-      <p className="mt-5 text-[13.5px] leading-relaxed text-muted-foreground">
+      <p className="mt-4 text-[13.5px] leading-relaxed text-muted-foreground">
         {HYDRATION_NOTE}
       </p>
 

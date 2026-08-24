@@ -35,7 +35,7 @@ export default function Inicio() {
 
       <main className="mx-auto w-full max-w-[1180px] px-5 lg:px-8">
         {/* ── Qué es ─────────────────────────────────────────── */}
-        <section className="grid gap-7 border-b py-11 lg:grid-cols-[1fr_1.1fr] lg:gap-14 lg:py-14">
+        <section className="grid gap-7 py-11 lg:grid-cols-[1fr_1.1fr] lg:gap-14 lg:py-14">
           <div>
             <p className="rotulo text-muted-foreground">Qué es</p>
             <h2 className="mt-3 font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
@@ -56,7 +56,7 @@ export default function Inicio() {
         </section>
 
         {/* ── Por qué surge ──────────────────────────────────── */}
-        <section className="grid gap-7 border-b py-11 lg:grid-cols-[1fr_1.1fr] lg:gap-14 lg:py-14">
+        <section className="grid gap-7 py-11 lg:grid-cols-[1fr_1.1fr] lg:gap-14 lg:py-14">
           <div>
             <p className="rotulo text-muted-foreground">Por qué surge</p>
             <h2 className="mt-3 font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
@@ -79,7 +79,7 @@ export default function Inicio() {
         </section>
 
         {/* ── Objetivos ──────────────────────────────────────── */}
-        <section className="border-b py-11 lg:py-14">
+        <section className="py-11 lg:py-14">
           <p className="rotulo text-muted-foreground">Qué nos proponemos</p>
           <h2 className="mt-3 max-w-[18ch] font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
             Cuatro objetivos
@@ -100,7 +100,7 @@ export default function Inicio() {
         </section>
 
         {/* ── El camino ──────────────────────────────────────── */}
-        <section className="border-b py-11 lg:py-14">
+        <section className="py-11 lg:py-14">
           <p className="rotulo text-muted-foreground">Cómo se usa</p>
           <h2 className="mt-3 font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
             Cuatro pasos, en orden
@@ -135,7 +135,7 @@ export default function Inicio() {
         </section>
 
         {/* ── Para qué animales ──────────────────────────────── */}
-        <section className="grid gap-7 border-b py-11 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-14 lg:py-14">
+        <section className="grid gap-7 py-11 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-14 lg:py-14">
           <div>
             <p className="rotulo text-muted-foreground">Para qué animales</p>
             <h2 className="mt-3 font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
@@ -176,7 +176,7 @@ export default function Inicio() {
         </section>
 
         {/* ── Cifras ─────────────────────────────────────────── */}
-        <section className="border-b py-11 lg:py-14">
+        <section className="py-11 lg:py-14">
           <p className="rotulo text-muted-foreground">El proyecto en números</p>
           <dl className="mt-6 grid grid-cols-2 gap-x-8 gap-y-8 border-t pt-8 lg:grid-cols-4">
             {CIFRAS.map((c) => (

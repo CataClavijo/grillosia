@@ -195,10 +195,9 @@ export default function WizardPage() {
   return (
     <>
       {/* En escritorio hay sitio para la navegacion completa; en celular
-          bastan la flecha de atras y el menu. */}
-      <div className="hidden lg:block">
-        <Barra />
-      </div>
+          bastan la flecha de atras y el menu. La clase va en la barra y no en
+          un envoltorio, que le quitaba el `sticky`. */}
+      <Barra className="hidden lg:block" />
     <main className="mx-auto flex w-full max-w-[560px] flex-col px-5 lg:px-8 pb-16 pt-5">
       <header className="flex items-center justify-between">
         {step > 1 && step < 5 ? (
@@ -220,7 +219,11 @@ export default function WizardPage() {
             Inicio
           </Link>
         )}
-        <SiteNav variant={enResultado ? "full" : "focused"} />
+        {/* Solo en celular: en escritorio la barra de arriba ya lleva la
+            navegacion, y dos menus a la vez confunden. */}
+        <div className="lg:hidden">
+          <SiteNav variant={enResultado ? "full" : "focused"} />
+        </div>
       </header>
 
       {!enResultado && (

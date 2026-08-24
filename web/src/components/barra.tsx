@@ -25,7 +25,21 @@ import { cn } from "@/lib/utils";
  * fondo deja de ser el logo. El disco resuelve el contraste sin tocar la
  * marca.
  */
-export function Barra({ sobreHeroe = false }: { sobreHeroe?: boolean }) {
+export function Barra({
+  sobreHeroe = false,
+  className,
+}: {
+  sobreHeroe?: boolean;
+  /**
+   * Va sobre la propia cabecera, no sobre un envoltorio.
+   *
+   * Envolverla en un `div` para esconderla en celular le quitaba el `sticky`:
+   * un elemento pegajoso solo se mueve dentro de su padre, y ese `div` medía
+   * lo mismo que la barra, asi que no tenia recorrido y se iba en cuanto se
+   * bajaba un poco.
+   */
+  className?: string;
+}) {
   const pathname = usePathname();
   const [bajado, setBajado] = useState(false);
 
@@ -49,6 +63,7 @@ export function Barra({ sobreHeroe = false }: { sobreHeroe?: boolean }) {
         claro
           ? "bg-transparent"
           : "border-b border-border/70 bg-background/95 backdrop-blur",
+        className,
       )}
     >
       <div className="mx-auto flex w-full max-w-[1180px] items-center justify-between gap-6 px-5 py-3 lg:px-8">

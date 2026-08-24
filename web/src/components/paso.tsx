@@ -43,39 +43,48 @@ export function Paso({
 
   return (
     <>
-      {/* En escritorio hay sitio para la navegacion completa; en celular la
-          flecha de atras y el menu bastan y la barra solo robaria alto. */}
-      <div className="hidden lg:block">
-        <Barra />
+      {/* UNA sola cabecera pegada, con la barra del sitio dentro.
+          Antes la barra iba en un `div` de su misma altura: `sticky` solo se
+          mueve dentro de su padre, asi que no tenia recorrido y se iba en
+          cuanto se bajaba. La barra del paso se quedaba pegada a 68 px del
+          borde y por esa franja se colaba el contenido. */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur">
+        <div className="hidden lg:block">
+          <Barra />
+        </div>
+        <div className="mx-auto w-full max-w-[760px]">
+          <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-3 lg:px-8">
+            <Link
+              href={anterior}
+              className="inline-flex min-h-11 items-center gap-1 -ml-2 rounded-full px-2 text-[15px] font-semibold text-foreground/80 transition-colors hover:text-foreground"
+            >
+              <ChevronLeft className="size-5" />
+              Atrás
+            </Link>
+            {/* El menu, solo en celular: en escritorio la barra de arriba ya
+                lleva la navegacion entera, y dos menus a la vez confunden. */}
+            <div className="lg:hidden">
+              <SiteNav />
+            </div>
+          </div>
+          <p className="rotulo px-5 pb-2 text-muted-foreground lg:px-8">
+            Paso {n} de {TOTAL_PARADAS} · {titulo}
+          </p>
+          {/* Cuatro tramos, uno por parada. */}
+          <div className="flex gap-1 px-5 pb-3 lg:px-8" aria-hidden>
+            {Array.from({ length: TOTAL_PARADAS }, (_, i) => (
+              <span
+                key={i}
+                className={cn(
+                  "h-1.5 flex-1 rounded-full",
+                  i < n ? "bg-primary" : "bg-muted",
+                )}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     <main className={cn("mx-auto flex w-full max-w-[760px] flex-col", className)}>
-      {/* Barra de progreso: cuatro tramos, uno por parada. */}
-      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur lg:top-[68px]">
-        <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-3 lg:px-8">
-          <Link
-            href={anterior}
-            className="inline-flex min-h-11 items-center gap-1 -ml-2 rounded-full px-2 text-[15px] font-semibold text-foreground/80 transition-colors hover:text-foreground"
-          >
-            <ChevronLeft className="size-5" />
-            Atrás
-          </Link>
-          <SiteNav />
-        </div>
-        <p className="rotulo px-5 pb-2 text-muted-foreground lg:px-8">
-          Paso {n} de {TOTAL_PARADAS} · {titulo}
-        </p>
-        <div className="flex gap-1 px-5 pb-3 lg:px-8" aria-hidden>
-          {Array.from({ length: TOTAL_PARADAS }, (_, i) => (
-            <span
-              key={i}
-              className={cn(
-                "h-1.5 flex-1 rounded-full",
-                i < n ? "bg-primary" : "bg-muted",
-              )}
-            />
-          ))}
-        </div>
-      </div>
 
       <div className="px-5 pb-4 lg:px-8 lg:pb-8">{children}</div>
 

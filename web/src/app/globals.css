@@ -178,6 +178,15 @@
     text-rendering: optimizeLegibility;
     @apply font-sans;
   }
+  /* El fondo del `body` se PROPAGA al lienzo del navegador cuando el `html`
+     no tiene ninguno. Y contra el lienzo no se puede mezclar: `mix-blend-mode`
+     se queda sin nada debajo y no surte efecto, que era por lo que las laminas
+     se veian con su recuadro blanco encima del crema. Dandole fondo al `html`
+     se corta la propagacion, el `body` pinta en su propia caja, y el multiply
+     de `.lamina` ya tiene con que mezclar. */
+  html {
+    background-color: var(--background);
+  }
   body {
     @apply bg-background text-foreground;
     /* 18px base + line-height 1.65 pensado para adultos con presbicia
