@@ -458,21 +458,36 @@ export function useLectura() {
    * nada a nadie. Ese usa la voz del propio aparato, que no cuesta.
    */
   /**
-   * Pide UN trozo de audio. Devuelve null si no se pudo.
+   * Pide UN trozo de audio, reintentando. Devuelve null si no se pudo.
+   *
+   * Los reintentos importan mas de lo que parece: al leer por frases, un solo
+   * tropiezo de red dejaba el resto de la respuesta en la voz del navegador y
+   * se oian DOS voces distintas en la misma contestacion. Un fallo pasajero
+   * no deberia costar eso, asi que se insiste dos veces mas antes de rendirse.
+   *
+   * Solo se reintenta lo que puede mejorar esperando. Un 503 con motivo
+   * "tope" o "sin-servicio" es una respuesta firme del servidor: insistir ahi
+   * es gastar tiempo mientras la persona espera en silencio.
    */
   const pedirAudio = useCallback(async (trozo: string) => {
-    try {
-      const res = await fetch("/api/voz", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ texto: trozo }),
-      });
-      // 503 es lo esperado cuando no hay servicio o se paso el tope.
-      if (!res.ok) return null;
-      return await res.blob();
-    } catch {
-      return null;
+    const esperas = [0, 250, 700];
+    for (const espera of esperas) {
+      if (espera) await new Promise((listo) => setTimeout(listo, espera));
+      try {
+        const res = await fetch("/api/voz", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ texto: trozo }),
+        });
+        if (res.ok) return await res.blob();
+        // 503 es lo esperado cuando no hay servicio o se paso el tope: es
+        // definitivo, no se insiste.
+        if (res.status === 503) return null;
+      } catch {
+        // Red: eso si puede arreglarse solo. Se sigue intentando.
+      }
     }
+    return null;
   }, []);
 
   /**
@@ -570,7 +585,18 @@ export function useLectura() {
             : Promise.resolve(null);
 
         if (!blob) {
-          // Sin servicio a mitad de camino: lo que queda lo lee el aparato.
+          // Sin servicio: lo que queda lo lee el aparato.
+          //
+          // Si ya sono algun trozo, aqui cambia la voz a mitad de respuesta y
+          // se oyen dos distintas. Con los reintentos de arriba esto solo
+          // deberia ocurrir cuando el servicio responde 503 de verdad —sin
+          // cupo o caido—, y entonces callar el resto seria peor que
+          // terminarlo con otra voz. Se deja aviso para no tener que
+          // adivinarlo la proxima vez.
+          if (i > 0)
+            console.warn(
+              `[voz] el trozo ${i + 1} no llego; el resto va con la voz del aparato`,
+            );
           await conElNavegador(trozos.slice(i).join(" "), id);
           return;
         }
