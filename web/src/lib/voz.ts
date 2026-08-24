@@ -189,6 +189,50 @@ export function useDictado(alTerminar: (texto: string) => void) {
   return { estado, parcial, empezar, parar };
 }
 
+/**
+ * Voz de mujer en espanol, entre las que trae el aparato.
+ *
+ * `speechSynthesis` no expone el genero, asi que se reconoce por nombre: los
+ * que instala cada sistema son pocos y conocidos (Monica y Paulina en Apple,
+ * Sabina y Helena en Windows, las de Google en Android). Se descartan de
+ * entrada los masculinos, por si el nombre no esta en la lista.
+ *
+ * Entre las candidatas gana el espanol de America, que es el que suena
+ * natural para quien va a usar esto.
+ */
+const NOMBRES_MUJER =
+  /m[oó]nica|paulina|esperanza|sabina|helena|marisol|luciana|elena|laura|carmen|lupe|isabela|female|mujer/i;
+const NOMBRES_HOMBRE = /jorge|diego|juan|pablo|carlos|enrique|male|hombre/i;
+
+function vozFemenina(): SpeechSynthesisVoice | null {
+  if (typeof window === "undefined" || !window.speechSynthesis) return null;
+  const enEspanol = window.speechSynthesis
+    .getVoices()
+    .filter((v) => /^es/i.test(v.lang));
+  if (!enEspanol.length) return null;
+
+  const cercania = (v: SpeechSynthesisVoice) => {
+    const l = v.lang.toLowerCase();
+    if (l.startsWith("es-co")) return 0;
+    if (l.startsWith("es-mx") || l.startsWith("es-us") || l.startsWith("es-419"))
+      return 1;
+    return 2;
+  };
+
+  const conNombreDeMujer = enEspanol.filter(
+    (v) => NOMBRES_MUJER.test(v.name) && !NOMBRES_HOMBRE.test(v.name),
+  );
+  const candidatas = conNombreDeMujer.length
+    ? conNombreDeMujer
+    : enEspanol.filter((v) => !NOMBRES_HOMBRE.test(v.name));
+
+  return (
+    [...(candidatas.length ? candidatas : enEspanol)].sort(
+      (a, b) => cercania(a) - cercania(b),
+    )[0] ?? null
+  );
+}
+
 /** Corta el marcado que el asistente escribe: no se lee en voz alta. */
 function paraLeer(texto: string): string {
   return texto
@@ -288,6 +332,11 @@ export function useLectura() {
         const u = new SpeechSynthesisUtterance(texto);
         u.lang = "es-CO";
         u.rate = 0.95;
+        const suya = vozFemenina();
+        if (suya) {
+          u.voice = suya;
+          u.lang = suya.lang;
+        }
         let cerrado = false;
         const terminar = () => {
           if (cerrado) return;
@@ -312,8 +361,19 @@ export function useLectura() {
     [],
   );
 
+  /**
+   * Lee un texto en voz alta.
+   *
+   * `servicio` decide de donde sale la voz, y por defecto es NO.
+   *
+   * ElevenLabs se reserva para el modo manos libres, que es una conversacion
+   * hablada y ahi la calidad de la voz es la funcion. El boton de escuchar de
+   * cada mensaje es el que mas se pulsa —uno puede oir la misma respuesta
+   * varias veces— y gastar cupo de pago en eso vaciaria la cuenta sin darle
+   * nada a nadie. Ese usa la voz del propio aparato, que no cuesta.
+   */
   const leer = useCallback(
-    async (texto: string, id: string) => {
+    async (texto: string, id: string, opciones?: { servicio?: boolean }) => {
       callar();
       const limpio = paraLeer(texto);
       if (!limpio) return;
@@ -321,6 +381,11 @@ export function useLectura() {
       setEstado("cargando");
       setLeyendo(id);
       setAvance(0);
+
+      if (!opciones?.servicio) {
+        await conElNavegador(limpio, id);
+        return;
+      }
 
       try {
         const res = await fetch("/api/voz", {
@@ -383,6 +448,23 @@ export function useLectura() {
     },
     [callar, conElNavegador],
   );
+
+  /**
+   * Pide la lista de voces al montar.
+   *
+   * En varios navegadores `getVoices()` devuelve vacio la primera vez y solo
+   * se llena despues, avisando por `voiceschanged`. Sin esta llamada temprana
+   * la primera lectura podia salir con la voz por defecto del sistema, que
+   * suele ser de hombre y en ingles.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    const pedir = () => window.speechSynthesis.getVoices();
+    pedir();
+    window.speechSynthesis.addEventListener("voiceschanged", pedir);
+    return () =>
+      window.speechSynthesis.removeEventListener("voiceschanged", pedir);
+  }, []);
 
   useEffect(() => callar, [callar]);
 

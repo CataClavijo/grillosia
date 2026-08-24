@@ -188,7 +188,7 @@ export function ManosLibres({
 
       // Se espera a que ACABE de sonar. Antes se reabria el microfono 400 ms
       // despues de empezar a hablar, y se oia a si mismo.
-      await leer(limpio, "manos-libres");
+      await leer(limpio, "manos-libres", { servicio: true });
       if (!vivo.current) return;
 
       // Pausa corta: lo justo para no pisar el final de su propia frase.
