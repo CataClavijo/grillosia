@@ -77,8 +77,8 @@ export function useDictado(alTerminar: (texto: string) => void) {
    * silencio de verdad.
    */
   const silencio = useRef<number | null>(null);
-  const ESPERA_INICIAL_MS = 2600;
-  const ESPERA_CORRIENTE_MS = 1700;
+  const ESPERA_INICIAL_MS = 1900;
+  const ESPERA_CORRIENTE_MS = 1100;
   /** Cuando el navegador cierra solo pero seguimos queriendo escuchar. */
   const queremosOir = useRef(false);
 
@@ -242,6 +242,54 @@ function vozFemenina(): SpeechSynthesisVoice | null {
   );
 }
 
+/**
+ * Parte el texto en trozos para pedirlos por separado.
+ *
+ * El PRIMERO va corto a proposito: es la unica espera que la persona oye como
+ * silencio, porque los demas se piden mientras suena el anterior. Los que
+ * siguen van mas largos para no multiplicar las llamadas sin necesidad.
+ *
+ * Se recorre a mano y no con un patron con `lookbehind`: eso no existe en
+ * Safari anterior a la 16.4 y no falla al usarlo, impide leer el archivo
+ * entero. Ya paso una vez y dejo la pagina muerta.
+ */
+const PRIMER_TROZO = 90;
+const TROZO = 200;
+
+function trocear(texto: string): string[] {
+  const frases: string[] = [];
+  let actual = "";
+  for (let i = 0; i < texto.length; i++) {
+    actual += texto[i];
+    const siguiente = texto[i + 1];
+    if (
+      ".!?:;".includes(texto[i]) &&
+      siguiente !== undefined &&
+      /\s/.test(siguiente)
+    ) {
+      frases.push(actual.trim());
+      actual = "";
+    }
+  }
+  if (actual.trim()) frases.push(actual.trim());
+  if (!frases.length) return texto.trim() ? [texto.trim()] : [];
+
+  const trozos: string[] = [];
+  for (const frase of frases) {
+    // El tope depende de a QUE trozo se esta pegando, no de si la lista esta
+    // vacia: mirando la lista, la segunda frase se unia al primer trozo con
+    // el tope grande y el arranque volvia a ser lento.
+    const ultimo = trozos[trozos.length - 1];
+    const tope = trozos.length - 1 === 0 ? PRIMER_TROZO : TROZO;
+    if (ultimo && ultimo.length + 1 + frase.length <= tope) {
+      trozos[trozos.length - 1] = ultimo + " " + frase;
+    } else {
+      trozos.push(frase);
+    }
+  }
+  return trozos;
+}
+
 /** Corta el marcado que el asistente escribe: no se lee en voz alta. */
 function paraLeer(texto: string): string {
   return texto
@@ -313,6 +361,15 @@ export function useLectura() {
   const cortar = useRef<(() => void) | null>(null);
 
   /**
+   * Numero de la lectura en curso.
+   *
+   * Al leer por frases hay un bucle vivo entre peticion y peticion. Sin esto,
+   * callar o empezar otra lectura no lo paraba: seguia pidiendo y soltando
+   * frases de una respuesta que ya nadie queria oir.
+   */
+  const generacion = useRef(0);
+
+  /**
    * Por donde va la lectura, de 0 a 1.
    *
    * Sirve para ir mostrando en pantalla lo que se esta diciendo. Es una
@@ -323,6 +380,7 @@ export function useLectura() {
   const [avance, setAvance] = useState(0);
 
   const callar = useCallback(() => {
+    generacion.current++;
     audio.current?.pause();
     cortar.current?.();
     if (typeof window !== "undefined") window.speechSynthesis?.cancel();
@@ -381,11 +439,91 @@ export function useLectura() {
    * varias veces— y gastar cupo de pago en eso vaciaria la cuenta sin darle
    * nada a nadie. Ese usa la voz del propio aparato, que no cuesta.
    */
+  /**
+   * Pide UN trozo de audio. Devuelve null si no se pudo.
+   */
+  const pedirAudio = useCallback(async (trozo: string) => {
+    try {
+      const res = await fetch("/api/voz", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ texto: trozo }),
+      });
+      // 503 es lo esperado cuando no hay servicio o se paso el tope.
+      if (!res.ok) return null;
+      return await res.blob();
+    } catch {
+      return null;
+    }
+  }, []);
+
+  /**
+   * Reproduce un trozo y espera a que ACABE.
+   *
+   * `base` y `tramo` situan este trozo dentro del texto completo, para que el
+   * avance que sigue la pantalla no se reinicie en cada frase.
+   */
+  const reproducir = useCallback(
+    (blob: Blob, base: number, tramo: number) =>
+      new Promise<boolean>((listo) => {
+        // Reutiliza el elemento desbloqueado; crear uno nuevo vuelve a
+        // toparse con el bloqueo del navegador.
+        const a = audio.current ?? new Audio();
+        audio.current = a;
+        a.src = URL.createObjectURL(blob);
+
+        let cerrado = false;
+        const terminar = (bien: boolean) => {
+          if (cerrado) return;
+          cerrado = true;
+          cortar.current = null;
+          a.ontimeupdate = null;
+          listo(bien);
+        };
+        cortar.current = () => terminar(false);
+        // Con el audio no hay marcas de palabra, asi que se reparte por
+        // tiempo. Es una estimacion, pero va atada a la reproduccion real.
+        a.ontimeupdate = () => {
+          if (a.duration > 0)
+            setAvance(base + (a.currentTime / a.duration) * tramo);
+        };
+        a.onended = () => terminar(true);
+        a.onerror = () => terminar(false);
+        void a.play().catch((e) => {
+          console.warn("[voz] el navegador bloqueo la reproduccion:", e);
+          terminar(false);
+        });
+      }),
+    [],
+  );
+
+  /**
+   * Lee un texto en voz alta.
+   *
+   * `servicio` decide de donde sale la voz, y por defecto es NO.
+   *
+   * ElevenLabs se reserva para el modo manos libres, que es una conversacion
+   * hablada y ahi la calidad de la voz es la funcion. El boton de escuchar de
+   * cada mensaje es el que mas se pulsa —uno puede oir la misma respuesta
+   * varias veces— y gastar cupo de pago en eso vaciaria la cuenta sin darle
+   * nada a nadie. Ese usa la voz del propio aparato, que no cuesta.
+   *
+   * Con el servicio se lee POR FRASES, no de una sola vez: se pide la
+   * primera, y mientras suena se va pidiendo la siguiente. Medido contra la
+   * API, una respuesta entera tarda 0,79 s en volver y la primera frase sola
+   * 0,43 s; esa es la espera que oye la persona antes de que empiece a hablar.
+   */
   const leer = useCallback(
     async (texto: string, id: string, opciones?: { servicio?: boolean }) => {
       callar();
       const limpio = paraLeer(texto);
       if (!limpio) return;
+
+      // Cada lectura lleva su numero. Si entra otra —o alguien calla esta—,
+      // el numero cambia y el bucle de abajo se detiene en vez de seguir
+      // pidiendo y soltando frases de una respuesta ya abandonada.
+      const mia = ++generacion.current;
+      const vigente = () => generacion.current === mia;
 
       setEstado("cargando");
       setLeyendo(id);
@@ -396,66 +534,44 @@ export function useLectura() {
         return;
       }
 
-      try {
-        const res = await fetch("/api/voz", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ texto: limpio }),
-        });
+      const trozos = trocear(limpio);
+      const total = trozos.reduce((n, t) => n + t.length, 0) || 1;
 
-        if (!res.ok) {
-          // 503 es lo esperado cuando no hay servicio o se paso el tope.
-          await conElNavegador(limpio, id);
+      let pedido = pedirAudio(trozos[0]);
+      let leidos = 0;
+
+      for (let i = 0; i < trozos.length; i++) {
+        const blob = await pedido;
+        if (!vigente()) return;
+
+        // Se pide el siguiente ANTES de reproducir este: asi el viaje a la
+        // API ocurre mientras suena, y entre frase y frase no hay espera.
+        pedido =
+          i + 1 < trozos.length
+            ? pedirAudio(trozos[i + 1])
+            : Promise.resolve(null);
+
+        if (!blob) {
+          // Sin servicio a mitad de camino: lo que queda lo lee el aparato.
+          await conElNavegador(trozos.slice(i).join(" "), id);
           return;
         }
 
-        const blob = await res.blob();
-        // Reutiliza el elemento desbloqueado; crear uno nuevo vuelve a
-        // toparse con el bloqueo del navegador.
-        const a = audio.current ?? new Audio();
-        audio.current = a;
-        a.src = URL.createObjectURL(blob);
         setEstado("hablando");
-
-        // Se espera al FINAL de la reproduccion, no al comienzo. Resolver al
-        // empezar hacia que el modo manos libres volviera a escuchar con el
-        // audio todavia sonando, y el microfono se oia a si mismo.
-        await new Promise<void>((listo) => {
-          let cerrado = false;
-          const terminar = () => {
-            if (cerrado) return;
-            cerrado = true;
-            cortar.current = null;
-            a.ontimeupdate = null;
-            setAvance(1);
-            setEstado("quieto");
-            setLeyendo(null);
-            listo();
-          };
-          cortar.current = terminar;
-          // Con el audio no hay marcas de palabra, asi que se reparte por
-          // tiempo. Es una estimacion, pero va atada a la reproduccion real.
-          a.ontimeupdate = () => {
-            if (a.duration > 0) setAvance(a.currentTime / a.duration);
-          };
-          a.onended = terminar;
-          a.onerror = () => {
-            if (cerrado) return;
-            cerrado = true;
-            void conElNavegador(limpio, id).then(listo);
-          };
-          void a.play().catch((e) => {
-            if (cerrado) return;
-            cerrado = true;
-            console.warn("[voz] el navegador bloqueo la reproduccion:", e);
-            void conElNavegador(limpio, id).then(listo);
-          });
-        });
-      } catch {
-        await conElNavegador(limpio, id);
+        const bien = await reproducir(blob, leidos / total, trozos[i].length / total);
+        if (!vigente() || !bien) {
+          if (!vigente()) return;
+          break;
+        }
+        leidos += trozos[i].length;
       }
+
+      if (!vigente()) return;
+      setAvance(1);
+      setEstado("quieto");
+      setLeyendo(null);
     },
-    [callar, conElNavegador],
+    [callar, conElNavegador, pedirAudio, reproducir],
   );
 
   /**

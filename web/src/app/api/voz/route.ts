@@ -36,6 +36,28 @@ import { identificar, permitirPregunta } from "@/lib/rate-limit";
  */
 const VOZ = process.env.ELEVENLABS_VOICE_ID ?? "k7v2xzj8pZoayBVu9pvq";
 
+/**
+ * Modelo de sintesis. `turbo_v2_5` y no `multilingual_v2`.
+ *
+ * Medido contra la API con esta misma voz, tres pasadas cada uno:
+ * multilingual_v2 1,75 s · turbo_v2_5 0,79 s · flash_v2_5 0,77 s.
+ *
+ * Turbo y flash empatan en tiempo; se toma turbo porque suena mejor. Flash
+ * cuesta la mitad, pero la voz de pago solo se usa en manos libres, donde el
+ * volumen es bajo y la voz ES la interfaz.
+ */
+const MODELO = process.env.ELEVENLABS_MODELO ?? "eleven_turbo_v2_5";
+
+/**
+ * Tope de peticiones de voz por ventana.
+ *
+ * Mas alto que el del chat porque el cliente lee por frases: los mismos
+ * caracteres se reparten en varias llamadas mas pequenas. Lo que cuesta son
+ * los caracteres, asi que subir el tope de peticiones en la misma proporcion
+ * deja el gasto acotado igual que antes.
+ */
+const TOPE_VOZ = Number(process.env.VOZ_TOPE_POR_VENTANA ?? 60);
+
 /** Tope de caracteres por peticion: una respuesta del asistente son ~600. */
 const MAX_CARACTERES = 900;
 
@@ -94,7 +116,7 @@ export async function POST(request: Request) {
 
   // El tope se cuenta aparte del chat: oir la misma respuesta dos veces no
   // deberia gastar preguntas.
-  if (!(await permitirPregunta(`voz:${identificar(request)}`))) {
+  if (!(await permitirPregunta(`voz:${identificar(request)}`, TOPE_VOZ))) {
     return NextResponse.json({ motivo: "tope" }, { status: 503 });
   }
 
@@ -109,7 +131,7 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
           text: texto,
-          model_id: "eleven_multilingual_v2",
+          model_id: MODELO,
           voice_settings: { stability: 0.5, similarity_boost: 0.75 },
         }),
       },

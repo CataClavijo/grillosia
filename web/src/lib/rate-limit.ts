@@ -36,7 +36,7 @@ export function identificar(request: Request): string {
   return request.headers.get("x-real-ip")?.trim() || "desconocido";
 }
 
-function permitirEnMemoria(clave: string): boolean {
+function permitirEnMemoria(clave: string, tope: number): boolean {
   const ahora = Date.now();
   const ventanaMs = VENTANA_MIN * 60_000;
   const actual = enMemoria.get(clave);
@@ -46,7 +46,7 @@ function permitirEnMemoria(clave: string): boolean {
     return true;
   }
   actual.conteo += 1;
-  return actual.conteo <= TOPE;
+  return actual.conteo <= tope;
 }
 
 /**
@@ -57,8 +57,19 @@ function permitirEnMemoria(clave: string): boolean {
  * gastar de mas un rato; hacia el lado restrictivo, dejar sin asistente a
  * todo el mundo. El tope de gasto de OpenAI es la red de seguridad de abajo.
  */
-export async function permitirPregunta(clave: string): Promise<boolean> {
-  if (!process.env.DATABASE_URL) return permitirEnMemoria(clave);
+/**
+ * @param tope Cuantas peticiones se permiten en la ventana. La voz usa uno
+ * mas alto que el chat: lo que cuesta dinero son los caracteres, no las
+ * peticiones, y al leer por frases los mismos caracteres se reparten en
+ * varias llamadas mas pequenas. Contar peticiones siempre fue una
+ * aproximacion; si se trocea, la aproximacion hay que ajustarla o se corta a
+ * la gente a mitad de una respuesta.
+ */
+export async function permitirPregunta(
+  clave: string,
+  tope: number = TOPE,
+): Promise<boolean> {
+  if (!process.env.DATABASE_URL) return permitirEnMemoria(clave, tope);
 
   try {
     // Una sola sentencia para que no haya carrera entre dos peticiones
@@ -82,7 +93,7 @@ export async function permitirPregunta(clave: string): Promise<boolean> {
       [clave, String(VENTANA_MIN)],
     );
 
-    return (filas[0]?.conteo ?? 1) <= TOPE;
+    return (filas[0]?.conteo ?? 1) <= tope;
   } catch (error) {
     // Fallar hacia el lado permisivo es lo correcto, pero callarlo no: si la
     // tabla no existe o la base cambio, el tope queda desactivado sin que
