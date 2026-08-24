@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
+
+import { Barra } from "@/components/barra";
 import {
-  Bot,
   ChevronLeft,
   ChevronRight,
   Mic,
@@ -251,7 +253,11 @@ export default function ChatPage() {
   // sería un parpadeo desconcertante.
   if (loading) {
     return (
-      <main className="mx-auto flex min-h-[calc(100dvh-42px)] w-full max-w-[520px] flex-col px-6 pb-16 pt-5">
+    <>
+      <div className="hidden lg:block">
+        <Barra />
+      </div>
+      <main className="mx-auto flex min-h-[100dvh] w-full max-w-[820px] flex-col px-5 pb-16 pt-5 lg:px-8">
         <header className="flex items-center justify-between">
           <Link
             href="/"
@@ -265,12 +271,17 @@ export default function ChatPage() {
           Cargando sus consultas...
         </p>
       </main>
+      </>
     );
   }
 
   if (!consultaLista) {
     return (
-      <main className="mx-auto flex min-h-[calc(100dvh-42px)] w-full max-w-[520px] flex-col px-6 pb-16 pt-5">
+    <>
+      <div className="hidden lg:block">
+        <Barra />
+      </div>
+      <main className="mx-auto flex min-h-[100dvh] w-full max-w-[820px] flex-col px-5 pb-16 pt-5 lg:px-8">
         <header className="flex items-center justify-between">
           <Link
             href="/"
@@ -286,7 +297,7 @@ export default function ChatPage() {
             aria-hidden
             className="inline-flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"
           >
-            <Bot className="size-7" strokeWidth={1.5} />
+            <Image src="/logo.png" alt="" width={34} height={34} className="size-8" />
           </span>
           <h1 className="text-[1.85rem] font-bold leading-tight tracking-[-0.02em]">
             Primero hagamos su consulta
@@ -305,11 +316,18 @@ export default function ChatPage() {
           />
         </div>
       </main>
+      </>
     );
   }
 
   return (
-    <main className="mx-auto flex h-[calc(100dvh-42px)] w-full max-w-[520px] flex-col px-6 pt-5">
+    <>
+      {/* En escritorio hay sitio para la navegacion completa; en celular
+          bastan la flecha de atras y el menu. */}
+      <div className="hidden lg:block">
+        <Barra />
+      </div>
+    <main className="mx-auto flex h-[100dvh] w-full max-w-[820px] flex-col overflow-hidden px-5 pt-5 lg:px-8">
       {/* Cabecera mínima: atrás · título · tres puntos */}
       <header className="flex items-center justify-between">
         <Link
@@ -352,7 +370,7 @@ export default function ChatPage() {
       {/* Hilo */}
       <div
         ref={scrollRef}
-        className="mt-6 flex flex-1 flex-col gap-4 overflow-y-auto pb-4"
+        className="mt-6 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pb-4"
         aria-live="polite"
       >
         {!hayMensajes && !thinking && (
@@ -391,7 +409,7 @@ export default function ChatPage() {
       {/* Composer */}
       <form
         onSubmit={onSubmit}
-        className="sticky bottom-0 -mx-6 border-t bg-background/95 px-6 pt-3 pb-[calc(env(safe-area-inset-bottom)+12px)] backdrop-blur"
+        className="-mx-5 mt-auto shrink-0 border-t bg-background px-5 pt-3 pb-[max(env(safe-area-inset-bottom),14px)] lg:-mx-8 lg:px-8"
       >
         <div className="flex items-center gap-2 rounded-full border bg-card py-1 pl-4 pr-1.5 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/15">
           <input
@@ -466,6 +484,7 @@ export default function ChatPage() {
         </AlertDialogContent>
       </AlertDialog>
     </main>
+    </>
   );
 }
 
@@ -489,12 +508,16 @@ function MessageBubble({
   return (
     <div className={`flex gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
-        <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <Bot className="size-4" strokeWidth={2} />
-        </span>
+        <Image
+          src="/logo.png"
+          alt=""
+          width={36}
+          height={36}
+          className="mt-0.5 size-8 shrink-0"
+        />
       )}
       <div
-        className={`max-w-[82%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
+        className={`max-w-[82%] rounded-2xl lg:max-w-[70%] px-4 py-3 text-[15px] leading-relaxed ${
           isUser
             ? "bg-primary text-primary-foreground"
             : "bg-card text-foreground"
@@ -570,7 +593,7 @@ function TypingBubble() {
   return (
     <div className="flex gap-2.5">
       <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-        <Bot className="size-4" strokeWidth={2} />
+        <Image src="/logo.png" alt="" width={22} height={22} className="size-5" />
       </span>
       <div className="rounded-2xl bg-card px-4 py-3">
         <span className="flex items-center gap-1.5" aria-label="Escribiendo">

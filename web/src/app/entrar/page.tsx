@@ -2,6 +2,8 @@
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
+
+import { Barra } from "@/components/barra";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { ChevronLeft, CloudUpload } from "lucide-react";
@@ -18,7 +20,13 @@ import { AUTH_ENABLED } from "@/lib/auth-flag";
  */
 export default function EntrarPage() {
   return (
-    <main className="mx-auto flex min-h-[calc(100dvh-42px)] w-full max-w-[520px] flex-col px-6 pb-16 pt-5">
+    <>
+      {/* En escritorio hay sitio para la navegacion completa; en celular
+          bastan la flecha de atras y el menu. */}
+      <div className="hidden lg:block">
+        <Barra />
+      </div>
+    <main className="mx-auto flex min-h-[calc(100dvh-42px)] w-full max-w-[560px] flex-col px-6 pb-16 pt-5">
       <header>
         <Link
           href="/"
@@ -61,6 +69,7 @@ export default function EntrarPage() {
         </Suspense>
       </div>
     </main>
+    </>
   );
 }
 

@@ -70,7 +70,7 @@ export default function ProjectPage() {
   return (
     <>
       <Barra />
-      <main className="relative mx-auto flex w-full max-w-[560px] flex-col px-6 pb-16 pt-5">
+      <main className="relative mx-auto flex w-full max-w-[820px] flex-col px-5 lg:px-8 pb-16 pt-5">
 
       <section className="mt-8">
         <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">

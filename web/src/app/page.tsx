@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { Barra } from "@/components/barra";
 import { PortadaHero } from "@/components/portada-hero";
 import { ANIMALS } from "@/lib/animals";
 import { CAMINO } from "@/lib/camino";
@@ -26,6 +27,7 @@ export default function Inicio() {
 
   return (
     <>
+      <Barra sobreHeroe />
       <PortadaHero
         href={siguiente.href}
         cta={empezando ? "Empezar por el paso 1" : `Seguir en el paso ${siguiente.n}`}
@@ -82,9 +84,9 @@ export default function Inicio() {
           <h2 className="mt-3 max-w-[18ch] font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
             Cuatro objetivos
           </h2>
-          <ul className="mt-6 grid gap-x-10 gap-y-6 sm:grid-cols-2">
+          <ul className="mt-6 grid gap-x-12 gap-y-8 border-t pt-8 sm:grid-cols-2">
             {OBJETIVOS.map((o) => (
-              <li key={o.n} className="border-t pt-4">
+              <li key={o.n}>
                 <span className="rotulo text-primary">{o.n}</span>
                 <h3 className="mt-2 font-display text-[17.5px] font-bold tracking-[-0.015em]">
                   {o.titulo}
@@ -103,9 +105,9 @@ export default function Inicio() {
           <h2 className="mt-3 font-display text-[1.75rem] font-extrabold leading-[1.12] tracking-[-0.028em] lg:text-[2.25rem]">
             Cuatro pasos, en orden
           </h2>
-          <ol className="mt-6 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+          <ol className="mt-6 grid gap-x-10 gap-y-8 border-t pt-8 sm:grid-cols-2 lg:grid-cols-4">
             {CAMINO.map((p) => (
-              <li key={p.n} className="border-t pt-4">
+              <li key={p.n}>
                 <span className="rotulo text-primary">0{p.n}</span>
                 <Link
                   href={p.href}
@@ -176,9 +178,9 @@ export default function Inicio() {
         {/* ── Cifras ─────────────────────────────────────────── */}
         <section className="border-b py-11 lg:py-14">
           <p className="rotulo text-muted-foreground">El proyecto en números</p>
-          <dl className="mt-6 grid grid-cols-2 gap-x-8 gap-y-7 lg:grid-cols-4">
+          <dl className="mt-6 grid grid-cols-2 gap-x-8 gap-y-8 border-t pt-8 lg:grid-cols-4">
             {CIFRAS.map((c) => (
-              <div key={c.rotulo} className="border-t pt-4">
+              <div key={c.rotulo}>
                 <dt className="font-display text-[2.6rem] font-extrabold leading-none tracking-[-0.035em] text-primary lg:text-[3.2rem]">
                   {c.valor}
                 </dt>

@@ -57,7 +57,7 @@ export default function ProjectsPage() {
   return (
     <>
       <Barra />
-      <main className="mx-auto flex w-full max-w-[520px] flex-col gap-8 px-6 pb-16 pt-5">
+      <main className="mx-auto flex w-full max-w-[820px] flex-col gap-8 px-5 lg:px-8 pb-16 pt-5">
 
       <h1 className="text-[2rem] font-bold leading-tight tracking-[-0.02em]">
         Mis consultas

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { CSSProperties } from "react";
 import { ArrowLeft, Beef, ChevronLeft, Egg, Fish } from "lucide-react";
 
+import { Barra } from "@/components/barra";
 import { SiteNav } from "@/components/site-nav";
 import { StepFooter } from "@/components/step-footer";
 import { ANIMALS, DIETS, HYDRATION_NOTE } from "@/lib/animals";
@@ -191,7 +192,13 @@ export default function WizardPage() {
   const enResultado = step === 5;
 
   return (
-    <main className="mx-auto flex w-full max-w-[520px] flex-col px-6 pb-16 pt-5">
+    <>
+      {/* En escritorio hay sitio para la navegacion completa; en celular
+          bastan la flecha de atras y el menu. */}
+      <div className="hidden lg:block">
+        <Barra />
+      </div>
+    <main className="mx-auto flex w-full max-w-[560px] flex-col px-5 lg:px-8 pb-16 pt-5">
       <header className="flex items-center justify-between">
         {step > 1 && step < 5 ? (
           <button
@@ -295,6 +302,7 @@ export default function WizardPage() {
         )}
       </div>
     </main>
+    </>
   );
 }
 
