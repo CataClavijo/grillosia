@@ -52,3 +52,7 @@ data/experimental/
 # Modelo entrenado: se regenera con backend/scripts/entrenar.py
 backend/ml/modelo.joblib
 backend/ml/modelo.json
+
+# Modelo candidato de actualizar.py: solo entra al repositorio al publicarse
+# (--publicar), y entonces como modelo.joblib.
+backend/ml/modelo-candidato.joblib
