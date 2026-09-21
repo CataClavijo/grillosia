@@ -1,8 +1,13 @@
 id_ensayo,tipo_dieta,alimento_g_dia,temperatura,humedad_ambiental,especie,tiempo_desarrollo,proteina_harina,lipidos_harina,tasa_supervivencia,biomasa_total,longitud_final,fotoperiodo,densidad,n_grillos_inicio,fuente,observaciones
-LOTE 1,D1,0.0833,26.32,74.2,Gryllidae,12,,,3.3333,,3.54,12.0,1260.5042,60,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Especie según plantilla: Acheta domesticus.
-LOTE 2,D2,0.0526,26.4571,75.8571,Gryllidae,19,,,15.5,,5.06,12.0,555.5556,20,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Especie según plantilla: Acheta domesticus.
-LOTE 3,D3,0.1176,27.8667,67.1667,Gryllidae,34,,,100.0,,,12.0,2207.7922,170,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Especie según plantilla: Acheta domesticus.
-LOTE 4,D3,1.0769,27.9667,64.0,Gryllidae,13,,,100.0,,,12.0,,25,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Especie según plantilla: Acheta domesticus.
-LOTE 5,D1,0.7692,27.9667,64.0,Gryllidae,13,,,100.0,,,12.0,,40,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Grillos llegaron ya medianos Especie según plantilla: Acheta domesticus.
-LOTE 6,D2,0.6154,27.9667,64.0,Gryllidae,13,,,100.0,,,12.0,,52,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Especie según plantilla: Acheta domesticus.
-LOTE 7,D2,0.1667,27.9667,64.0,Gryllidae,12,,,100.0,,,12.0,,54,EXPERIMENTAL · Plantilla_recoleccion_GrillIA_modificación_final (1).xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 1,D1,0.0833,26.32,74.2,Gryllidae,12,,,3.3333,,3.54,12.0,1260.5042,60,EXPERIMENTAL · Plantilla de recolección de datos (Excel) con lotes experimentales nuevos datos.xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 2,D2,0.0526,26.4571,75.8571,Gryllidae,19,,,15.5,,5.06,12.0,555.5556,20,EXPERIMENTAL · Plantilla de recolección de datos (Excel) con lotes experimentales nuevos datos.xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 3,D3,0.1837,29.2185,57.0741,Gryllidae,98,,,12.3529,,,12.0,2207.7922,170,EXPERIMENTAL · Plantilla de recolección de datos (Excel) con lotes experimentales nuevos datos.xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 4,D3,0.5143,29.3583,56.125,Gryllidae,70,,,16.0,,,12.0,525.2101,25,EXPERIMENTAL · Plantilla de recolección de datos (Excel) con lotes experimentales nuevos datos.xlsx,Grillos llegaron ya medianos Especie según plantilla: Acheta domesticus.
+LOTE 5,D1,0.2714,29.1231,56.1538,Gryllidae,70,,,0.0,,,12.0,759.0133,40,EXPERIMENTAL · Plantilla de recolección de datos (Excel) con lotes experimentales nuevos datos.xlsx,Grillos llegaron ya medianos Especie según plantilla: Acheta domesticus.
+LOTE 6,D2,0.2714,29.3583,56.125,Gryllidae,70,,,13.4615,,,12.0,928.5714,52,EXPERIMENTAL · Plantilla de recolección de datos (Excel) con lotes experimentales nuevos datos.xlsx,Grillos llegaron ya medianos Especie según plantilla: Acheta domesticus.
+LOTE 7,D2,0.0435,29.3583,56.125,Gryllidae,69,,,9.2593,,,12.0,1963.6364,54,EXPERIMENTAL · Plantilla de recolección de datos (Excel) con lotes experimentales nuevos datos.xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 8,D1,0.0172,29.3583,57.9167,Gryllidae,58,,,,,,12.0,721.0626,,EXPERIMENTAL · Plantilla de recolección de datos (Excel) con lotes experimentales nuevos datos.xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 9,D1,,25.0,75.0,Gryllidae,111,,,100.0,,,12.0,,38,EXPERIMENTAL · Plantilla de recolección de datos (Excel) con lotes experimentales nuevos datos.xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 10,D2,,24.6667,74.1667,Gryllidae,111,,,86.6667,,,12.0,,15,EXPERIMENTAL · Plantilla de recolección de datos (Excel) con lotes experimentales nuevos datos.xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 11,D3,,24.7,75.5,Gryllidae,111,,,100.0,,,12.0,,38,EXPERIMENTAL · Plantilla de recolección de datos (Excel) con lotes experimentales nuevos datos.xlsx,Especie según plantilla: Acheta domesticus.
+LOTE 12,D1,,,,Gryllidae,,,,,,,12.0,,,EXPERIMENTAL · Plantilla de recolección de datos (Excel) con lotes experimentales nuevos datos.xlsx,Especie según plantilla: Gryllidae silvestre.
