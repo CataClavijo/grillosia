@@ -89,25 +89,43 @@ servicio de predicción desplegado.
 ### Pruebas
 
 ```bash
+# Modelo y servicio de predicción (deterministas)
 pytest backend/tests
+
+# Asistente contra la plataforma desplegada: comprueba reglas, no textos
+python scripts/probar_asistente.py --repeticiones 3 --informe docs/pruebas
 ```
+
+Qué se prueba, cómo y con qué resultados:
+[`docs/pruebas-integracion.md`](docs/pruebas-integracion.md).
 
 ---
 
-## Cuando lleguen los análisis del laboratorio
+## Cada vez que llega una plantilla nueva
 
-Dos comandos, sin tocar código:
+Un solo comando, sin tocar código:
 
 ```bash
-# 1. Consolidar la plantilla: valida, exporta el CSV y guarda el histórico
-python backend/scripts/cargar_plantilla.py --excel <plantilla.xlsx>
-
-# 2. Reentrenar con datos reales (sin la bandera --simulados)
-python backend/scripts/entrenar.py --datos data/experimentos.csv
+python backend/scripts/actualizar.py --excel <plantilla.xlsx>
 ```
 
-El artefacto queda marcado como entrenado con datos reales, la API lo propaga
-y el aviso de "números de prueba" desaparece solo de la aplicación.
+Valida la plantilla, deja el CSV consolidado, regenera el anexo de la base de
+datos (`entregables/base-datos-consolidada.xlsx`) y corre las pruebas. Si ya
+hay lotes con proteína y lípidos medidos, entrena además un modelo **candidato**
+con esos datos reales y muestra sus métricas.
+
+El candidato no reemplaza al modelo en uso por su cuenta. Con pocos lotes
+reales puede ser peor que el que hay, y esa decisión la toma una persona
+mirando las métricas:
+
+```bash
+python backend/scripts/actualizar.py --excel <plantilla.xlsx> --publicar
+railway up --ci --service grillosia-api
+```
+
+Al publicarlo, el artefacto queda marcado como entrenado con datos reales, la
+API lo propaga y el aviso de "números de prueba" desaparece solo de la
+aplicación.
 
 ---
 
@@ -118,14 +136,16 @@ y el aviso de "números de prueba" desaparece solo de la aplicación.
 | `backend/ml/` | Definición de variables, entrenamiento e inferencia del modelo. |
 | `backend/api/` | Endpoints `GET /api/v1/modelo` y `POST /api/v1/predict`. |
 | `backend/schemas/` | Contrato de la API (Pydantic). |
-| `backend/scripts/` | Cargar la plantilla, simular datos, entrenar. |
+| `backend/scripts/` | Cargar la plantilla, generar el anexo, simular datos, entrenar, y `actualizar.py`, que hace todo en orden. |
 | `backend/db/` | Tabla `experiments` y migraciones (Alembic). |
 | `backend/tests/` | Pruebas del modelo, la API y el cargador. |
-| `web/` | Aplicación web (Next.js). Consulta paso a paso y asistente. |
+| `web/` | Aplicación web (Next.js). Consulta paso a paso, asistente y modo de voz. |
+| `scripts/` | Pruebas del asistente contra la plataforma desplegada. |
+| `entregables/` | Anexo de la base de datos consolidada, en Excel. |
 | `data/literature/` | Plantilla e instrucciones para capturar datos de artículos. |
 | `data/sintetico/` | Datos simulados y la explicación de cómo se generan. |
 | `notebooks/` | Análisis exploratorio de los datos. |
-| `docs/` | Manuales y documentos técnicos. |
+| `docs/` | Manuales, documentos técnicos y resultados de pruebas (`docs/pruebas/`). |
 
 ---
 
@@ -156,6 +176,7 @@ fila es un lote: una comida probada en unas condiciones concretas.
 | Manual técnico | [`manual-tecnico.md`](docs/manual-tecnico.md) | [`manual-tecnico.pdf`](docs/manual-tecnico.pdf) |
 | Esquema de base de datos | [`database-schema.md`](docs/database-schema.md) | [`database-schema.pdf`](docs/database-schema.pdf) |
 | Login con Google y persistencia | [`auth-y-persistencia.md`](docs/auth-y-persistencia.md) | [`auth-y-persistencia.pdf`](docs/auth-y-persistencia.pdf) |
+| Pruebas de integración y validación | [`pruebas-integracion.md`](docs/pruebas-integracion.md) | |
 
 Los PDF se regeneran con:
 
@@ -165,6 +186,7 @@ npx md-to-pdf --stylesheet docs/pdf-style.css docs/modelo-tecnico.md
 
 Además:
 
+- [`entregables/base-datos-consolidada.xlsx`](entregables/base-datos-consolidada.xlsx) — la base de datos consolidada, con su diccionario de variables y el estado de cada una.
 - [`notebooks/01_analisis_exploratorio.ipynb`](notebooks/01_analisis_exploratorio.ipynb) — qué dicen los datos que hay.
 - [`data/sintetico/README.md`](data/sintetico/README.md) — cómo se generan los datos simulados y qué no se puede hacer con ellos.
 - [`data/literature/INSTRUCCIONES.md`](data/literature/INSTRUCCIONES.md) — cómo llenar la plantilla de literatura.
@@ -176,5 +198,5 @@ Además:
 
 | Actividad | Qué respalda este repositorio |
 |---|---|
-| **3.2** Desarrollo del modelo de IA | Variables, entrenamiento, validación, documento técnico con la justificación del modelo elegido, pruebas. |
-| **3.4** Integración del modelo con la plataforma | API de predicción y la aplicación web consumiéndola: resultado con números y margen, y asistente que responde sobre esos números. |
+| **3.2** Desarrollo del modelo de inteligencia artificial | Base de datos consolidada con su diccionario, entrenamiento, validación cruzada, documento técnico con la justificación del modelo elegido y pruebas automáticas. |
+| **3.4** Pruebas y validación del sistema | API de predicción y plataforma web consumiéndola, asistente que consulta el modelo real, y las pruebas de integración, comportamiento, rendimiento y compatibilidad de [`docs/pruebas-integracion.md`](docs/pruebas-integracion.md). |
