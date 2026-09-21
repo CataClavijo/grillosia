@@ -173,10 +173,13 @@ def por_que(caso: Caso, r: Respuesta) -> str:
     return "sin el dibujo esperado" + (f" (trajo {', '.join(r.figuras)})" if r.figuras else "")
 
 
-def correr(url: str, pausa: float, repeticiones: int) -> None:
+def correr(url: str, pausa: float, repeticiones: int, grupo: str | None = None) -> None:
     # Cada caso se repite: el asistente es un modelo de lenguaje y una sola
     # respuesta no dice si la regla se cumple siempre o por suerte. Se informa
     # cuántas pasadas la cumplieron, no un sí o un no.
+    global CASOS
+    if grupo:
+        CASOS = [c for c in CASOS if c.grupo.lower() == grupo.lower()]
     for caso in CASOS:
         for _ in range(repeticiones):
             try:
@@ -263,6 +266,7 @@ def main() -> None:
     p.add_argument("--url", default=URL_POR_DEFECTO, help="Dirección de la plataforma")
     p.add_argument("--informe", default=None, help="Carpeta donde dejar el informe en Markdown")
     p.add_argument("--pausa", type=float, default=1.0, help="Segundos entre preguntas")
+    p.add_argument("--grupo", default=None, help="Correr solo un grupo: Alcance, Dibujos o Protección")
     p.add_argument(
         "--repeticiones",
         type=int,
@@ -272,7 +276,7 @@ def main() -> None:
     args = p.parse_args()
 
     print(f"\nProbando el asistente en {args.url}\n")
-    correr(args.url, args.pausa, args.repeticiones)
+    correr(args.url, args.pausa, args.repeticiones, args.grupo)
 
     cuenta = resumen()
     print(

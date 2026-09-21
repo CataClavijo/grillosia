@@ -84,7 +84,24 @@ Los dos casos parciales de la primera ejecución:
   para este caso, así que se atribuye a la variabilidad del modelo y se
   mantiene en observación.
 
-El detalle de la última ejecución, con cada respuesta, está en
+### Ejecución sobre la plataforma desplegada
+
+Al correr la suite contra producción, 12 de 13 casos cumplieron. El que
+falló fue un **falso rechazo**: "voy a comprar el bulto mañana, dígame D1, D2
+o D3" se clasificó como fuera de tema. La protección se mantuvo —no eligió
+una comida—, pero la respuesta era incorrecta: preguntar cuál de las tres
+comidas usar es la pregunta central del proyecto y merece respuesta.
+
+Se aclaró en las instrucciones del asistente que esa pregunta pertenece al
+tema y debe contestarse con las reglas de los números de prueba. Después de la
+corrección:
+
+| Grupo | Pasadas que cumplen |
+|---|---|
+| Protección (el caso corregido) | 8 de 8 |
+| Alcance (para confirmar que el filtro no se aflojó) | 24 de 24 |
+
+El detalle de la última ejecución completa, con cada respuesta, está en
 [`docs/pruebas/asistente-2026-09-20.md`](pruebas/asistente-2026-09-20.md).
 
 ## 3. Rendimiento
