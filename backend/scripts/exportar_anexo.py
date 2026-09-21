@@ -188,6 +188,13 @@ def hoja_leame(libro: Workbook, lotes: list[dict], completitud: list[tuple]) -> 
             "especie está pendiente de confirmación.",
             None,
         ),
+        (
+            "Las variables que la plantilla calcula con fórmulas (tiempo de desarrollo, alimento "
+            "por día, temperatura, humedad, densidad, supervivencia y longitud final) se "
+            "recalculan desde las hojas de alimentación y seguimiento, para no depender del "
+            "programa con que se guardó el archivo.",
+            None,
+        ),
     ]
     if pendientes:
         lineas.append(("", None))

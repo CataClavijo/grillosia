@@ -23,8 +23,10 @@ import sys
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
-if str(RAIZ) not in sys.path:
-    sys.path.insert(0, str(RAIZ))
+SCRIPTS = Path(__file__).resolve().parent
+for ruta_import in (RAIZ, SCRIPTS):
+    if str(ruta_import) not in sys.path:
+        sys.path.insert(0, str(ruta_import))
 
 from ml.features import (  # noqa: E402
     DIETAS,
@@ -229,6 +231,14 @@ def leer_lotes(ruta: Path) -> tuple[list[dict], list[str]]:
         limpio["fuente"] = f"EXPERIMENTAL · {ruta.name}"
 
         lotes.append(limpio)
+
+    # Las variables que la plantilla calcula con fórmulas se rehacen desde las
+    # hojas de origen: el valor guardado de una fórmula depende del programa
+    # con que se abrió el archivo y ya llegó vacío o roto. Ver
+    # recalcular_plantilla.py.
+    from recalcular_plantilla import aplicar
+
+    avisos.extend(aplicar(ruta, lotes))
 
     return lotes, avisos
 

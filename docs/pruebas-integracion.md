@@ -25,9 +25,26 @@ done
 
 ## 1. Modelo y servicio de predicción
 
-**42 pruebas automáticas, 42 aprobadas.** Cubren la lectura y validación de la
-plantilla de recolección, el entrenamiento, la validación cruzada, el guardado
-del modelo y las respuestas del servicio de predicción.
+**46 pruebas automáticas, 46 aprobadas.** Cubren la lectura y validación de la
+plantilla de recolección, el recálculo de sus variables derivadas, el
+entrenamiento, la validación cruzada, el guardado del modelo y las respuestas
+del servicio de predicción.
+
+### Recálculo de la plantilla
+
+Al cargar la plantilla más reciente, el tiempo de desarrollo y el alimento por
+día llegaron vacíos en todos los lotes. El archivo se había guardado en una
+versión de Excel que no reconoce las funciones MAXIFS y MINIFS, y las fórmulas
+quedaron sin calcular. La revisión encontró además fórmulas rotas al copiar
+filas, un identificador de lote con un espacio sobrante que dejaba el lote sin
+datos, temperaturas escritas como texto —que las fórmulas de Excel ignoran sin
+avisar— y longitudes registradas en 0 en filas sin medición.
+
+El cargador ya no depende del valor guardado de esas fórmulas: recalcula cada
+variable derivada desde las hojas de origen, con la misma definición que la
+fórmula de la plantilla, y avisa cada diferencia con los dos valores. Se
+validó contra una plantilla anterior cuyas fórmulas sí estaban calculadas:
+**40 de 40 valores idénticos**. Cuatro pruebas automáticas cubren estos casos.
 
 El servicio está desplegado en https://grillosia-api-production.up.railway.app
 y expone su propio estado:
