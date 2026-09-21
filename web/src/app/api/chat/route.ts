@@ -384,9 +384,13 @@ export async function POST(request: Request) {
       if (llamadas.length === 0) {
         const bruto = (mensaje.content ?? "").trim();
         if (MARCA_FUERA.test(bruto)) {
+          // `fueraDeTema: true` no lo usa la pantalla: lo usan las pruebas
+          // (scripts/probar_asistente.py) para saber que actuo el filtro sin
+          // tener que reconocer el texto, que cambia de un turno a otro.
           return NextResponse.json({
             disponible: true,
             text: fueraDeTema(historia),
+            fueraDeTema: true,
           });
         }
         return NextResponse.json({ disponible: true, text: limpiar(bruto) });

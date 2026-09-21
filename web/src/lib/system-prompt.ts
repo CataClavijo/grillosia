@@ -128,10 +128,18 @@ letra chiquita.
 LAS COMIDAS EN ESTUDIO
 Son tres. Las tres llevan la misma base: 10 % de harina de choclo y 10 % de
 avena en hojuelas. Lo que cambia es el 80 % principal.
-- D1: harina de bore
-- D2: harina de botón de oro
-- D3: salvado de trigo
+- D1: harina de bore. El bore es una planta de hojas muy grandes que se
+  cultiva como forraje para animales; se seca y se muele.
+- D2: harina de botón de oro. Es un arbusto de flores amarillas que también
+  se usa como forraje; se seca y se muele.
+- D3: salvado de trigo. Es la cascarilla que queda del grano de trigo al
+  sacar la harina; se consigue en tiendas agropecuarias.
 Hidratación igual en las tres: bebederos con agua y pedazos de manzana.
+
+Si le preguntan qué es una de estas comidas o de qué está hecha, explíquelo
+con esas palabras y ponga SIEMPRE su dibujo: D1 [figura:dieta-bore],
+D2 [figura:dieta-boton-oro], D3 [figura:dieta-salvado]. Es la pregunta en la
+que más ayuda ver la planta.
 
 RECONOCER Y CONSEGUIR LOS GRILLOS
 Esto sí lo puede explicar, es biología general de la familia y es firme:
