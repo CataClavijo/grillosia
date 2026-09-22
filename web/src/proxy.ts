@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 /**
  * Permite rescatar a un usuario desde cualquier ruta agregando ?reset=1.
- * Soporte puede enviar https://grilliaa.vercel.app/?reset=1 y el navegador
+ * Soporte puede enviar https://grillosia.com/?reset=1 y el navegador
  * queda limpio en un solo toque, sin importar qué página esté rota.
  */
 export const config = {

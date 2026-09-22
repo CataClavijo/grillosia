@@ -10,7 +10,7 @@ se completen los pasos.
 1. **Cuenta en Railway** (https://railway.app). Plan Hobby es suficiente.
 2. **Cuenta de Google Cloud** con acceso al proyecto donde estén configuradas
    las credenciales OAuth.
-3. Acceso al panel de **Vercel** del proyecto `grilliaa` para agregar
+3. Acceso al panel de **Vercel** del proyecto `grillosia` para agregar
    variables de entorno.
 
 ## Paso 1 — Provisionar la base de datos

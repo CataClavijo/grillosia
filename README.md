@@ -11,7 +11,7 @@ reemplazar las importaciones de harina de pescado en Colombia.
 - **Financiación**: Minciencias, Convocatoria 963 de 2025 (Contrato 207-2025).
 - **Ejecutor**: Universidad de los Llanos.
 - **Investigadora principal**: Dra. Mónica Paola Higuera-Díaz.
-- **Duración**: 12 meses (febrero 2026 — febrero 2027).
+- **Duración**: 29 de diciembre de 2025 — 29 de junio de 2027 (según contrato).
 - **Licencia**: Apache 2.0.
 
 ---
