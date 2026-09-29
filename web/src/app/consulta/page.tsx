@@ -624,15 +624,15 @@ function PreguntaCategoria({
             >
               <LaminaNormalizada
                 src={c.image}
-                area={11500}
-                alto={116}
+                area={9000}
+                alto={100}
                 className="w-24 shrink-0 sm:w-full"
               />
               <span className="min-w-0 pr-6 sm:pr-0">
-                <span className="block font-display text-[1.6rem] font-semibold leading-none">
+                <span className="block font-display text-[2rem] font-semibold leading-none">
                   {c.name}
                 </span>
-                <span className="mt-2 block text-[13.5px] leading-snug text-subtle">
+                <span className="mt-2 block text-[14.5px] leading-snug text-subtle">
                   {pistaCategoria(c)}
                 </span>
               </span>
@@ -690,11 +690,11 @@ function PreguntaAnimal({
                 />
               )}
               <span className="min-w-0 pr-6">
-                <span className="block text-[16.5px] font-semibold leading-snug">
+                <span className="block font-display text-[1.6rem] font-semibold leading-tight">
                   {a.name}
                 </span>
                 {a.scientific && (
-                  <span className="mt-0.5 block text-[13.5px] italic text-subtle">
+                  <span className="mt-0.5 block text-[14.5px] italic text-subtle">
                     {a.scientific}
                   </span>
                 )}

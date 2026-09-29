@@ -97,8 +97,10 @@ export default function PaginaCaja() {
     <Paso n={1} titulo="Arme su caja">
       <div>
         {/* ── 1. Entrada ─────────────────────────────────────────────── */}
-        <section className="grid gap-10 lg:grid-cols-12 lg:gap-12">
-          <div className="flex flex-col justify-between gap-10 lg:col-span-5 lg:py-4">
+        {/* Texto e imagen a partes iguales y centrados entre si: la caja
+            acompana al titulo, no lo aplasta. */}
+        <section className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-12">
+          <div className="flex flex-col gap-10 lg:col-span-6">
             <EncabezadoSeccion
               as="h1"
               tamano="h1"
@@ -120,14 +122,14 @@ export default function PaginaCaja() {
               <p className="t-caption mt-5 max-w-[46ch]">{ENCLOSURE_DISCLAIMER}</p>
             </div>
           </div>
-          <figure className="lg:col-span-7">
-            <div className="relative aspect-[1100/681] w-full">
+          <figure className="mx-auto w-full max-w-[560px] lg:col-span-6 lg:max-w-none">
+            <div className="relative aspect-[1300/808] max-h-[420px] w-full">
               <Image
                 src={CAJA_ARMADA.src}
                 alt={CAJA_ARMADA.alt}
                 fill
                 priority
-                sizes="(max-width: 1024px) 92vw, 700px"
+                sizes="(max-width: 1024px) 92vw, 580px"
                 className="lamina object-contain"
               />
             </div>
@@ -199,7 +201,7 @@ export default function PaginaCaja() {
         {/* ── 4. Condiciones objetivo: banda invertida y centrada ────── */}
         <Banda fondo="invertida" className="mt-20 py-16 lg:mt-28 lg:py-20">
           <Revelar className="flex flex-col items-center text-center">
-            <p className="t-eyebrow text-background/65">Condiciones objetivo</p>
+            <p className="t-eyebrow text-background/65 dark:text-subtle">Condiciones objetivo</p>
             <h2 className="t-h2 mt-3 max-w-[22ch] text-balance">
               El clima que buscamos dentro de la caja
             </h2>
@@ -217,7 +219,7 @@ export default function PaginaCaja() {
                 unidad={RANGOS_OBJETIVO.humedad.unidad}
               />
             </dl>
-            <p className="t-small mt-8 max-w-[52ch] text-background/70">
+            <p className="t-small mt-8 max-w-[52ch] text-background/70 dark:text-subtle">
               Son los rangos con los que el proyecto está aprendiendo, no
               valores ya medidos. Revíselos con el termómetro-higrómetro.
             </p>
@@ -272,7 +274,10 @@ export default function PaginaCaja() {
  */
 const FONDO_BANDA = {
   suave: "bg-surface-2 shadow-[0_0_0_100vmax_var(--surface-2)]",
-  invertida: "bg-foreground text-background shadow-[0_0_0_100vmax_var(--foreground)]",
+  // En oscuro no se invierte (seria una franja clara que encandila): pasa a
+  // la superficie elevada, con el mismo contraste de lectura.
+  invertida:
+    "bg-foreground text-background shadow-[0_0_0_100vmax_var(--foreground)] dark:bg-surface-2 dark:text-foreground dark:shadow-[0_0_0_100vmax_var(--surface-2)]",
 } as const;
 
 function Banda({
@@ -295,17 +300,17 @@ function Banda({
 function TarjetaPaso({ paso: s, total }: { paso: EnclosureStep; total: number }) {
   return (
     <article className="flex h-full flex-col rounded-lg bg-surface p-6 ring-1 ring-border">
-      <div className="flex items-center justify-between">
-        <span className="flex size-7 items-center justify-center rounded-full bg-primary font-mono text-[12.5px] font-semibold text-primary-foreground">
-          {s.number}
+      {/* El numero del paso manda (cifra grande, igual al del mapa); el
+          contador "07 / 08" queda como dato secundario. */}
+      <div className="flex items-baseline justify-between">
+        <span className="t-cifra text-[2.75rem] leading-none text-primary">
+          {dos(s.number)}
         </span>
-        <span className="t-eyebrow text-faint">
-          {dos(s.number)} / {dos(total)}
-        </span>
+        <span className="t-eyebrow text-subtle">de {dos(total)}</span>
       </div>
       {/* Caja fija para los ocho dibujos: mismo alto y misma base, sin
           importar la proporcion de cada uno. */}
-      <div className="relative mt-5 h-36 w-full">
+      <div className="relative mt-5 h-32 w-full">
         <Image
           src={s.imagen}
           alt=""
@@ -315,11 +320,11 @@ function TarjetaPaso({ paso: s, total }: { paso: EnclosureStep; total: number })
           className="lamina object-contain object-bottom"
         />
       </div>
-      <h3 className="t-h3 mt-6">{s.title}</h3>
-      <p className="t-small mt-2 text-subtle">{s.body}</p>
+      <h3 className="mt-6 font-display text-[1.6rem] font-semibold leading-tight">{s.title}</h3>
+      <p className="t-body mt-2 text-subtle">{s.body}</p>
       {s.tip && (
         <p className="t-caption mt-auto pt-5">
-          <span className="font-semibold text-foreground/80">Consejo: </span>
+          <span className="font-semibold text-foreground">Consejo: </span>
           {s.tip}
         </p>
       )}
@@ -341,10 +346,10 @@ function Rango({
 }) {
   return (
     <div>
-      <dt className="t-small text-background/65">{etiqueta}</dt>
+      <dt className="t-small text-background/65 dark:text-subtle">{etiqueta}</dt>
       <dd className="t-cifra mt-2 whitespace-nowrap text-[2.25rem] sm:text-[4.25rem]">
         {min}–{max}
-        <span className="t-unidad text-background/70">{" "}{unidad}</span>
+        <span className="t-unidad text-background/70 dark:text-subtle">{" "}{unidad}</span>
       </dd>
     </div>
   );

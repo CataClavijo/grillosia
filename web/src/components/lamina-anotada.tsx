@@ -62,10 +62,12 @@ export function LaminaAnotada({
 
   return (
     <div className={cn("grid items-center gap-10 lg:grid-cols-12 lg:gap-14", className)}>
-      <figure className="lg:col-span-8">
+      {/* La foto acompana a la lista (7 de 12 columnas, no 8). En oscuro va
+          sobre papel marfil: el grillo cafe oscuro se perdia en el carbon. */}
+      <figure className="lg:col-span-7 dark:rounded-xl dark:bg-[#efe9dc] dark:p-5 dark:text-[#1f1b16]">
         <div
           ref={caja}
-          className="relative mx-auto w-full max-w-[680px]"
+          className="relative mx-auto w-full max-w-[600px]"
           style={{ aspectRatio: `${W} / ${H}` }}
         >
           <Image
@@ -100,7 +102,7 @@ export function LaminaAnotada({
                   strokeWidth={on ? 1.5 : 1}
                   className={cn(
                     "transition-[stroke-dashoffset,stroke] duration-700 ease-[var(--ease-natural)]",
-                    on ? "stroke-primary" : "stroke-foreground/45",
+                    on ? "stroke-primary" : "stroke-foreground/45 dark:stroke-[#5f594e]",
                   )}
                   style={{
                     strokeDasharray: largo,
@@ -176,13 +178,13 @@ export function LaminaAnotada({
             );
           })}
         </div>
-        <figcaption className="t-caption mt-4 text-center">
+        <figcaption className="t-caption mt-4 text-center dark:text-[#5f594e]">
           Ejemplar del proyecto, familia Gryllidae. Foto: {foto.credito}. Toque
           un número para ver el rasgo.
         </figcaption>
       </figure>
 
-      <ol className="flex flex-col gap-1 lg:col-span-4">
+      <ol className="flex flex-col gap-1 lg:col-span-5">
         {rasgos.map((r, i) => {
           const on = activo === r.id;
           return (
@@ -205,7 +207,7 @@ export function LaminaAnotada({
               >
                 <span
                   className={cn(
-                    "flex size-7 items-center justify-center rounded-full border-2 border-primary text-[12px] font-bold tabular-nums transition-colors duration-200",
+                    "flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-primary font-display text-[17px] font-semibold tabular-nums transition-colors duration-200",
                     on ? "bg-primary text-primary-foreground" : "text-primary",
                   )}
                   aria-hidden
@@ -213,10 +215,10 @@ export function LaminaAnotada({
                   {i + 1}
                 </span>
                 <span>
-                  <span className={cn("t-h4 block", on && "text-foreground")}>
+                  <span className={cn("block font-display text-[1.5rem] font-semibold leading-tight", on && "text-foreground")}>
                     {r.titulo}
                   </span>
-                  <span className="t-small mt-0.5 block text-subtle">{r.texto}</span>
+                  <span className="t-body mt-1 block text-subtle">{r.texto}</span>
                 </span>
               </button>
             </li>

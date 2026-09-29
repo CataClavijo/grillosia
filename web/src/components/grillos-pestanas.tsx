@@ -189,7 +189,7 @@ function Comparacion({
       </div>
 
       <figure className="lg:col-span-5 lg:pt-4">
-        <div className="relative mx-auto h-60 w-full max-w-[420px] sm:h-72">
+        <div className="relative mx-auto h-52 w-full max-w-[380px] sm:h-60">
           <Image
             src={lamina.src}
             alt={lamina.alt}

@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { BarraComposicion } from "@/components/barra-composicion";
 import { LaminaNormalizada } from "@/components/lamina-normalizada";
 import { DIETS, DIET_BASE, HYDRATION_NOTE } from "@/lib/animals";
 import { cn } from "@/lib/utils";
@@ -60,10 +61,10 @@ export function TresComidas({
                 width={80}
                 height={80}
                 aria-hidden
-                className="lamina size-9 shrink-0 object-contain"
+                className="lamina size-10 shrink-0 object-contain"
               />
-              <span className="text-[14.5px] leading-tight">
-                <span className="t-eyebrow mr-1.5 text-faint">{d.id}</span>
+              <span className="flex items-baseline gap-2 text-[15.5px] font-medium leading-tight">
+                <span className="t-cifra text-[1.25rem] text-primary">{d.id}</span>
                 {d.main}
               </span>
             </li>
@@ -95,11 +96,23 @@ export function TresComidas({
             key={d.id}
             className="grid grid-cols-[96px_1fr] items-center gap-4 sm:flex sm:flex-col sm:items-stretch sm:gap-0"
           >
-            <LaminaNormalizada src={DIBUJO[d.id]} area={17000} alto={150} />
+            <LaminaNormalizada src={DIBUJO[d.id]} area={14000} alto={130} />
             <div>
-              <p className="t-eyebrow text-primary sm:mt-5">{d.id}</p>
-              <h3 className="t-h3 mt-1.5">{d.main}</h3>
-              <p className="t-small mt-1 text-subtle">{QUE_ES[d.id]}</p>
+              {/* El codigo y el nombre mandan; el dibujo acompana. */}
+              <p className="t-cifra text-[2.5rem] leading-none text-primary sm:mt-6 sm:text-[2.75rem]">
+                {d.id}
+              </p>
+              <h3 className="mt-2 font-display text-[1.75rem] font-semibold leading-tight sm:text-[1.9rem]">
+                {d.main}
+              </h3>
+              <p className="t-body mt-2 text-subtle">{QUE_ES[d.id]}</p>
+              <BarraComposicion
+                principal={d.main}
+                base={DIET_BASE.base}
+                mainPct={DIET_BASE.mainPct}
+                compacta
+                className="mt-4"
+              />
             </div>
           </li>
         ))}

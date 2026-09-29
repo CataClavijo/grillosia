@@ -183,7 +183,7 @@ export default function Inicio() {
                     >
                       {/* Misma caja, misma altura y misma linea de apoyo para
                           los tres: el dibujo se ajusta dentro, apoyado abajo. */}
-                      <div className={cn("h-44 pt-6 lg:h-52", AJUSTE_ANIMAL[c.id])}>
+                      <div className={cn("h-32 px-6 pt-6 lg:h-40", AJUSTE_ANIMAL[c.id])}>
                         <div className="relative h-full w-full">
                           <Image
                             src={c.image}
@@ -196,8 +196,8 @@ export default function Inicio() {
                         </div>
                       </div>
                       <div className="flex flex-1 flex-col px-5 pt-5 pb-5 lg:px-6 lg:pb-6">
-                        <h3 className="t-h2">{c.name}</h3>
-                        <p className="t-small mt-2 text-subtle">
+                        <h3 className="font-display text-[2.25rem] font-semibold leading-none lg:text-[2.5rem]">{c.name}</h3>
+                        <p className="t-body mt-2 text-subtle">
                           {animales.map((a) => a.name).join(" · ")}
                         </p>
                         <div className="mt-5 flex-1">
@@ -206,7 +206,7 @@ export default function Inicio() {
                               <span className="t-caption">
                                 Proteína en el alimento, según especie y etapa
                               </span>
-                              <span className="t-cifra text-[1.875rem]">
+                              <span className="t-cifra text-[2.25rem]">
                                 {formatoProteina(rango)}
                               </span>
                             </p>
@@ -242,17 +242,24 @@ export default function Inicio() {
             </Revelar>
             <ul className="flex flex-col gap-9 lg:pt-3">
               {DIETS.map((d, i) => (
-                <Revelar as="li" key={d.id} retraso={i * 90}>
-                  <div className="flex items-baseline gap-3">
-                    <span className="t-eyebrow text-primary">{d.id}</span>
-                    <p className="t-h3">{d.main}</p>
+                <Revelar as="li" key={d.id} retraso={i * 90} className="grid grid-cols-[4.25rem_1fr] gap-x-5 sm:grid-cols-[5rem_1fr]">
+                  <span className="t-cifra text-[2.5rem] leading-none text-primary sm:text-[3rem]">
+                    {d.id}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-display text-[1.75rem] font-semibold leading-tight sm:text-[2rem]">
+                      {d.main}
+                    </p>
+                    <p className="t-body mt-1 text-subtle">
+                      {DIET_BASE.mainPct} % del ingrediente principal más la base común.
+                    </p>
+                    <BarraComposicion
+                      principal={d.main}
+                      base={DIET_BASE.base}
+                      mainPct={DIET_BASE.mainPct}
+                      className="mt-4"
+                    />
                   </div>
-                  <BarraComposicion
-                    principal={d.main}
-                    base={DIET_BASE.base}
-                    mainPct={DIET_BASE.mainPct}
-                    className="mt-3"
-                  />
                 </Revelar>
               ))}
             </ul>
@@ -299,16 +306,18 @@ export default function Inicio() {
             <Revelar className="order-2 lg:order-1">
               {/* Foto real de un ejemplar del proyecto, recortada sobre el
                   fondo: nada de marco blanco pegado encima de la pagina. */}
-              <figure className="rounded-lg bg-surface-2 px-6 pt-10 pb-6 sm:px-10">
+              {/* En oscuro, el grillo cafe oscuro desaparecia sobre el
+                  carbon: va sobre la misma hoja de papel que las acuarelas. */}
+              <figure className="rounded-lg bg-surface-2 px-6 pt-10 pb-6 sm:px-10 dark:bg-[#efe9dc]">
                 <Image
                   src="/grillos/recorte-3.webp"
                   alt="Grillo del proyecto, de la familia Gryllidae, visto de lado."
                   width={611}
                   height={379}
                   sizes="(min-width: 1024px) 600px, 90vw"
-                  className="mx-auto h-auto w-full max-w-[560px]"
+                  className="mx-auto h-auto w-full max-w-[480px]"
                 />
-                <figcaption className="t-caption mt-5 text-center">
+                <figcaption className="t-caption mt-5 text-center dark:text-[#5f594e]">
                   Ejemplar del proyecto, familia Gryllidae. Foto: Sebastián Berrío.
                 </figcaption>
               </figure>
@@ -361,8 +370,10 @@ export default function Inicio() {
 
         {/* ── 7. Territorio: el mapa manda ─────────────────────────── */}
         <section className="bg-surface-2 py-16 lg:py-24">
-          <Contenedor className="grid gap-10 lg:grid-cols-[0.62fr_1.38fr] lg:gap-14">
-            <Revelar className="lg:pt-4">
+          <Contenedor className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-16">
+            {/* El texto se alinea arriba con el mapa y lo acompana al bajar:
+                centrado, flotaba en medio de la columna alta del mapa. */}
+            <Revelar className="lg:sticky lg:top-28 lg:pt-6">
               <EncabezadoSeccion
                 rotulo="Territorio"
                 titulo="Cubarral y Granada, Meta"
@@ -377,7 +388,7 @@ export default function Inicio() {
               </Link>
             </Revelar>
             <Revelar retraso={80}>
-              <MapaTerritorio className="w-full" />
+              <MapaTerritorio className="mx-auto w-full max-w-[640px]" />
             </Revelar>
           </Contenedor>
         </section>

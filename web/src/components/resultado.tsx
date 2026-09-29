@@ -544,9 +544,9 @@ function TablaComidas({ filas, sugeridaId }: { filas: Fila[]; sugeridaId?: strin
                     className="lamina size-12 shrink-0 object-contain"
                   />
                   <span className="flex flex-col gap-0.5">
-                    <span className="t-eyebrow text-faint">{f.id}</span>
+                    <span className="t-cifra text-[1.5rem] leading-none text-primary">{f.id}</span>
                     <span className="flex flex-wrap items-center gap-2">
-                      <span className="text-[16px] font-semibold">{f.main}</span>
+                      <span className="text-[17px] font-semibold">{f.main}</span>
                       {f.id === sugeridaId && <EtiquetaSugerida />}
                     </span>
                   </span>
@@ -587,9 +587,9 @@ function TablaComidas({ filas, sugeridaId }: { filas: Fila[]; sugeridaId?: strin
                 className="lamina size-11 shrink-0 object-contain"
               />
               <span className="flex flex-col gap-0.5">
-                <span className="t-eyebrow text-faint">{f.id}</span>
+                <span className="t-cifra text-[1.5rem] leading-none text-primary">{f.id}</span>
                 <span className="flex flex-wrap items-center gap-2">
-                  <span className="text-[16px] font-semibold">{f.main}</span>
+                  <span className="text-[17px] font-semibold">{f.main}</span>
                   {f.id === sugeridaId && <EtiquetaSugerida />}
                 </span>
               </span>

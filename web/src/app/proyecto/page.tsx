@@ -267,10 +267,10 @@ export default function PaginaProyecto() {
                   ];
                   return (
                     <Revelar as="li" key={d.id} retraso={i * 80}>
-                      <span className="t-eyebrow text-primary">{d.id}</span>
-                      <p className="t-h3 mt-2">{d.main}</p>
+                      <span className="t-cifra text-[2.5rem] leading-none text-primary">{d.id}</span>
+                      <p className="mt-2 font-display text-[1.6rem] font-semibold leading-tight">{d.main}</p>
                       <div
-                        className="mt-4 flex h-2.5 w-full gap-[3px] overflow-hidden rounded-full"
+                        className="mt-4 flex h-3 w-full gap-[3px] overflow-hidden rounded-full"
                         role="img"
                         aria-label={partes.map((p) => `${p.pct} % ${p.nombre}`).join(", ")}
                       >
@@ -289,7 +289,7 @@ export default function PaginaProyecto() {
                       </div>
                       <ul className="mt-3 flex flex-col gap-1">
                         {partes.map((p, j) => (
-                          <li key={p.nombre} className="t-caption flex items-center gap-2">
+                          <li key={p.nombre} className="t-small flex items-center gap-2 text-subtle">
                             <span aria-hidden className={cn("size-2 rounded-full", COLOR_PARTE[j])} />
                             <span className="font-mono tabular-nums text-foreground/80">
                               {p.pct}
