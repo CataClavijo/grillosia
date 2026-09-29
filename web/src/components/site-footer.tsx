@@ -80,7 +80,7 @@ export function SiteFooter() {
           contrato 207-2025. Investigación: Dra. Mónica Paola Higuera-Díaz.
           Desarrollo de la plataforma: Catalina Clavijo Agudelo.
         </p>
-        <div className="flex shrink-0 items-center gap-5">
+        <div className="flex shrink-0 flex-wrap items-center gap-x-5 gap-y-1 [&>button]:whitespace-nowrap">
           <CambioTema />
           <p className="t-eyebrow text-faint">
             Piedemonte Llanero, Meta · {new Date().getFullYear()}
