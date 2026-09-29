@@ -543,7 +543,7 @@ function PreguntaCategoria({
                 width={280}
                 height={200}
                 aria-hidden
-                className="lamina h-16 w-20 shrink-0 object-contain sm:h-24 sm:w-full"
+                className="lamina h-16 w-20 shrink-0 object-contain sm:h-24 sm:w-full sm:pr-8"
               />
               <span className="min-w-0 pr-8 sm:pr-0">
                 <span className="block font-display text-[1.45rem] font-medium leading-tight">
