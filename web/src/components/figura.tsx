@@ -80,7 +80,7 @@ export const FIGURAS: DefinicionFigura[] = [
     // recipiente vacio: esta responde a "¿como se ve un grillero?", que se
     // pregunta antes de saber que hace falta cada pieza por separado.
     id: "grillero",
-    src: "/ilustraciones/caja-cria.webp",
+    src: "/acuarelas/caja-cria.webp",
     titulo: "Un grillero montado, con todo dentro",
     alt: "Corte de una caja de cría vista por dentro: hueveras de cartón paradas como acordeón, un bebedero, un plato con alimento y cama en el fondo. Al lado, la tapa perforada.",
     cuando:

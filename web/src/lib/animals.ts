@@ -166,7 +166,7 @@ export const ANIMALS: AnimalDestino[] = [
     id: "gallina",
     category: "aves",
     name: "Gallina ponedora",
-    image: "/ilustraciones/gallina.webp",
+    image: "/acuarelas/gallina.webp",
     stages: [
       { id: "inicio", name: "Inicio", detail: "0 a 6 semanas", protein: { min: 17, max: 18, refs: ["nrc-1994-aves"], nota: "El rango va de las líneas de huevo marrón a las de huevo blanco." } },
       { id: "levante", name: "Levante", detail: "6 a 18 semanas", protein: { min: 14, max: 16, refs: ["nrc-1994-aves"], nota: "El rango va de las líneas de huevo marrón a las de huevo blanco." } },

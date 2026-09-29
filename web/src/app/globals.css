@@ -581,6 +581,16 @@ html.cambiando-tema *::after {
   opacity: 0.9;
 }
 
+/* Acuarelas: vienen con el papel ya transparente (ver scripts de
+   optimizacion), asi que se ven igual en claro y en oscuro, sin mezclas ni
+   filtros. Se reconocen por su carpeta, /acuarelas/. */
+img.lamina[src*="acuarelas"],
+.dark img.lamina[src*="acuarelas"] {
+  mix-blend-mode: normal;
+  filter: none;
+  opacity: 1;
+}
+
 /* ══════════════════════════════════════════════════════════════════════════
    SISTEMA DE DISEÑO GRILLOSIA — TIPOGRAFIA
    ──────────────────────────────────────────────────────────────────────────

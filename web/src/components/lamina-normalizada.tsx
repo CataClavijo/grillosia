@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 const PROPORCION: Record<string, number> = {
   "/ilustraciones/tilapia.webp": 1.63,
   "/ilustraciones/pollo-engorde.webp": 0.98,
-  "/ilustraciones/gallina.webp": 0.98,
+  "/acuarelas/gallina.webp": 0.98,
   "/ilustraciones/cerdo.webp": 1.95,
   "/ilustraciones/ing-bore.webp": 0.93,
   "/ilustraciones/ing-boton-oro.webp": 1.16,
