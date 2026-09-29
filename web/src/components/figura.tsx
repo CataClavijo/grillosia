@@ -145,6 +145,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "trampa-vaso",
+    src: "/ilustraciones/trampa-vaso.webp",
     titulo: "Trampa de vaso enterrado",
     alt: "Corte del suelo: un vaso plástico enterrado a ras de tierra con un pedazo de fruta dentro, y encima una teja apoyada en dos piedras que deja un hueco de entrada y tapa la lluvia.",
     cuando:
@@ -152,6 +153,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "atrapar-mano",
+    src: "/ilustraciones/atrapar-mano.webp",
     titulo: "Atraparlos a mano, sin apretar",
     alt: "Dos manos: una baja ahuecada sobre un grillo posado en el suelo y la otra espera al lado para cerrar el hueco entre ambas.",
     cuando:
@@ -159,6 +161,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "trampa-carton",
+    src: "/ilustraciones/trampa-carton.webp",
     titulo: "Cartón enrollado y huevera como refugio",
     alt: "Un pedazo de cartón corrugado enrollado y una huevera de cartón, con grillos metidos entre los pliegues.",
     cuando:
@@ -190,6 +193,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "cosecha",
+    src: "/ilustraciones/cosecha.webp",
     titulo: "Un cedazo para separar, un frasco para guardar",
     alt: "Un cedazo circular de marco de madera sobre una mesa y, al lado, un frasco de vidrio con tapa perforada.",
     cuando:
