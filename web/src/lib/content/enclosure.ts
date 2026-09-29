@@ -33,7 +33,7 @@ export interface EnclosureStep {
   title: string;
   body: string;
   tip?: string;
-  /** Ilustración en grabado del paso (ruta dentro de /public). */
+  /** Ilustración del paso (ruta dentro de /public). */
   imagen: string;
 }
 
@@ -54,7 +54,7 @@ export const COST_NOTE =
 /** Ilustración principal de la página: la caja ya armada. */
 export const CAJA_ARMADA = {
   src: "/ilustraciones/caja-cria.webp",
-  alt: "Grabado de una caja plástica de cría abierta, con hueveras de cartón paradas como refugio, un bebedero y un plato de alimento, y la tapa con una ventana de malla a un lado.",
+  alt: "Ilustración de una caja plástica de cría abierta, con hueveras de cartón paradas como refugio, un bebedero y un plato de alimento, y la tapa con una ventana de malla a un lado.",
   width: 1100,
   height: 681,
 };
