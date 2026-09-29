@@ -4,127 +4,204 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ──────────────────────────────────────────────────────────────────────────
-   Paleta — blanco calido, tinta casi negra y terracota (la tierra roja del
-   llano) como unico color de accion. Linea editorial de campo, con rotulos
-   en monoespaciada y lineas finas. Nada de verdes "de IA". Alto contraste y
-   tipografia de 18px, pensada para audiencia adulta rural leyendo en un
-   celular Android bajo el sol.
-   ────────────────────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════
+   SISTEMA DE DISEÑO GRILLOSIA — COLOR
+   ──────────────────────────────────────────────────────────────────────────
+   Biologia + ciencia + tecnologia + territorio. Marfil de fondo, carbon calido
+   para el texto, terracota (la tierra roja del llano) como UNICO color de
+   accion, oliva vegetal como color de apoyo (datos confirmados, exito), y
+   marrones naturales en las ilustraciones.
+
+   Reglas:
+   - Ningun componente pone un color a mano: todo sale de estos tokens.
+   - Texto sobre fondo: minimo 4,5:1 (WCAG AA). `--text-secondary` sobre
+     `--background` da 5,3:1; blanco sobre `--primary` da 6,8:1.
+   - El estado nunca depende solo del color: siempre va con icono o texto.
+
+   Equivalencias con los nombres del brief de diseno:
+     background ........ --background        surface ........... --surface
+     surface-secondary . --surface-2         text-primary ...... --foreground
+     text-secondary .... --text-secondary    border ............ --border
+     accent ............ --primary           accent-hover ...... --primary-hover
+     success / warning . --success / --warning
+     disabled .......... --disabled / --disabled-foreground
+   (En shadcn, `--accent` es el fondo de hover de menus; no es el terracota.)
+   ══════════════════════════════════════════════════════════════════════════ */
 :root {
-  --radius: 0.3rem;
+  --radius: 0.375rem; /* 6 px: radios contenidos, nada de pildoras gigantes */
 
   /* tonos crudos */
-  --cream-50: #FFFAF1;
-  --cream-100: #F7F0E3;
-  --cream-200: #EEE5D4;
-
-  --ink-900: #17130E;
-  --ink-700: #3A332B;
-  --ink-500: #6B6257;
-
-  --forest-700: #A3421D; /* terracota: la tierra roja del llano */
-  --forest-600: #B8532B;
-  --forest-500: #C96A43;
-  --earth-600: oklch(0.50 0.080 55); /* tierra calida */
-  --gold-500: oklch(0.74 0.135 82); /* dorado puntual */
+  --marfil-50: #fcfaf5;
+  --marfil-100: #f6f2e9;
+  --marfil-200: #ede6d8;
+  --carbon-900: #1f1b16;
+  --carbon-700: #463f37;
+  --carbon-500: #675f54;
+  --carbon-400: #8c8478;
+  --terracota-600: #a4451f;
+  --terracota-700: #8a3816;
+  --terracota-50: #f7ebe3;
+  --oliva-700: #4e5a2e;
+  --oliva-50: #edefe2;
+  --ambar-700: #8a5a0c;
+  --ambar-50: #faf1dd;
+  --rojo-700: #a3342a;
+  --linea: #e8e1d3;
+  --linea-fuerte: #d3c9b6;
 
   /* tokens semanticos */
-  --background: var(--cream-50);
-  --foreground: var(--ink-900);
-  --card: var(--cream-100);
-  --card-foreground: var(--ink-900);
-  --popover: var(--cream-50);
-  --popover-foreground: var(--ink-900);
-  --primary: var(--forest-700);
-  --primary-foreground: var(--cream-50);
-  --secondary: var(--cream-200);
-  --secondary-foreground: var(--ink-700);
-  --muted: var(--cream-200);
-  --muted-foreground: var(--ink-500);
-  --accent: var(--cream-200);
-  --accent-foreground: var(--ink-700);
-  --gold: var(--gold-500);
-  --gold-foreground: var(--ink-900);
-  --destructive: oklch(0.52 0.170 27);
-  --border: #E4DAC8;
-  --input: #D9CDB8;
-  --ring: var(--forest-600);
+  --background: var(--marfil-50);
+  --foreground: var(--carbon-900);
+  --surface: #ffffff;
+  --surface-2: var(--marfil-100);
+  --text-secondary: var(--carbon-500);
+  --text-tertiary: var(--carbon-400);
 
-  /* banner demo */
-  --demo-bg: oklch(0.78 0.135 82 / 0.18);
-  --demo-border: oklch(0.74 0.135 82 / 0.40);
-  --demo-foreground: oklch(0.32 0.080 55);
+  --primary: var(--terracota-600);
+  --primary-hover: var(--terracota-700);
+  --primary-soft: var(--terracota-50);
+  --primary-foreground: #ffffff;
 
-  /* charts — verdes y tierras, no los grises por defecto */
-  --chart-1: var(--forest-700);
-  --chart-2: var(--forest-500);
-  --chart-3: var(--earth-600);
-  --chart-4: var(--gold-500);
-  --chart-5: var(--ink-500);
+  --vegetal: var(--oliva-700);
+  --vegetal-soft: var(--oliva-50);
+  --success: #3f6b3a;
+  --success-soft: #e8efe2;
+  --warning: var(--ambar-700);
+  --warning-soft: var(--ambar-50);
+  --destructive: var(--rojo-700);
+  --disabled: var(--marfil-200);
+  --disabled-foreground: var(--carbon-400);
 
-  /* sidebar */
-  --sidebar: var(--cream-100);
-  --sidebar-foreground: var(--ink-900);
-  --sidebar-primary: var(--forest-700);
-  --sidebar-primary-foreground: var(--cream-50);
-  --sidebar-accent: var(--cream-200);
-  --sidebar-accent-foreground: var(--ink-700);
-  --sidebar-border: oklch(0.86 0.024 110);
-  --sidebar-ring: var(--forest-600);
+  --border: var(--linea);
+  --border-strong: var(--linea-fuerte);
+  --input: var(--linea-fuerte);
+  --ring: var(--terracota-600);
+
+  /* nombres que usan los componentes de shadcn */
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--carbon-700);
+  --muted: var(--surface-2);
+  --muted-foreground: var(--text-secondary);
+  --accent: var(--marfil-200);
+  --accent-foreground: var(--foreground);
+  --gold: var(--ambar-700);
+  --gold-foreground: #ffffff;
+
+  /* aviso de datos de prueba */
+  --demo-bg: var(--warning-soft);
+  --demo-border: #ead7ad;
+  --demo-foreground: var(--warning);
+
+  --chart-1: var(--terracota-600);
+  --chart-2: var(--oliva-700);
+  --chart-3: #7a5a3a;
+  --chart-4: var(--ambar-700);
+  --chart-5: var(--carbon-500);
+
+  --sidebar: var(--surface-2);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--marfil-200);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  /* movimiento: cortos y con curva natural, nada de rebotes */
+  --ease-natural: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-rapida: 150ms;
+  --dur-media: 250ms;
+  --dur-lenta: 350ms;
 }
 
 .dark {
-  --background: oklch(0.135 0.020 145);
-  --foreground: oklch(0.95 0.014 110);
-  --card: oklch(0.18 0.022 145);
-  --card-foreground: oklch(0.95 0.014 110);
-  --popover: oklch(0.18 0.022 145);
-  --popover-foreground: oklch(0.95 0.014 110);
-  --primary: oklch(0.72 0.115 148);
-  --primary-foreground: oklch(0.135 0.020 145);
-  --secondary: oklch(0.23 0.022 145);
-  --secondary-foreground: oklch(0.92 0.013 110);
-  --muted: oklch(0.22 0.022 145);
-  --muted-foreground: oklch(0.76 0.018 110);
-  --accent: oklch(0.23 0.022 145);
-  --accent-foreground: oklch(0.92 0.013 110);
-  --gold: oklch(0.78 0.130 82);
-  --gold-foreground: oklch(0.135 0.020 145);
-  --destructive: oklch(0.68 0.180 25);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.72 0.115 148);
+  --background: #16130f;
+  --foreground: #f1ece2;
+  --surface: #1e1a15;
+  --surface-2: #26211b;
+  --text-secondary: #b5ab9c;
+  --text-tertiary: #8c8478;
 
-  --demo-bg: oklch(0.55 0.135 82 / 0.18);
-  --demo-border: oklch(0.65 0.135 82 / 0.40);
-  --demo-foreground: oklch(0.85 0.110 82);
+  --primary: #d06a3f;
+  --primary-hover: #e07a4d;
+  --primary-soft: #3a2419;
+  --primary-foreground: #16130f;
 
-  --chart-1: oklch(0.72 0.115 148);
-  --chart-2: oklch(0.62 0.100 148);
-  --chart-3: oklch(0.66 0.082 55);
-  --chart-4: oklch(0.78 0.130 82);
-  --chart-5: oklch(0.76 0.018 110);
+  --vegetal: #a9b67f;
+  --vegetal-soft: #2a2d1f;
+  --success: #93b98a;
+  --success-soft: #1f2a1d;
+  --warning: #e0b35e;
+  --warning-soft: #33280f;
+  --destructive: #e07a6c;
+  --disabled: #2c2721;
+  --disabled-foreground: #7d756a;
 
-  --sidebar: oklch(0.18 0.022 145);
-  --sidebar-foreground: oklch(0.95 0.014 110);
-  --sidebar-primary: oklch(0.72 0.115 148);
-  --sidebar-primary-foreground: oklch(0.135 0.020 145);
-  --sidebar-accent: oklch(0.23 0.022 145);
-  --sidebar-accent-foreground: oklch(0.92 0.013 110);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.72 0.115 148);
+  --border: #332d25;
+  --border-strong: #463e33;
+  --input: #463e33;
+  --ring: #d06a3f;
+
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --secondary: var(--surface-2);
+  --secondary-foreground: #ddd5c8;
+  --muted: var(--surface-2);
+  --muted-foreground: var(--text-secondary);
+  --accent: #2c2721;
+  --accent-foreground: var(--foreground);
+  --gold: var(--warning);
+  --gold-foreground: #16130f;
+
+  --demo-bg: var(--warning-soft);
+  --demo-border: #5a4718;
+  --demo-foreground: var(--warning);
+
+  --chart-1: #d06a3f;
+  --chart-2: #a9b67f;
+  --chart-3: #c09a72;
+  --chart-4: #e0b35e;
+  --chart-5: #b5ab9c;
+
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: #16130f;
+  --sidebar-accent: #2c2721;
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-subtle: var(--text-secondary);
+  --color-faint: var(--text-tertiary);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
   --color-primary-foreground: var(--primary-foreground);
+  --color-vegetal: var(--vegetal);
+  --color-vegetal-soft: var(--vegetal-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-disabled: var(--disabled);
+  --color-disabled-foreground: var(--disabled-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -135,6 +212,7 @@
   --color-gold-foreground: var(--gold-foreground);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-demo-bg: var(--demo-bg);
@@ -156,19 +234,21 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --radius-sm: calc(var(--radius) * 0.55);
-  --radius-md: calc(var(--radius) * 0.75);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.3);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-sm: 0.25rem; /* 4 px: etiquetas, chips */
+  --radius-md: 0.375rem; /* 6 px: botones, campos */
+  --radius-lg: 0.625rem; /* 10 px: superficies, tarjetas */
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.25rem;
+  --radius-4xl: 1.5rem;
 
   --font-sans: var(--font-sans);
   --font-heading: var(--font-display);
   --font-display: var(--font-display);
   --font-serif: var(--font-display);
   --font-mono: var(--font-mono);
+
+  --ease-natural: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 @layer base {
@@ -195,12 +275,78 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* 18px base + line-height 1.65 pensado para adultos con presbicia
-       leyendo al sol en un celular Android. */
-    font-size: 18px;
+    /* 17 px de base y 1.65 de interlineado: legible para adultos con
+       presbicia en un celular, sin que el escritorio se vea inflado. */
+    font-size: 17px;
     line-height: 1.65;
     -webkit-tap-highlight-color: transparent;
+    font-feature-settings: "ss01", "cv11";
   }
+  ::selection {
+    background: var(--primary-soft);
+    color: var(--foreground);
+  }
+  /* Foco visible SIEMPRE con teclado, y nunca con el dedo o el raton. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  a,
+  button,
+  [role="tab"],
+  summary {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button:not(:disabled),
+  [role="button"],
+  [role="tab"],
+  summary {
+    cursor: pointer;
+  }
+  html {
+    scroll-padding-top: 88px;
+  }
+}
+
+/* ── Movimiento ─────────────────────────────────────────────────────────────
+   Entrada de secciones: aparecen con un desplazamiento de 12 px y un fundido
+   de 350 ms, solo la primera vez que entran en pantalla (ver <Revelar>).
+   Con "reducir movimiento" activado aparecen quietas. */
+[data-revelar] {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+  transition:
+    opacity var(--dur-lenta) var(--ease-natural),
+    transform var(--dur-lenta) var(--ease-natural);
+  transition-delay: var(--retraso, 0ms);
+}
+[data-revelar="visible"] {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-revelar] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Barras de desplazamiento horizontales (pestanas, carrusel) sin la barra
+   del sistema: el gesto basta y la barra a medio mostrar se ve sin terminar. */
+.sin-barra {
+  scrollbar-width: none;
+}
+.sin-barra::-webkit-scrollbar {
+  display: none;
 }
 
 @keyframes reveal-up {
@@ -319,34 +465,99 @@
   opacity: 0.62;
 }
 
-/* Microetiqueta: "Paso 3 de 4", "01". En monoespaciada, como una ficha
-   tecnica; a 12,5 px para que se lea bien. */
-.rotulo {
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-}
+/* ══════════════════════════════════════════════════════════════════════════
+   SISTEMA DE DISEÑO GRILLOSIA — TIPOGRAFIA
+   ──────────────────────────────────────────────────────────────────────────
+   Condensada (Barlow Condensed) solo para lo que se lee de un golpe: H1, H2,
+   cifras grandes y nombres cortos de seccion. Mayusculas SOLO en el titular
+   de pagina (.t-display, .t-h1). Todo lo que se lee de corrido va en la sans
+   (Plus Jakarta Sans), con parrafos de 65 caracteres como maximo.
 
-/* Titulares de pagina y de seccion: condensados, gruesos y en mayusculas.
-   La cursiva de enfasis no se inclina: cambia de color. */
-h1.font-display,
-h2.font-display {
-  text-transform: uppercase;
-  font-weight: 700 !important;
-  letter-spacing: -0.005em;
-  line-height: 0.98;
-}
-h1.font-display .italic,
-h2.font-display .italic,
-h1.font-display em,
-h2.font-display em {
-  font-style: normal;
-  color: var(--primary);
-}
-h3.font-display {
-  font-weight: 600 !important;
-  letter-spacing: 0;
+   Escala (px): 12 · 13 · 14 · 16 · 17 · 18 · 20 · 24 · 30 · 38 · 48 · 64.
+   ══════════════════════════════════════════════════════════════════════════ */
+@layer components {
+  .t-display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: clamp(2.5rem, 1.55rem + 3.4vw, 4.25rem);
+    line-height: 0.96;
+    letter-spacing: -0.005em;
+  }
+  .t-h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: clamp(2.125rem, 1.7rem + 1.6vw, 3rem);
+    line-height: 1;
+    letter-spacing: 0;
+  }
+  .t-h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.75rem, 1.45rem + 1.1vw, 2.375rem);
+    line-height: 1.05;
+    letter-spacing: 0;
+  }
+  .t-h3 {
+    font-family: var(--font-sans);
+    font-weight: 650;
+    font-size: 1.125rem;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+  .t-h4 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  .t-lead {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    max-width: 60ch;
+  }
+  .t-body {
+    font-size: 1rem;
+    line-height: 1.65;
+    max-width: 65ch;
+  }
+  .t-small {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  .t-caption {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--text-secondary);
+  }
+  /* Rotulo de seccion ("01", "Territorio", "Paso 3 de 4"): monoespaciada,
+     como una ficha tecnica. */
+  .t-eyebrow,
+  .rotulo {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  /* Cifras grandes: condensada y tabular. La unidad va aparte, mas pequena
+     (ver `.t-unidad`), separada por un espacio fino. */
+  .t-cifra {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .t-unidad {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 0.55em;
+    margin-left: 0.18em;
+    color: var(--text-secondary);
+  }
 }
 
 /* ──────────────────────────────────────────────────────────────────────────

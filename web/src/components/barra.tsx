@@ -1,25 +1,31 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 
+import { Logo } from "@/components/logo";
 import { SiteNav } from "@/components/site-nav";
-import { CAMINO } from "@/lib/camino";
+import { Progreso } from "@/components/ds/progreso";
+import { CAMINO, TOTAL_PARADAS } from "@/lib/camino";
 import { cn } from "@/lib/utils";
 
 /**
- * Barra superior del sitio, como en los disenos de referencia: marca con su
- * lema a la izquierda, las seis secciones en el centro y un unico boton
- * "Comenzar consulta" a la derecha.
+ * Cabecera del sitio. Dos modos:
  *
- * SIN numeracion, a proposito: los numeros de parada pertenecen al camino,
- * donde dicen cuanto falta. En una barra de navegacion no significan nada y
- * hacen que el sitio entero parezca un formulario.
+ *  - `sitio` (portada, Sobre GrillosIA, biblioteca): marca, las seis
+ *    secciones y "Comenzar consulta". Al bajar se reduce de 76 a 60 px, el
+ *    lema se oculta y aparece una linea fina: al leer, la navegacion
+ *    estorba menos.
  *
- * El logo va SIEMPRE en su color original. Un logo que cambia de color segun
- * el fondo deja de ser el logo.
+ *  - `camino` (las cuatro paradas): la navegacion pasa a segundo plano para
+ *    que la persona se concentre en la tarea. Solo marca compacta, "Paso 3
+ *    de 4 · Consulta" y el menu. La barra fina de abajo es el progreso: una
+ *    sola senal, en vez de rotulo + circulos + lineas diciendo lo mismo.
+ *
+ * SIN numeracion en la navegacion del modo `sitio`: los numeros pertenecen al
+ * camino, donde dicen cuanto falta.
  */
 const SECCIONES = [
   { href: "/", titulo: "Inicio" },
@@ -27,50 +33,76 @@ const SECCIONES = [
   { href: "/proyecto", titulo: "Sobre GrillosIA" },
 ];
 
+/** Nombre corto de cada parada para la cabecera del camino. */
+const CORTO: Record<number, string> = {
+  1: "Caja",
+  2: "Grillos",
+  3: "Consulta",
+  4: "Resultado",
+};
+
 export function Barra({
+  modo = "sitio",
+  paso,
   className,
 }: {
-  /**
-   * Va sobre la propia cabecera, no sobre un envoltorio.
-   *
-   * Envolverla en un `div` para esconderla en celular le quitaba el `sticky`:
-   * un elemento pegajoso solo se mueve dentro de su padre, y ese `div` medía
-   * lo mismo que la barra, asi que no tenia recorrido y se iba en cuanto se
-   * bajaba un poco.
-   */
+  modo?: "sitio" | "camino";
+  /** Numero de la parada, en modo `camino`. */
+  paso?: number;
   className?: string;
 }) {
   const pathname = usePathname();
+  const [bajado, setBajado] = useState(false);
+
+  useEffect(() => {
+    const alMover = () => setBajado(window.scrollY > 24);
+    alMover();
+    window.addEventListener("scroll", alMover, { passive: true });
+    return () => window.removeEventListener("scroll", alMover);
+  }, []);
+
+  if (modo === "camino" && paso) {
+    const etiqueta = `Paso ${paso} de ${TOTAL_PARADAS} · ${CORTO[paso] ?? ""}`;
+    return (
+      <header
+        className={cn(
+          "sticky top-0 z-40 w-full bg-background/90 backdrop-blur-md",
+          className,
+        )}
+      >
+        <div className="mx-auto flex h-14 w-full max-w-[1240px] items-center justify-between gap-4 px-5 lg:h-16 lg:px-8">
+          <Link href="/" aria-label="GrillosIA, ir al inicio" className="shrink-0">
+            <Logo variante="compacto" />
+          </Link>
+          <p className="t-eyebrow truncate text-subtle">{etiqueta}</p>
+          <SiteNav />
+        </div>
+        <Progreso valor={paso} total={TOTAL_PARADAS} etiqueta={etiqueta} />
+      </header>
+    );
+  }
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 w-full border-b border-border/70 bg-background/95 backdrop-blur",
+        "sticky top-0 z-40 w-full border-b bg-background/90 backdrop-blur-md transition-[border-color] duration-[var(--dur-media)]",
+        bajado ? "border-border" : "border-transparent",
         className,
       )}
     >
-      <div className="mx-auto flex w-full max-w-[1240px] items-center justify-between gap-5 px-5 py-3 lg:px-8">
-        <Link href="/" className="flex shrink-0 items-center gap-2.5">
-          <Image
-            src="/logo.png"
-            alt=""
-            width={40}
-            height={40}
-            priority
-            className="size-10"
-          />
-          <span className="flex flex-col leading-none">
-            <span className="font-display text-[25px] font-medium tracking-[-0.01em]">
-              GrillosIA
-            </span>
-            <span className="mt-1 hidden font-display text-[12.5px] text-foreground/70 sm:block">
-              Inteligencia natural para decisiones reales
-            </span>
-          </span>
+      <div
+        className={cn(
+          "mx-auto flex w-full max-w-[1240px] items-center justify-between gap-6 px-5 transition-[height] duration-[var(--dur-media)] ease-[var(--ease-natural)] lg:px-8",
+          bajado ? "h-[60px]" : "h-[68px] lg:h-[76px]",
+        )}
+      >
+        <Link href="/" aria-label="GrillosIA, ir al inicio" className="shrink-0">
+          <Logo variante={bajado ? "compacto" : "completo"} prioridad className="hidden lg:inline-flex" />
+          <Logo variante="compacto" prioridad className="lg:hidden" />
         </Link>
 
         <nav className="hidden lg:block" aria-label="Secciones">
-          <ul className="flex items-center gap-0.5">
+          <ul className="flex items-center gap-1 xl:gap-2">
             {SECCIONES.map((p) => {
               const activa = pathname === p.href;
               return (
@@ -79,12 +111,19 @@ export function Barra({
                     href={p.href}
                     aria-current={activa ? "page" : undefined}
                     className={cn(
-                      "relative flex items-center whitespace-nowrap px-2.5 py-2 text-[14.5px] font-medium text-foreground/80 transition-colors hover:text-foreground xl:px-3 xl:text-[15px]",
-                      activa &&
-                        "text-foreground after:absolute after:inset-x-2.5 after:-bottom-[13px] after:h-[2px] after:rounded-full after:bg-primary xl:after:inset-x-3",
+                      "relative flex h-9 items-center whitespace-nowrap rounded-md px-2.5 text-[14.5px] font-medium transition-colors duration-150",
+                      activa
+                        ? "text-foreground"
+                        : "text-subtle hover:text-foreground",
                     )}
                   >
                     {p.titulo}
+                    {activa && (
+                      <span
+                        aria-hidden
+                        className="absolute inset-x-2.5 -bottom-px h-[2px] rounded-full bg-primary"
+                      />
+                    )}
                   </Link>
                 </li>
               );
@@ -95,7 +134,7 @@ export function Barra({
         <div className="flex shrink-0 items-center gap-2">
           <Link
             href="/consulta"
-            className="hidden min-h-11 items-center gap-2 rounded-md bg-primary px-4 text-[14.5px] font-semibold text-primary-foreground transition-opacity hover:opacity-90 lg:inline-flex"
+            className="hidden h-10 items-center gap-2 rounded-md bg-primary px-4 text-[14.5px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover lg:inline-flex"
           >
             Comenzar consulta
             <ArrowRight className="size-4" />

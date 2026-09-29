@@ -2,24 +2,23 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { Barra } from "@/components/barra";
-import { CAMINO, TOTAL_PARADAS, siguienteParada } from "@/lib/camino";
+import { CAMINO, siguienteParada } from "@/lib/camino";
 import { cn } from "@/lib/utils";
 
 /**
  * Armazon de una parada del camino.
  *
  * Hace tres cosas, y las tres son la razon de que exista:
- *  1. Dice en que parada va y cuantas faltan ("Paso 3 de 4" y los cuatro
- *     puntos numerados, como en los disenos de referencia).
+ *  1. Dice en que parada va (la cabecera en modo `camino`: "Paso 3 de 4 ·
+ *     Consulta" y una barra fina). Una sola senal de progreso.
  *  2. Deja UNA sola accion hacia adelante, al final.
  *  3. Ofrece volver, que no es lo mismo que ir al inicio.
  *
- * Ninguna parada dibuja su propia navegacion. Si hiciera falta un segundo
- * boton hacia adelante en alguna, la respuesta correcta es partir esa parada
- * en dos, no agregar el boton.
+ * La barra de acciones de abajo no atraviesa la pantalla con una linea: se
+ * apoya en un fundido del fondo y alinea sus botones con el contenido.
  *
- * El ancho es el del sitio (1240 px): las paradas usan rejillas de dos o tres
- * columnas en escritorio y una sola en celular.
+ * Exporta `BarraAcciones` para las paradas que manejan su propio avance (la
+ * consulta, que va pregunta por pregunta).
  */
 export function Paso({
   n,
@@ -31,13 +30,12 @@ export function Paso({
   n: number;
   titulo: string;
   children: React.ReactNode;
-  /** Sobrescribe el texto del boton. Por defecto, el de la parada. */
+  /** Sobrescribe el texto o destino del boton. `href: ""` lo oculta. */
   accion?: { texto?: string; href?: string };
   className?: string;
 }) {
   // El texto sale de ESTA parada —describe lo que el productor esta a punto
-  // de hacer— y la direccion de la siguiente. Leer los dos de la misma
-  // parada pone en el boton de la 1 el texto de la 2.
+  // de hacer— y la direccion de la siguiente.
   const actual = CAMINO.find((x) => x.n === n);
   const sigue = siguienteParada(n);
   const href = accion?.href ?? sigue?.href;
@@ -46,71 +44,78 @@ export function Paso({
 
   return (
     <>
-      <Barra />
+      <Barra modo="camino" paso={n} />
       <main
+        aria-label={titulo}
         className={cn(
-          "mx-auto flex w-full max-w-[1240px] flex-col px-5 lg:px-8",
+          "mx-auto flex w-full max-w-[1240px] flex-col px-5 pt-8 lg:px-8 lg:pt-12",
           className,
         )}
       >
-        {/* Donde va: "Paso 3 de 4" y los cuatro puntos. */}
-        <div className="flex flex-wrap items-center gap-4 pt-6 pb-2 lg:pt-8">
-          <span className="rounded-full border bg-card px-3 py-1 text-[13.5px] font-medium text-foreground/80">
-            Paso {n} de {TOTAL_PARADAS}
-            <span className="sr-only"> · {titulo}</span>
-          </span>
-          <ol className="flex items-center" aria-hidden>
-            {CAMINO.map((p, i) => (
-              <li key={p.n} className="flex items-center">
-                {i > 0 && (
-                  <span
-                    className={cn(
-                      "h-px w-6 sm:w-9",
-                      p.n <= n ? "bg-primary" : "bg-border",
-                    )}
-                  />
-                )}
-                <Link
-                  href={p.href}
-                  tabIndex={-1}
-                  className={cn(
-                    "flex size-6 items-center justify-center rounded-full border text-[12px] font-semibold",
-                    p.n <= n
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-background text-muted-foreground",
-                  )}
-                >
-                  {p.n}
-                </Link>
-              </li>
-            ))}
-          </ol>
-        </div>
-
-        <div className="pb-6 lg:pb-10">{children}</div>
-
-        {/* La unica accion hacia adelante, con "Atras" a la izquierda. */}
-        <div className="sticky bottom-0 z-20 -mx-5 flex items-center gap-3 border-t bg-background/95 px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+14px)] backdrop-blur lg:-mx-8 lg:px-8">
-          <Link
-            href={anterior}
-            className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-md border px-4 text-[15px] font-semibold text-foreground/85 transition-colors hover:bg-muted"
-          >
-            <ArrowLeft className="size-4" />
-            Atrás
-          </Link>
-          {href && (
-            <Link
-              href={href}
-              className="mx-auto flex min-h-12 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-6 text-[16.5px] font-semibold text-primary-foreground transition-opacity hover:opacity-92 sm:max-w-[420px]"
-            >
-              {texto}
-              <ArrowRight className="size-4" />
-            </Link>
-          )}
-          {/* Contrapeso del boton "Atras" para que el principal quede centrado. */}
-          <span className="hidden w-[104px] shrink-0 sm:block" aria-hidden />
-        </div>
+        <div className="pb-10 lg:pb-16">{children}</div>
+        <BarraAcciones
+          atras={{ href: anterior }}
+          adelante={href ? { href, texto } : undefined}
+        />
       </main>
     </>
+  );
+}
+
+/**
+ * Barra de acciones fija abajo: "Atras" a la izquierda y la accion principal
+ * a la derecha, alineadas con el contenido. En celular la principal ocupa el
+ * ancho que queda, al alcance del pulgar.
+ */
+export function BarraAcciones({
+  atras,
+  adelante,
+}: {
+  atras: { href?: string; onClick?: () => void; texto?: string };
+  adelante?: {
+    href?: string;
+    onClick?: () => void;
+    texto: string;
+    deshabilitado?: boolean;
+  };
+}) {
+  const claseAtras =
+    "inline-flex h-12 shrink-0 items-center gap-2 rounded-md px-3 text-[15px] font-medium text-foreground/80 transition-colors hover:bg-surface-2 hover:text-foreground";
+  const claseAdelante =
+    "inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-6 text-[16px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover disabled:bg-disabled disabled:text-disabled-foreground sm:flex-none sm:min-w-[240px]";
+
+  return (
+    <div className="sticky bottom-0 z-20 -mx-5 mt-auto bg-gradient-to-t from-background from-70% to-transparent px-5 pt-6 pb-[calc(env(safe-area-inset-bottom)+14px)] lg:-mx-8 lg:px-8">
+      <div className="flex items-center justify-between gap-3">
+        {atras.href ? (
+          <Link href={atras.href} className={claseAtras}>
+            <ArrowLeft className="size-4" />
+            {atras.texto ?? "Atrás"}
+          </Link>
+        ) : (
+          <button type="button" onClick={atras.onClick} className={claseAtras}>
+            <ArrowLeft className="size-4" />
+            {atras.texto ?? "Atrás"}
+          </button>
+        )}
+        {adelante &&
+          (adelante.href && !adelante.deshabilitado ? (
+            <Link href={adelante.href} className={claseAdelante}>
+              {adelante.texto}
+              <ArrowRight className="size-4" />
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={adelante.onClick}
+              disabled={adelante.deshabilitado}
+              className={claseAdelante}
+            >
+              {adelante.texto}
+              <ArrowRight className="size-4" />
+            </button>
+          ))}
+      </div>
+    </div>
   );
 }

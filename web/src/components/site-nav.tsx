@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { ArrowRight, Menu } from "lucide-react";
 
 import {
   Sheet,
@@ -13,95 +14,96 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Logo } from "@/components/logo";
 import { SessionBlock } from "@/components/session-block";
 import { ThemeToggle, useTemaOscuro } from "@/components/theme-toggle";
+import { CAMINO } from "@/lib/camino";
+import { cn } from "@/lib/utils";
 
 /**
- * El menu repite las mismas secciones que la barra de escritorio, sin
- * numerar: navegar no es avanzar en el camino. Debajo, la biblioteca: lo que
- * se consulta y no se recorre.
- */
-const CAMINO = [
-  { href: "/", label: "Inicio", n: null as number | null },
-  { href: "/caja", label: "Arme su caja", n: 1 },
-  { href: "/grillos", label: "Conozca sus grillos", n: 2 },
-  { href: "/consulta", label: "Haga su consulta", n: 3 },
-  { href: "/resultado", label: "Vea su resultado", n: 4 },
-];
-
-/**
- * Fuera del camino: se consultan, no se recorren.
+ * Menu de celular (y del camino guiado en escritorio).
  *
- * El asistente no aparece aquí a propósito. Conversa sobre el resultado de
- * una consulta, así que se llega a él desde el resultado del asistente
- * guiado, no como destino suelto.
+ * No es el menu de escritorio encogido: esta pensado para el pulgar. Arriba
+ * el recorrido numerado con una linea de que se hace en cada paso, porque en
+ * celular es la forma de entender el sitio completo de un vistazo. Debajo lo
+ * que se consulta y no se recorre. Al final, la accion principal al alcance
+ * del pulgar. Filas de 56 px.
  */
-const SECUNDARIO = [
-  { href: "/consultas", label: "Mis consultas" },
-  { href: "/proyecto", label: "Sobre GrillosIA" },
+const OTRAS = [
+  { href: "/", titulo: "Inicio" },
+  { href: "/proyecto", titulo: "Sobre GrillosIA" },
+  { href: "/consultas", titulo: "Mis consultas" },
 ];
 
-export function SiteNav({ variant = "full" }: { variant?: "full" | "focused" }) {
+export function SiteNav() {
   const [open, setOpen] = useState(false);
-  // Antes del return temprano de abajo: un hook no se puede llamar de forma
-  // condicional.
   const oscuro = useTemaOscuro();
-
-  // Durante un flujo guiado no mostramos nada: la flecha de atrás basta.
-  if (variant === "focused") return null;
+  const pathname = usePathname();
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
+        <button
+          type="button"
           aria-label="Abrir menú"
-          className="size-11 rounded-full"
+          className="inline-flex h-10 items-center gap-2 rounded-md px-3 text-[14.5px] font-medium text-foreground/85 transition-colors hover:bg-surface-2 hover:text-foreground"
         >
-          <Menu />
-        </Button>
+          <Menu className="size-[18px]" />
+          <span className="hidden sm:inline">Menú</span>
+        </button>
       </SheetTrigger>
 
-      <SheetContent side="right" className="w-full gap-0 sm:max-w-[340px]">
-        <SheetHeader>
-          <SheetTitle className="text-base">GrillosIA</SheetTitle>
-          <SheetDescription className="sr-only">
-            Navegación principal
-          </SheetDescription>
+      <SheetContent side="right" className="w-full gap-0 border-l bg-background sm:max-w-[400px]">
+        <SheetHeader className="px-5 pt-5 pb-2">
+          <SheetTitle asChild>
+            <div>
+              <Logo variante="compacto" />
+            </div>
+          </SheetTitle>
+          <SheetDescription className="sr-only">Navegación principal</SheetDescription>
         </SheetHeader>
 
-        <Separator />
+        <nav className="flex-1 overflow-y-auto px-3 pb-4" aria-label="Menú">
+          <p className="t-eyebrow px-2 pt-5 pb-2 text-faint">El recorrido</p>
+          <ol className="flex flex-col">
+            {CAMINO.map((p) => {
+              const activa = pathname === p.href;
+              return (
+                <li key={p.href}>
+                  <SheetClose asChild>
+                    <Link
+                      href={p.href}
+                      aria-current={activa ? "page" : undefined}
+                      className={cn(
+                        "flex min-h-14 items-start gap-4 rounded-md px-2 py-3 transition-colors hover:bg-surface-2",
+                        activa && "bg-surface-2",
+                      )}
+                    >
+                      <span className="t-eyebrow mt-[3px] w-6 shrink-0 text-primary">
+                        0{p.n}
+                      </span>
+                      <span className="flex flex-col">
+                        <span className="text-[16px] font-semibold leading-snug">{p.titulo}</span>
+                        <span className="text-[14px] leading-snug text-subtle">{p.resumen}</span>
+                      </span>
+                    </Link>
+                  </SheetClose>
+                </li>
+              );
+            })}
+          </ol>
 
-        <nav className="flex-1 overflow-y-auto p-2">
+          <p className="t-eyebrow px-2 pt-6 pb-2 text-faint">Más</p>
           <ul className="flex flex-col">
-            {CAMINO.map((item) => (
-              <li key={item.href}>
+            {OTRAS.map((o) => (
+              <li key={o.href}>
                 <SheetClose asChild>
                   <Link
-                    href={item.href}
-                    className="flex min-h-14 items-center rounded-xl px-4 text-[17px] font-semibold transition-colors hover:bg-muted"
+                    href={o.href}
+                    aria-current={pathname === o.href ? "page" : undefined}
+                    className="flex min-h-12 items-center rounded-md px-2 text-[16px] font-medium text-foreground/85 transition-colors hover:bg-surface-2 hover:text-foreground"
                   >
-                    {item.label}
-                  </Link>
-                </SheetClose>
-              </li>
-            ))}
-          </ul>
-
-          <Separator className="my-2" />
-
-          <ul className="flex flex-col">
-            {SECUNDARIO.map((item) => (
-              <li key={item.href}>
-                <SheetClose asChild>
-                  <Link
-                    href={item.href}
-                    className="flex min-h-14 items-center rounded-xl px-4 text-[16px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  >
-                    {item.label}
+                    {o.titulo}
                   </Link>
                 </SheetClose>
               </li>
@@ -109,11 +111,20 @@ export function SiteNav({ variant = "full" }: { variant?: "full" | "focused" }) 
           </ul>
         </nav>
 
-        <div className="border-t">
+        <div className="flex flex-col gap-1 border-t px-5 pt-4 pb-[calc(env(safe-area-inset-bottom)+16px)]">
+          <SheetClose asChild>
+            <Link
+              href="/consulta"
+              className="flex h-[52px] items-center justify-center gap-2 rounded-md bg-primary text-[16px] font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+            >
+              Comenzar consulta
+              <ArrowRight className="size-4" />
+            </Link>
+          </SheetClose>
           <SessionBlock onNavigate={() => setOpen(false)} />
-          <div className="flex min-h-16 items-center justify-between border-t px-4">
-            <span className="text-[16px] font-medium">
-              {oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+          <div className="flex min-h-12 items-center justify-between">
+            <span className="text-[15px] text-subtle">
+              {oscuro ? "Modo claro" : "Modo oscuro"}
             </span>
             <ThemeToggle />
           </div>
