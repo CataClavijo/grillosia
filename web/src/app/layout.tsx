@@ -1,10 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import {
-  Instrument_Serif,
-  JetBrains_Mono,
-  Plus_Jakarta_Sans,
-  Schibsted_Grotesk,
-} from "next/font/google";
+import { EB_Garamond, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 
 import "./globals.css";
 import { SessionGate } from "@/components/session-gate";
@@ -14,27 +9,19 @@ import { SwKillBoot } from "@/components/sw-kill-boot";
 import { cn } from "@/lib/utils";
 
 /**
- * Cuatro papeles, cada uno con su razon:
+ * Tres papeles, cada uno con su razon:
  *
- *  - Schibsted Grotesk para titulares: x-alta grande, se lee de lejos y en
- *    pantalla pequena.
- *  - Instrument Serif solo en la frase de enfasis del titular. Nunca en
- *    parrafos: para leer de corrido, este publico necesita la sans.
- *  - JetBrains Mono en microetiquetas ("PASO 3 DE 4"), a 11 px y no a 8,
- *    que es lo que la hace legible para ojos mayores.
- *  - Plus Jakarta Sans para todo el cuerpo. Ya estaba y funciona.
+ *  - EB Garamond para titulares y la frase de enfasis en cursiva. Es la
+ *    tipografia elegante de los disenos de referencia: da el tono de lamina
+ *    cientifica sin volverse dificil de leer en tamanos grandes.
+ *  - Plus Jakarta Sans para todo el cuerpo. Para leer de corrido, este
+ *    publico necesita la sans.
+ *  - JetBrains Mono queda solo para bloques de codigo del asistente.
  */
-const grotesk = Schibsted_Grotesk({
+const garamond = EB_Garamond({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "500", "700", "800"],
-  display: "swap",
-});
-
-const serif = Instrument_Serif({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  weight: ["400"],
+  weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
   display: "swap",
 });
@@ -104,8 +91,7 @@ export default function RootLayout({
       className={cn(
         "h-full antialiased font-sans",
         jakarta.variable,
-        grotesk.variable,
-        serif.variable,
+        garamond.variable,
         mono.variable,
       )}
     >

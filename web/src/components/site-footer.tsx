@@ -35,11 +35,14 @@ export function SiteFooter() {
 
   return (
     <footer className="mt-auto border-t">
-      <div className="mx-auto w-full max-w-[1180px] px-5 pb-10 pt-9 lg:px-8">
+      <div className="mx-auto w-full max-w-[1240px] px-5 pb-10 pt-9 lg:px-8">
         <div className="flex items-center gap-2.5">
           <Image src="/logo.png" alt="" width={34} height={34} />
-          <span className="font-display text-[17px] font-bold tracking-[-0.02em]">
-            GrillosIA
+          <span className="flex flex-col leading-none">
+            <span className="font-display text-[21px] font-medium">GrillosIA</span>
+            <span className="mt-1 font-display text-[12.5px] text-foreground/70">
+              Inteligencia natural para decisiones reales
+            </span>
           </span>
         </div>
 
@@ -84,11 +87,11 @@ export function SiteFooter() {
 
         <p className="mt-7 border-t pt-5 text-[13.5px] leading-relaxed text-muted-foreground">
           Universidad de los Llanos · Minciencias 963 de 2025, contrato
-          207-2025. Investigación: Dra. Mónica Paola Higuera-Díaz. Creación de
-          la página: Catalina Clavijo Agudelo.
+          207-2025. Investigación: Dra. Mónica Paola Higuera-Díaz. Desarrollo
+          de la plataforma: Catalina Clavijo Agudelo.
         </p>
         <p className="rotulo mt-3 text-muted-foreground">
-          Villavicencio, Meta · {new Date().getFullYear()}
+          Piedemonte Llanero, Meta · {new Date().getFullYear()}
         </p>
       </div>
     </footer>

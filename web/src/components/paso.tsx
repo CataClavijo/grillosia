@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { Barra } from "@/components/barra";
-import { SiteNav } from "@/components/site-nav";
 import { CAMINO, TOTAL_PARADAS, siguienteParada } from "@/lib/camino";
 import { cn } from "@/lib/utils";
 
@@ -10,13 +9,17 @@ import { cn } from "@/lib/utils";
  * Armazon de una parada del camino.
  *
  * Hace tres cosas, y las tres son la razon de que exista:
- *  1. Dice en que parada va y cuantas faltan, arriba, siempre.
+ *  1. Dice en que parada va y cuantas faltan ("Paso 3 de 4" y los cuatro
+ *     puntos numerados, como en los disenos de referencia).
  *  2. Deja UNA sola accion hacia adelante, al final.
  *  3. Ofrece volver, que no es lo mismo que ir al inicio.
  *
  * Ninguna parada dibuja su propia navegacion. Si hiciera falta un segundo
  * boton hacia adelante en alguna, la respuesta correcta es partir esa parada
  * en dos, no agregar el boton.
+ *
+ * El ancho es el del sitio (1240 px): las paradas usan rejillas de dos o tres
+ * columnas en escritorio y una sola en celular.
  */
 export function Paso({
   n,
@@ -43,61 +46,71 @@ export function Paso({
 
   return (
     <>
-      {/* UNA sola cabecera pegada, con la barra del sitio dentro.
-          Antes la barra iba en un `div` de su misma altura: `sticky` solo se
-          mueve dentro de su padre, asi que no tenia recorrido y se iba en
-          cuanto se bajaba. La barra del paso se quedaba pegada a 68 px del
-          borde y por esa franja se colaba el contenido. */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur">
-        <Barra className="hidden lg:block" />
-        <div className="mx-auto w-full max-w-[760px]">
-          <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-3 lg:px-8">
-            <Link
-              href={anterior}
-              className="inline-flex min-h-11 items-center gap-1 -ml-2 rounded-full px-2 text-[15px] font-semibold text-foreground/80 transition-colors hover:text-foreground"
-            >
-              <ChevronLeft className="size-5" />
-              Atrás
-            </Link>
-            {/* El menu, solo en celular: en escritorio la barra de arriba ya
-                lleva la navegacion entera, y dos menus a la vez confunden. */}
-            <div className="lg:hidden">
-              <SiteNav />
-            </div>
-          </div>
-          <p className="rotulo px-5 pb-2 text-muted-foreground lg:px-8">
-            Paso {n} de {TOTAL_PARADAS} · {titulo}
-          </p>
-          {/* Cuatro tramos, uno por parada. */}
-          <div className="flex gap-1 px-5 pb-3 lg:px-8" aria-hidden>
-            {Array.from({ length: TOTAL_PARADAS }, (_, i) => (
-              <span
-                key={i}
-                className={cn(
-                  "h-1.5 flex-1 rounded-full",
-                  i < n ? "bg-primary" : "bg-muted",
+      <Barra />
+      <main
+        className={cn(
+          "mx-auto flex w-full max-w-[1240px] flex-col px-5 lg:px-8",
+          className,
+        )}
+      >
+        {/* Donde va: "Paso 3 de 4" y los cuatro puntos. */}
+        <div className="flex flex-wrap items-center gap-4 pt-6 pb-2 lg:pt-8">
+          <span className="rounded-full border bg-card px-3 py-1 text-[13.5px] font-medium text-foreground/80">
+            Paso {n} de {TOTAL_PARADAS}
+            <span className="sr-only"> · {titulo}</span>
+          </span>
+          <ol className="flex items-center" aria-hidden>
+            {CAMINO.map((p, i) => (
+              <li key={p.n} className="flex items-center">
+                {i > 0 && (
+                  <span
+                    className={cn(
+                      "h-px w-6 sm:w-9",
+                      p.n <= n ? "bg-primary" : "bg-border",
+                    )}
+                  />
                 )}
-              />
+                <Link
+                  href={p.href}
+                  tabIndex={-1}
+                  className={cn(
+                    "flex size-6 items-center justify-center rounded-full border text-[12px] font-semibold",
+                    p.n <= n
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background text-muted-foreground",
+                  )}
+                >
+                  {p.n}
+                </Link>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
-      </div>
-    <main className={cn("mx-auto flex w-full max-w-[760px] flex-col", className)}>
 
-      <div className="px-5 pb-4 lg:px-8 lg:pb-8">{children}</div>
+        <div className="pb-6 lg:pb-10">{children}</div>
 
-      {/* La unica accion hacia adelante. */}
-      {href && (
-        <div className="sticky bottom-0 z-20 border-t bg-background/95 px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+14px)] backdrop-blur lg:px-8">
+        {/* La unica accion hacia adelante, con "Atras" a la izquierda. */}
+        <div className="sticky bottom-0 z-20 -mx-5 flex items-center gap-3 border-t bg-background/95 px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+14px)] backdrop-blur lg:-mx-8 lg:px-8">
           <Link
-            href={href}
-            className="mx-auto flex min-h-14 w-full items-center justify-center rounded-full bg-primary px-6 text-[17px] font-bold text-primary-foreground transition-opacity hover:opacity-92 lg:w-fit lg:min-w-[280px] lg:px-10"
+            href={anterior}
+            className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-md border px-4 text-[15px] font-semibold text-foreground/85 transition-colors hover:bg-muted"
           >
-            {texto}
+            <ArrowLeft className="size-4" />
+            Atrás
           </Link>
+          {href && (
+            <Link
+              href={href}
+              className="mx-auto flex min-h-12 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-6 text-[16.5px] font-semibold text-primary-foreground transition-opacity hover:opacity-92 sm:max-w-[420px]"
+            >
+              {texto}
+              <ArrowRight className="size-4" />
+            </Link>
+          )}
+          {/* Contrapeso del boton "Atras" para que el principal quede centrado. */}
+          <span className="hidden w-[104px] shrink-0 sm:block" aria-hidden />
         </div>
-      )}
-    </main>
+      </main>
     </>
   );
 }

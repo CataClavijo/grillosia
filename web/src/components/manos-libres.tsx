@@ -457,16 +457,8 @@ export function ManosLibres({
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-[#12180F]">
-      {/* La misma lamina de la portada, al fondo: la voz no deja de ser la
-          misma aplicacion. */}
-      <Image
-        src="/arte/llanura.webp"
-        alt=""
-        width={1000}
-        height={547}
-        aria-hidden
-        className="lamina-fundida pointer-events-none absolute inset-x-0 bottom-0 w-full max-w-none opacity-[0.22] mix-blend-screen invert"
-      />
+      {/* Sin lamina de fondo: el paisaje con palmas ya no es parte de la
+          identidad, y el fondo liso deja todo el foco en la conversacion. */}
 
       <div className="relative flex flex-1 flex-col px-6 pb-[max(env(safe-area-inset-bottom),20px)] pt-[max(env(safe-area-inset-top),14px)]">
         <div className="flex justify-end">

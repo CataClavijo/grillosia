@@ -1,89 +1,67 @@
-import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+
+import { FotoGrillo } from "@/components/foto-grillo";
 
 /**
- * Portada a sangre.
+ * Entrada de la portada, como en el diseno de referencia: titular en serif a
+ * la izquierda, con su frase en cursiva, y una fotografia real de grillo a la
+ * derecha.
  *
- * La barra NO vive aqui dentro: este contenedor tiene `overflow-hidden` para
- * recortar la lamina, y un elemento pegajoso dentro de un contenedor asi solo
- * se pega mientras ese contenedor esta en pantalla. La barra va como hermana,
- * antes, y el heroe se mete debajo con margen negativo.
- *
- * Ocupa el alto completo de la pantalla, sea cual sea el aparato: `100svh`
- * y no `100vh` porque en un celular la barra del navegador aparece y
- * desaparece, y con `vh` el heroe queda cortado por debajo justo al cargar.
- *
- * La lamina lleva `lamina-fundida`: sin eso su borde de arriba corta en seco
- * contra el fondo y se lee como un recorte mal pegado. El degradado de la
- * seccion no alcanza a taparlo, porque a esa altura ya va casi transparente.
- *
- * La lamina se ancla abajo y se ve entera: es un paisaje, y recortarle el
- * suelo le quita el horizonte, que es lo unico que lo hace legible como
- * paisaje. El contenido se empuja hacia arriba para dejarle ese espacio.
- *
- * Va invertida —grabado blanco sobre negro— por lectura: texto sobre un
- * grabado claro se pelea con el trazo. Blanco sobre oscuro da el contraste
- * mas alto, que es lo que necesita alguien mayor mirando el celular al sol.
+ * La foto va PEQUENA y dentro de un marco, a proposito: el grillo es el eje
+ * del proyecto, pero no debe dominar la pagina. El texto y el espacio en
+ * blanco llevan el peso; la foto acompana.
  */
-export function PortadaHero({ href, cta }: { href: string; cta: string }) {
+export function PortadaHero() {
   return (
-    <section className="relative isolate -mt-[var(--alto-barra)] flex min-h-[100svh] flex-col overflow-hidden bg-[#12180F] pt-[var(--alto-barra)]">
-      <Image
-        src="/arte/llanura.webp"
-        alt=""
-        width={1000}
-        height={547}
-        priority
-        aria-hidden
-        className="lamina-fundida pointer-events-none absolute inset-x-0 bottom-0 w-full max-w-none opacity-[0.45] mix-blend-screen invert"
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#12180F] via-[#12180F]/75 via-40% to-transparent"
-      />
-
-      {/* El contenido ocupa el espacio libre y se centra; el padding de abajo
-          le reserva sitio a la lamina para que se vea completa. Se mide en
-          `svh` y no en pixeles: en un telefono bajo, un valor fijo empuja el
-          heroe mas alla de la pantalla y le corta el suelo al paisaje, que es
-          justo lo que lo hace legible como paisaje. */}
-      <div className="relative flex flex-1 items-center">
-        <div className="mx-auto w-full max-w-[1180px] px-5 pb-[29svh] pt-4 sm:pb-[32svh] sm:pt-6 lg:px-8 lg:pb-[30svh]">
-          <div className="mx-auto max-w-[680px] text-center">
-            <p className="rotulo text-[#A8C08F]">
-              Piedemonte Llanero · Universidad de los Llanos
-            </p>
-
-            <h1 className="mt-4 font-display text-[2.4rem] font-extrabold leading-[1.02] tracking-[-0.035em] text-[#F4F1E7] sm:text-[3.2rem] lg:text-[4rem]">
-              Críe grillos y sepa
-              <br />
-              <span className="font-serif font-normal italic text-[#A8C08F]">
-                qué darles de comer.
-              </span>
-            </h1>
-
-            {/* Subtitulo en monoespaciada: el gesto de Ballerina Farm. */}
-            <p className="mx-auto mt-5 max-w-[46ch] font-mono text-[13px] leading-[1.7] tracking-[0.01em] text-[#D5D2C4] sm:text-[14px]">
-              Cuatro pasos, desde armar la caja hasta saber qué comida le
-              conviene a su tilapia, pollo o cerdo.
-            </p>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <Link
-                href={href}
-                className="flex min-h-14 items-center justify-center rounded-full bg-[#F4F1E7] px-8 text-[17px] font-bold text-[#12180F] transition-opacity hover:opacity-90"
-              >
-                {cta}
-              </Link>
-              <Link
-                href="/proyecto"
-                className="flex min-h-14 items-center justify-center rounded-full border-2 border-white/35 px-8 text-[16px] font-bold text-[#F4F1E7] transition-colors hover:bg-white/10"
-              >
-                Conozca el proyecto
-              </Link>
-            </div>
+    <section className="border-b">
+      <div className="mx-auto grid w-full max-w-[1240px] items-center gap-10 px-5 py-12 lg:grid-cols-[1.3fr_0.7fr] lg:gap-16 lg:px-8 lg:py-20">
+        <div>
+          <p className="rotulo text-muted-foreground">
+            Universidad de los Llanos · Piedemonte Llanero
+          </p>
+          <h1 className="mt-4 font-display text-[2.6rem] font-normal leading-[1.04] tracking-[-0.01em] sm:text-[3.3rem] lg:text-[3.9rem]">
+            Decisiones informadas
+            <br />
+            <span className="italic text-foreground/85">
+              para una nutrición más sostenible
+            </span>
+          </h1>
+          <p className="mt-6 max-w-[46ch] text-[17px] leading-relaxed text-foreground/80">
+            GrillosIA compara tres comidas para grillos y le muestra cómo
+            responden según su clima y el animal que usted alimenta.
+          </p>
+          <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-7">
+            <Link
+              href="/consulta"
+              className="inline-flex min-h-12 items-center gap-2 rounded-md bg-primary px-6 text-[16px] font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              Comenzar consulta
+              <ArrowRight className="size-4" />
+            </Link>
+            <Link
+              href="#como-funciona"
+              className="inline-flex min-h-11 items-center gap-2 text-[15.5px] font-medium text-foreground/85 underline decoration-foreground/30 underline-offset-[6px] transition-colors hover:text-foreground"
+            >
+              Conozca cómo funciona
+              <ArrowRight className="size-4" />
+            </Link>
           </div>
         </div>
+
+        {/* Foto real, contenida. En celular aun mas pequena. */}
+        <figure className="mx-auto w-full max-w-[280px] lg:max-w-[340px]">
+          <FotoGrillo
+            src="/grillos/grillo-2.webp"
+            width={611}
+            height={459}
+            alt="Grillo adulto de los que cría el proyecto, visto de lado"
+            priority
+          />
+          <figcaption className="mt-2 text-[12.5px] text-muted-foreground">
+            Grillo criado en el proyecto.
+          </figcaption>
+        </figure>
       </div>
     </section>
   );

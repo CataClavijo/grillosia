@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Barra } from "@/components/barra";
 import { StepFooter } from "@/components/step-footer";
-import { ANIMALS } from "@/lib/animals";
+import { animalPorId, etapaPorId } from "@/lib/animals";
 import { useProjects } from "@/lib/projects-store";
 import { clearWizardDraft } from "@/lib/wizard-draft";
 
@@ -71,12 +71,8 @@ export default function ProjectsPage() {
       ) : (
         <ul className="flex flex-col gap-2">
           {projects.map((p) => {
-            const animal = p.selection.animalId
-              ? ANIMALS.find((a) => a.id === p.selection.animalId)
-              : null;
-            const stage = animal?.stages.find(
-              (s) => s.id === p.selection.stageId,
-            );
+            const animal = animalPorId(p.selection.animalId);
+            const stage = etapaPorId(animal, p.selection.stageId);
             const isActive = p.id === activeId;
             return (
               <li

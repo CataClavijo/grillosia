@@ -1,9 +1,29 @@
 /**
- * Guía paso a paso para armar cajas de cría. Redactada para audiencia
- * rural adulta; los materiales pueden ser reciclados.
+ * Guía para armar una caja de cría de grillos.
+ *
+ * Redactada para productores: frases cortas, palabras claras y un tono
+ * cercano pero profesional. Los materiales pueden ser reciclados.
+ *
+ * REGLA: aquí no entran cifras nuevas. Las medidas y frecuencias que aparecen
+ * son las que el proyecto ya venía usando como punto de partida práctico; las
+ * condiciones de temperatura y humedad son las CONDICIONES OBJETIVO del
+ * proyecto, no mediciones.
  */
 
+/** Ícono que acompaña a cada material (se traduce a un ícono en la página). */
+export type IconoMaterial =
+  | "caja"
+  | "malla"
+  | "sustrato"
+  | "hueveras"
+  | "termohigrometro"
+  | "bebedero"
+  | "manzana"
+  | "cinta"
+  | "tijeras";
+
 export interface Material {
+  id: IconoMaterial;
   item: string;
   detail: string;
 }
@@ -13,12 +33,12 @@ export interface EnclosureStep {
   title: string;
   body: string;
   tip?: string;
-  /** Identificador de la figura que acompaña al paso, si tiene. */
-  figura?: string;
+  /** Ilustración a lápiz del paso (ruta dentro de /public). */
+  imagen: string;
 }
 
 export const ENCLOSURE_INTRO =
-  "Armar una caja de cría de grillos es sencillo y económico. Con materiales que muchas veces ya tiene en la casa o consigue reciclados, puede empezar sin gastar mucho. Lo importante es hacerlo con calma y paciencia.";
+  "Siga estos pasos para preparar una caja segura, sencilla y fácil de mantener. Muchos materiales se consiguen reciclados.";
 
 /**
  * Las cantidades y medidas de esta guía son orientativas: vienen de la
@@ -26,100 +46,162 @@ export const ENCLOSURE_INTRO =
  * ajustando con lo que muestren los ensayos.
  */
 export const ENCLOSURE_DISCLAIMER =
-  "Las medidas y cantidades son orientativas, para que tenga un punto de partida. Los ensayos del proyecto nos irán diciendo qué funciona mejor.";
+  "Las medidas y cantidades son orientativas: son un punto de partida. Los ensayos del proyecto irán mostrando qué funciona mejor.";
 
 export const COST_NOTE =
-  "El montaje completo suele salir muy económico, sobre todo si consigue la caja y las hueveras de segunda o reciclados. Casi todo se reutiliza entre una cría y otra.";
+  "El montaje suele salir económico, sobre todo si consigue la caja y las hueveras de segunda. Casi todo se reutiliza entre una cría y otra.";
+
+/** Ilustración principal de la página: la caja ya armada. */
+export const CAJA_ARMADA = {
+  src: "/arte/caja-cria.webp",
+  alt: "Dibujo a lápiz de una caja plástica de cría abierta, con hueveras de cartón paradas como refugio, un bebedero y un plato de alimento, y la tapa con agujeros de ventilación a un lado.",
+  width: 760,
+  height: 543,
+};
 
 export const MATERIALS: Material[] = [
   {
-    item: "Caja plástica transparente de 40 a 60 litros",
-    detail:
-      "Sirve de hogar para los grillos. Una caja con tapa, de segunda o nueva económica.",
+    id: "caja",
+    item: "Caja plástica con tapa (40 a 60 litros)",
+    detail: "Transparente, nueva o de segunda.",
   },
   {
-    item: "Malla mosquitero fina",
-    detail:
-      "Para tapar la ventilación y evitar escapes. Un pedazo de 30 por 30 centímetros basta.",
+    id: "malla",
+    item: "Malla mosquitera fina",
+    detail: "Un pedazo de 30 × 30 cm para la ventilación de la tapa.",
   },
   {
-    item: "Hueveras de cartón",
-    detail:
-      "Sirven de refugio y espacio para que trepen. Junte de 8 a 12 hueveras usadas.",
+    id: "sustrato",
+    item: "Sustrato seco",
+    detail: "Tierra seca, aserrín limpio o papel periódico para el fondo.",
   },
   {
-    item: "Termómetro-higrómetro económico",
-    detail:
-      "Mide temperatura y humedad al mismo tiempo. Uno digital sencillo cuesta poco en tiendas o internet.",
+    id: "hueveras",
+    item: "Hueveras de cartón (8 a 12)",
+    detail: "Sirven de refugio y de espacio para trepar.",
   },
   {
-    item: "Bebederos pequeños o tapas plásticas",
-    detail:
-      "Para poner el agua sin que se ahoguen. Sirven tapas de gaseosa o frascos bajitos.",
+    id: "termohigrometro",
+    item: "Termómetro-higrómetro",
+    detail: "Mide la temperatura y la humedad al mismo tiempo.",
   },
   {
+    id: "bebedero",
+    item: "Bebederos o tapas plásticas bajas",
+    detail: "Para el agua y el alimento, sin riesgo de que se ahoguen.",
+  },
+  {
+    id: "manzana",
     item: "Manzana en pedazos",
-    detail:
-      "Fuente principal de hidratación. Una manzana alcanza para varios días de cría.",
+    detail: "Su principal fuente de hidratación.",
   },
   {
+    id: "cinta",
     item: "Cinta de doble faz",
-    detail:
-      "Se pega en el borde interior de la caja para que no se escapen. Un rollo alcanza para varias cajas.",
+    detail: "En el borde interior de la caja, para evitar escapes.",
   },
   {
-    item: "Tijeras o cuchillo bien afilado",
-    detail: "Para recortar la tapa y la malla. Cualquiera que tenga en la cocina sirve.",
+    id: "tijeras",
+    item: "Tijeras o cuchillo afilado",
+    detail: "Para recortar la tapa y la malla.",
   },
 ];
 
 export const ENCLOSURE_STEPS: EnclosureStep[] = [
   {
     number: 1,
-    figura: "caja",
-    title: "Preparar y limpiar la caja",
-    body: "Lave la caja plástica con agua y jabón suave, sin cloro fuerte. Séquela muy bien al sol antes de usarla. Revise que no tenga huecos ni grietas por donde se puedan escapar los grillos.",
-    tip: "Evite productos con olor fuerte como límpido puro. A los grillos les afectan los químicos.",
+    imagen: "/figuras/lapiz/caja-recipiente.webp",
+    title: "Prepare la caja",
+    body: "Lávela con agua y jabón suave, sin cloro fuerte, y séquela bien al sol. Revise que no tenga huecos ni grietas.",
+    tip: "Los productos de olor fuerte, como el límpido puro, afectan a los grillos.",
   },
   {
     number: 2,
-    figura: "ventilacion",
-    title: "Abrir ventilación con malla",
-    body: "Con las tijeras o el cuchillo, recorte un cuadrado grande en la tapa de la caja, dejando un marco de unos 4 centímetros alrededor. Pegue la malla mosquitero por dentro de la tapa, bien estirada, cubriendo todo el hueco. Puede sujetarla con silicona o cinta resistente.",
+    imagen: "/figuras/lapiz/caja-ventilacion.webp",
+    title: "Abra la ventilación",
+    body: "Recorte un cuadrado grande en la tapa, dejando un marco de unos 4 cm. Pegue la malla por dentro, bien estirada, con silicona o cinta resistente.",
     tip: "Sin buena ventilación se acumula humedad y los grillos se enferman.",
   },
   {
     number: 3,
-    figura: "sustrato",
-    title: "Poner la cama o sustrato",
-    body: "En el fondo de la caja, ponga una capa delgada de tierra seca, aserrín limpio o simplemente papel periódico. Esto ayuda a mantener la caja seca y facilita la limpieza. No use materiales húmedos ni con olor a moho.",
+    imagen: "/figuras/lapiz/caja-sustrato.webp",
+    title: "Ponga el sustrato",
+    body: "Cubra el fondo con una capa delgada de material seco. Ayuda a mantener la caja seca y facilita la limpieza.",
+    tip: "No use materiales húmedos ni con olor a moho.",
   },
   {
     number: 4,
-    figura: "refugios",
-    title: "Armar los refugios con hueveras",
-    body: "Coloque las hueveras de cartón paradas o cruzadas dentro de la caja, formando como pequeños túneles. Los grillos se esconden y trepan por ahí, y así aprovecha mejor el espacio. Deje libre una esquina para el alimento y el agua.",
-    tip: "Entre más refugios, menos se pelean y mejor crecen.",
+    imagen: "/figuras/lapiz/caja-refugios.webp",
+    title: "Arme los refugios",
+    body: "Coloque las hueveras de cartón paradas o cruzadas, formando túneles. Deje libre una esquina para el alimento y el agua.",
+    tip: "Con más refugios hay menos peleas y mejor crecimiento.",
   },
   {
     number: 5,
-    figura: "agua",
-    title: "Colocar alimento y agua",
-    body: "En una esquina, ponga una tapa con el alimento (la dieta que esté estudiando) y otra tapa con pedacitos de manzana fresca para la hidratación. Si usa bebedero, ponga algodón o piedritas para que no se ahoguen. Cambie el agua y la manzana cada dos días.",
+    imagen: "/figuras/lapiz/caja-alimento.webp",
+    title: "Ponga el alimento",
+    body: "En la esquina libre, ponga una tapa o un plato bajo con la comida que esté usando.",
+    tip: "Retire la comida vieja cada dos o tres días.",
   },
   {
     number: 6,
-    figura: "clima",
-    title: "Controlar temperatura y humedad",
-    body: "Ponga el termómetro-higrómetro adentro, en un lugar visible. Las condiciones objetivo son entre 24 y 34 grados centígrados de temperatura, y entre 50 y 80 por ciento de humedad. Ubique la caja en un lugar tranquilo, sin sol directo ni corrientes de aire frío.",
-    tip: "Si hace mucho frío en la noche, cubra parte de la caja con un trapo.",
+    imagen: "/figuras/lapiz/caja-agua.webp",
+    title: "Ponga el agua",
+    body: "Ofrezca pedazos de manzana fresca. Si usa bebedero, póngale algodón o piedras pequeñas para que no se ahoguen.",
+    tip: "Cambie el agua y la manzana cada dos días.",
+  },
+  {
+    number: 7,
+    imagen: "/figuras/lapiz/caja-clima.webp",
+    title: "Vigile el clima",
+    body: "Ponga el termómetro-higrómetro dentro de la caja, en un lugar visible. Ubique la caja en un sitio tranquilo, sin sol directo ni corrientes de aire frío.",
+    tip: "Si en la noche hace mucho frío, cubra parte de la caja con un trapo.",
+  },
+  {
+    number: 8,
+    imagen: "/figuras/lapiz/caja-limpieza.webp",
+    title: "Mantenga la caja limpia",
+    body: "Cada dos o tres días retire la comida vieja y los grillos muertos. Cada semana limpie el fondo y cambie el sustrato si está sucio.",
+    tip: "Si hay mal olor o charcos, aumente la ventilación y revise los bebederos.",
   },
 ];
 
-export const MAINTENANCE: string[] = [
-  "Revise todos los días que haya agua fresca y pedacitos de manzana disponibles.",
-  "Retire cada dos o tres días los restos de comida vieja y los grillos muertos.",
-  "Cada semana limpie el fondo de la caja y cambie el sustrato si lo ve sucio.",
-  "Anote en un cuaderno la temperatura, la humedad y lo que observa cada día.",
-  "Si nota mal olor o mucha humedad, aumente la ventilación y revise los bebederos.",
+/**
+ * Condiciones objetivo del proyecto. Son los rangos con los que se está
+ * aprendiendo, no valores ya medidos ni óptimos confirmados.
+ */
+export const CONDICIONES_OBJETIVO = {
+  temperatura: "24 a 34 °C",
+  humedad: "50 a 80 %",
+};
+
+export interface Consejo {
+  id: "temperatura" | "humedad" | "ventilacion" | "limpieza" | "registro";
+  texto: string;
+}
+
+export const CONSEJOS: Consejo[] = [
+  {
+    id: "temperatura",
+    texto: `Temperatura objetivo: ${CONDICIONES_OBJETIVO.temperatura}.`,
+  },
+  {
+    id: "humedad",
+    texto: `Humedad objetivo: ${CONDICIONES_OBJETIVO.humedad}.`,
+  },
+  {
+    id: "ventilacion",
+    texto: "Si nota mal olor o mucha humedad, aumente la ventilación.",
+  },
+  {
+    id: "limpieza",
+    texto: "Limpie el fondo cada semana y cambie el sustrato si está sucio.",
+  },
+  {
+    id: "registro",
+    texto: "Anote cada día la temperatura, la humedad y lo que observe.",
+  },
 ];
+
+export const NOTA_IMPORTANTE =
+  "Evite el sol directo y los cambios bruscos de temperatura. Mantenga siempre agua y manzana frescas.";

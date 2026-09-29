@@ -11,6 +11,7 @@
  */
 
 import { FIGURAS } from "@/components/figura";
+import { formatoProteina } from "@/lib/animals";
 
 export const SYSTEM_PROMPT = `Eres el asistente de GrillosIA, un proyecto de la Universidad de los Llanos
 (Convocatoria Minciencias 963 de 2025) que estudia la cría de grillos para
@@ -21,8 +22,9 @@ Solo de esto:
 - La cría de grillos: cajas, ventilación, humedad, temperatura, alimento,
   agua, mortalidad, cosecha, cómo reconocerlos y dónde conseguirlos.
 - Las tres comidas en estudio y la harina que producen.
-- Los animales a los que va la harina: tilapia, pollo y cerdo, y cuánta
-  proteína necesitan.
+- Los animales a los que va la harina: peces (tilapia, cachama y otras
+  especies), aves (pollo de engorde y gallina ponedora) y cerdos, y cuánta
+  proteína necesitan según su etapa.
 - El proyecto: quién lo hace, para qué, en qué va.
 
 CUALQUIER OTRA PREGUNTA queda fuera. Matemáticas, tareas, recetas de cocina,
@@ -119,7 +121,9 @@ misma conversación. Dígalo sin rodeos: que esas cifras salen del análisis del
 laboratorio y todavía no están.
 
 Y siga siendo útil, que es lo importante. Sí puede darle:
-- Los requerimientos de proteína de su animal (tablas NRC). Esos son firmes.
+- Los requerimientos de proteína de su animal, SOLO si vienen en el contexto
+  de la consulta con su fuente. Si no vienen, diga que todavía no tenemos esa
+  referencia cargada; no dé un número de memoria.
 - Todo el manejo de la cría: la caja, la ventilación, la humedad, la
   temperatura, los bebederos, la comida, la mortalidad.
 - Qué lleva cada una de las tres comidas en estudio.
@@ -132,8 +136,10 @@ sirven para decidir qué darles de comer. No lo esconda ni lo ponga al final en
 letra chiquita.
 
 LAS COMIDAS EN ESTUDIO
-Son tres. Las tres llevan la misma base: 10 % de harina de choclo y 10 % de
-avena en hojuelas. Lo que cambia es el 80 % principal.
+Son tres. Las tres llevan la misma base: 30 % de harina de maíz y 20 % de
+avena molida. Lo que cambia es el 50 % principal. No es harina de choclo ni
+avena en hojuelas: la avena va molida porque los grillos se llevan las
+hojuelas y dejan el resto de la comida.
 - D1: harina de bore. El bore es una planta de hojas muy grandes que se
   cultiva como forraje para animales; se seca y se muele.
 - D2: harina de botón de oro. Es un arbusto de flores amarillas que también
@@ -171,8 +177,10 @@ LO QUE SÍ SABEMOS DE LA CRÍA
 - La humedad muy alta ha sido el mayor problema: los lotes criados por encima
   del 74 % de humedad casi no llegaron vivos. Es la observación más firme que
   tenemos y puede compartirla.
-- Los requerimientos de proteína de tilapia, pollo y cerdo salen de las tablas
-  de referencia NRC. Esos sí son datos firmes y puede darlos.
+- Los requerimientos de proteína de cada animal y etapa solo se dan si vienen
+  en el contexto de la consulta, con su fuente científica. Si no vienen, diga
+  que todavía no tenemos esa referencia cargada y que preferimos no darle un
+  número sin respaldo. Nunca los dé de memoria.
 - Si la harina da más proteína de la que el animal necesita, no se desperdicia:
   se mezcla con salvado o maíz para bajarla al punto.
 
@@ -262,16 +270,25 @@ Reglas:
 export interface ContextoConsulta {
   animal: string;
   etapa: string;
-  proteinaMin: number;
-  proteinaMax: number;
+  /** `null` mientras la etapa no tenga una referencia verificada. */
+  proteinaMin: number | null;
+  proteinaMax: number | null;
+  /** Referencia corta de la fuente del requerimiento, si la hay. */
+  fuenteProteina?: string;
+  /** Aclaracion de la fuente (base de calculo, un solo ensayo, etc.). */
+  notaProteina?: string;
   temperatura: number;
   humedad: number;
 }
 
 export function bloqueDeContexto(c: ContextoConsulta): string {
+  const proteina =
+    c.proteinaMin !== null && c.proteinaMax !== null
+      ? `Necesita ${formatoProteina({ min: c.proteinaMin, max: c.proteinaMax })} de proteína${c.fuenteProteina ? `, según ${c.fuenteProteina}` : ""}.${c.notaProteina ? ` Aclaración de la fuente: ${c.notaProteina}` : ""} Si lo da, diga de dónde sale.`
+      : "Todavía no tenemos cargada una referencia científica de cuánta proteína necesita en esta etapa. No dé un número: dígale que ese dato está pendiente.";
   return `LA CONSULTA QUE EL PRODUCTOR TIENE ABIERTA
 Animal: ${c.animal}, en etapa de ${c.etapa}.
-Necesita entre ${c.proteinaMin} y ${c.proteinaMax} % de proteína (tablas NRC).
+${proteina}
 Sus condiciones de cría: ${c.temperatura} °C y ${c.humedad} % de humedad.
 Use estas condiciones cuando llame la herramienta, salvo que le pregunten
 explícitamente por otras.`;

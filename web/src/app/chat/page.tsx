@@ -44,7 +44,8 @@ import {
   SIN_SERVICIO,
   DEMASIADAS,
 } from "@/lib/chat-knowledge";
-import { ANIMALS } from "@/lib/animals";
+import { animalPorId, etapaPorId } from "@/lib/animals";
+import { referencia } from "@/lib/content/referencias";
 import type { ContextoConsulta } from "@/lib/system-prompt";
 import { usePrediccion } from "@/lib/prediccion";
 import {
@@ -121,6 +122,22 @@ async function preguntarAlAsistente(
   }
 }
 
+/**
+ * La fuente del requerimiento de proteina, en corto: "National Research
+ * Council (1994)" en vez de la cita entera. El asistente la nombra al dar el
+ * numero ("segun ...").
+ */
+function fuenteCorta(refs: string[] | undefined): string | undefined {
+  if (!refs?.length) return undefined;
+  const cortas = refs.flatMap((id) => {
+    const cita = referencia(id)?.cita;
+    if (!cita) return [];
+    const conAno = cita.match(/^(.*?\(\d{4}\))/);
+    return [conAno ? conAno[1] : cita.split(". ")[0]];
+  });
+  return cortas.length ? cortas.join("; ") : undefined;
+}
+
 export default function ChatPage() {
   const { active, activeId, appendMessage, clearChat, loading } = useProjects();
   const [input, setInput] = useState("");
@@ -149,8 +166,8 @@ export default function ChatPage() {
 
   const contextoConsulta: ContextoConsulta | null = useMemo(() => {
     if (!seleccion) return null;
-    const animal = ANIMALS.find((a) => a.id === seleccion.animalId);
-    const etapa = animal?.stages.find((e) => e.id === seleccion.stageId);
+    const animal = animalPorId(seleccion.animalId);
+    const etapa = etapaPorId(animal, seleccion.stageId);
     if (!animal || !etapa) return null;
     if (seleccion.temp === undefined || seleccion.humidity === undefined) {
       return null;
@@ -158,8 +175,10 @@ export default function ChatPage() {
     return {
       animal: animal.name,
       etapa: etapa.name,
-      proteinaMin: etapa.proteinMin,
-      proteinaMax: etapa.proteinMax,
+      proteinaMin: etapa.protein?.min ?? null,
+      proteinaMax: etapa.protein?.max ?? null,
+      fuenteProteina: fuenteCorta(etapa.protein?.refs),
+      notaProteina: etapa.protein?.nota,
       temperatura: seleccion.temp,
       humedad: seleccion.humidity,
     };
@@ -167,15 +186,16 @@ export default function ChatPage() {
 
   const contextoModelo: ContextoModelo | null = useMemo(() => {
     if (prediccion.estado !== "listo" || !seleccion) return null;
-    const animal = ANIMALS.find((a) => a.id === seleccion.animalId);
-    const etapa = animal?.stages.find((e) => e.id === seleccion.stageId);
+    const animal = animalPorId(seleccion.animalId);
+    const etapa = etapaPorId(animal, seleccion.stageId);
     if (!animal || !etapa) return null;
 
     return {
       animal: animal.name,
       etapa: etapa.name,
-      proteinaMin: etapa.proteinMin,
-      proteinaMax: etapa.proteinMax,
+      proteinaMin: etapa.protein?.min ?? null,
+      proteinaMax: etapa.protein?.max ?? null,
+      fuenteProteina: fuenteCorta(etapa.protein?.refs),
       temperatura: seleccion.temp as number,
       humedad: seleccion.humidity as number,
       resultados: prediccion.resultados,

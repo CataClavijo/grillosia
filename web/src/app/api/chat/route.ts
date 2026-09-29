@@ -61,8 +61,8 @@ const RECHAZOS = [
  */
 const HILOS: Array<[RegExp, string]> = [
   [/cerdo|marran/i, "¿Seguimos con lo de sus cerdos?"],
-  [/tilapia|pescad|pez|peces/i, "¿Seguimos con lo de su tilapia?"],
-  [/pollo|gallin|ave/i, "¿Seguimos con lo de sus pollos?"],
+  [/tilapia|cachama|trucha|bocachico|yam[uú]|pescad|pez|peces/i, "¿Seguimos con lo de sus peces?"],
+  [/pollo|gallin|\bave/i, "¿Seguimos con lo de sus aves?"],
   [/caja|refugi|huevera/i, "¿Seguimos con lo de su caja?"],
   [/comida|dieta|aliment/i, "¿Seguimos con lo de la comida?"],
   [/temperatura|humedad|clima|grados/i, "¿Seguimos con lo del clima?"],
@@ -228,9 +228,10 @@ async function consultarModelo(
           "hay cifras que dar. Digale que las de proteina y lipidos de la " +
           "harina llegan cuando el laboratorio termine los analisis.",
         puede_hablar_de:
-          "Si puede darle los requerimientos de proteina de su animal, que " +
-          "salen de las tablas NRC y si son firmes, y ayudarle con el manejo " +
-          "de la cria: cajas, humedad, temperatura, alimentacion, mortalidad.",
+          "Si puede darle los requerimientos de proteina de su animal SOLO " +
+          "si vienen en el contexto de la consulta con su fuente, y ayudarle " +
+          "con el manejo de la cria: cajas, humedad, temperatura, " +
+          "alimentacion, mortalidad.",
       });
     }
 
@@ -250,15 +251,21 @@ async function consultarModelo(
     // tiene un orden, no tiene con qué recomendar una sola, por mucho que le
     // insistan. La protección deja de depender de que el modelo obedezca.
     let cercania: unknown = undefined;
-    if (contexto && !simulados) {
+    if (
+      contexto &&
+      !simulados &&
+      contexto.proteinaMin !== null &&
+      contexto.proteinaMax !== null
+    ) {
+      const { proteinaMin, proteinaMax } = contexto;
       cercania = [...resultados]
         .map((r) => ({
           tipo_dieta: r.tipo_dieta,
           distancia_en_puntos: Number(
             distanciaAlObjetivo(
               r.proteina_harina,
-              contexto.proteinaMin,
-              contexto.proteinaMax,
+              proteinaMin,
+              proteinaMax,
             ).toFixed(1),
           ),
         }))

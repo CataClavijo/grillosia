@@ -3,6 +3,8 @@
  * (investigadores, evaluadores Minciencias, docentes).
  */
 
+import { REFERENCIAS } from "@/lib/content/referencias";
+
 export interface MethodologySection {
   id: string;
   icon: "target" | "layers" | "brain" | "database" | "flag" | "book-open";
@@ -25,14 +27,14 @@ export const METHODOLOGY_SECTIONS: MethodologySection[] = [
     icon: "target",
     title: "El problema que abordamos",
     body_markdown:
-      "Colombia importa cerca de **12.000 toneladas al año de harina de pescado** para alimentar tilapia, pollo y cerdo. Esta dependencia encarece los concentrados que compran los pequeños productores del país y expone al sector pecuario a la volatilidad del mercado internacional y a la presión sobre las pesquerías marinas.\n\nLa harina de grillo aparece como una alternativa concreta:\n\n- Alto contenido proteico (**meta interna 60-70% en base seca**, a confirmar por análisis bromatológico).\n- Perfil de aminoácidos y lípidos favorable para monogástricos y peces.\n- Producción posible en pequeñas unidades familiares, con baja huella de agua y suelo.\n\nGrillosIA se enfoca específicamente en **grillos nativos del Piedemonte Llanero**, un rasgo diferencial frente a proyectos que trabajan con especies exóticas. La pregunta que guía la metodología es sencilla:\n\n> ¿Qué combinación de dieta y condiciones de cría le permite a un productor obtener harina con el perfil proteico que su animal necesita, manteniendo una supervivencia viable del cultivo?\n\nResponderla exige articular biología, nutrición animal y ciencia de datos en una misma plataforma, y hacerlo con un lenguaje que un productor sin formación técnica pueda entender.",
+      "Colombia importa cerca de **12.000 toneladas al año de harina de pescado** para alimentar peces, aves y cerdos. Esta dependencia encarece los concentrados que compran los pequeños productores del país y expone al sector pecuario a la volatilidad del mercado internacional y a la presión sobre las pesquerías marinas.\n\nLa harina de grillo aparece como una alternativa concreta:\n\n- Alto contenido proteico (**meta interna 60-70% en base seca**, a confirmar por análisis bromatológico).\n- Perfil de aminoácidos y lípidos favorable para monogástricos y peces.\n- Producción posible en pequeñas unidades familiares, con baja huella de agua y suelo.\n\nGrillosIA se enfoca específicamente en **grillos nativos del Piedemonte Llanero**, un rasgo diferencial frente a proyectos que trabajan con especies exóticas. La pregunta que guía la metodología es sencilla:\n\n> ¿Qué combinación de dieta y condiciones de cría le permite a un productor obtener harina con el perfil proteico que su animal necesita, manteniendo una supervivencia viable del cultivo?\n\nResponderla exige articular biología, nutrición animal y ciencia de datos en una misma plataforma, y hacerlo con un lenguaje que un productor sin formación técnica pueda entender.",
   },
   {
     id: "variables",
     icon: "layers",
     title: "Variables del sistema",
     body_markdown:
-      "El sistema modela la cría como una función de seis variables de entrada y dos variables objetivo, más filtros de viabilidad biológica.\n\n## Entradas (features)\n\n- **tipo_dieta**: código categórico (D1, D2, D3). El modelo aprende qué produce cada receta sin necesidad de análisis bromatológico previo.\n- **alimento_g_dia**: gramos de alimento suministrado por día.\n- **temperatura**: temperatura de cría en °C (condiciones objetivo 24-34 °C).\n- **humedad_ambiental**: humedad relativa en % (condiciones objetivo 50-80%).\n- **especie**: grillo nativo del Piedemonte Llanero utilizado en el ensayo.\n- **tiempo_desarrollo**: días desde la eclosión hasta la cosecha.\n\n## Salidas objetivo\n\n- **proteina_harina** (%MS): meta interna 60-70%.\n- **lipidos_harina** (%MS): perfil secundario relevante para peces.\n\n## Filtros de viabilidad\n\n- **tasa_supervivencia** (%), **peso_promedio** (g) y **biomasa_total** (g). Una recomendación con alta proteína pero baja supervivencia se descarta.\n\nLas dietas se registran como códigos y su composición (bore, botón de oro, salvado de trigo, harina de choclo, avena en hojuelas, hidratación con manzana) queda documentada en el campo **observaciones**.",
+      "El sistema modela la cría como una función de seis variables de entrada y dos variables objetivo, más filtros de viabilidad biológica.\n\n## Entradas (features)\n\n- **tipo_dieta**: código categórico (D1, D2, D3). El modelo aprende qué produce cada receta sin necesidad de análisis bromatológico previo.\n- **alimento_g_dia**: gramos de alimento suministrado por día.\n- **temperatura**: temperatura de cría en °C (condiciones objetivo 24-34 °C).\n- **humedad_ambiental**: humedad relativa en % (condiciones objetivo 50-80%).\n- **especie**: grillo nativo del Piedemonte Llanero utilizado en el ensayo.\n- **tiempo_desarrollo**: días desde la eclosión hasta la cosecha.\n\n## Salidas objetivo\n\n- **proteina_harina** (%MS): meta interna 60-70%.\n- **lipidos_harina** (%MS): perfil secundario relevante para peces.\n\n## Filtros de viabilidad\n\n- **tasa_supervivencia** (%), **peso_promedio** (g) y **biomasa_total** (g). Una recomendación con alta proteína pero baja supervivencia se descarta.\n\nLas dietas se registran como códigos y su composición (bore, botón de oro, salvado de trigo, harina de maíz, avena molida, hidratación con manzana) queda documentada en el campo **observaciones**.",
   },
   {
     id: "modelo",
@@ -85,14 +87,11 @@ export const REFERENCES: Reference[] = [
       "Kwon, S., & Lee, K. P. 2026. Nutrient landscape of a cricket nymph: how dietary protein and carbohydrate shape intake, performance, and body composition in the two-spotted cricket, Gryllus bimaculatus. Physiological Entomology. https://doi.org/10.1111/phen.70014",
     note: "Evidencia experimental de cómo la proporción entre proteína y carbohidrato de la dieta modifica el crecimiento, la supervivencia y la composición corporal del grillo. Es el antecedente más cercano a la pregunta que persiguen las dietas D1 a D3.",
   },
-  {
-    citation:
-      "National Research Council (NRC). 2011. Nutrient Requirements of Fish and Shrimp. National Academies Press, Washington, D.C.",
-    note: "Fuente oficial de los rangos de requerimiento proteico para tilapia en sus distintas etapas (alevín, crecimiento, engorde) utilizados en la plataforma.",
-  },
-  {
-    citation:
-      "National Research Council (NRC). 2012. Nutrient Requirements of Swine, 11th Revised Edition. National Academies Press, Washington, D.C.",
-    note: "Fuente oficial de los requerimientos nutricionales para cerdos en inicio, crecimiento y engorde; sustenta las metas de proteína mostradas al productor.",
-  },
+  // Las fuentes de la proteina que necesita cada animal salen del mismo
+  // registro que usa "¿De donde sale este valor?", para que nunca se citen
+  // dos listas distintas.
+  ...Object.values(REFERENCIAS).map((r) => ({
+    citation: r.url ? `${r.cita} ${r.url}` : r.cita,
+    note: `Fuente de la proteína que necesita el animal destino. ${r.ubicacion ?? ""}`.trim(),
+  })),
 ];

@@ -7,6 +7,10 @@ import type { NextConfig } from "next";
  * los enlaces que ya se compartieron.
  */
 const nextConfig: NextConfig = {
+  // Solo aplica en desarrollo: deja abrir el servidor local desde otros
+  // equipos de la misma red (por ejemplo un celular) usando la IP del
+  // computador en vez de localhost.
+  allowedDevOrigins: ["192.168.*.*", "10.*.*.*"],
   async redirects() {
     return [
       { source: "/como-armar", destination: "/caja", permanent: true },

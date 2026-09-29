@@ -1,11 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 import { Paso } from "@/components/paso";
 import { Resultado } from "@/components/resultado";
-import { ANIMALS } from "@/lib/animals";
+import { animalPorId, etapaPorId } from "@/lib/animals";
 import { clearWizardDraft } from "@/lib/wizard-draft";
 import { useProjects } from "@/lib/projects-store";
 
@@ -18,11 +17,11 @@ import { useProjects } from "@/lib/projects-store";
  */
 export default function PaginaResultado() {
   const router = useRouter();
-  const { active, activeId, setActive, loading } = useProjects();
+  const { active, setActive, loading } = useProjects();
 
   const sel = active?.selection;
-  const animal = ANIMALS.find((a) => a.id === sel?.animalId);
-  const etapa = animal?.stages.find((e) => e.id === sel?.stageId);
+  const animal = animalPorId(sel?.animalId);
+  const etapa = etapaPorId(animal, sel?.stageId);
   const completa =
     animal && etapa && sel?.temp !== undefined && sel?.humidity !== undefined;
 
@@ -50,12 +49,12 @@ export default function PaginaResultado() {
         accion={{ texto: "Hacer mi consulta", href: "/consulta" }}
       >
         <div className="flex flex-col gap-4 py-8">
-          <h1 className="font-display text-[1.9rem] font-extrabold leading-[1.08] tracking-[-0.03em]">
+          <h1 className="font-display text-[2.2rem] font-medium leading-[1.08] lg:text-[2.9rem]">
             Primero hagamos su consulta
           </h1>
           <p className="text-[16px] leading-relaxed text-foreground/85">
-            Son cuatro preguntas cortas sobre su animal y su clima. Con eso le
-            mostramos las tres comidas comparadas para su caso.
+            Son unas preguntas cortas sobre su animal, su etapa y su clima.
+            Con eso le mostramos las tres comidas comparadas para su caso.
           </p>
         </div>
       </Paso>
@@ -69,10 +68,8 @@ export default function PaginaResultado() {
       accion={{ texto: "Preguntar sobre esto", href: "/chat" }}
     >
       <Resultado
-        animalName={animal.name}
-        stageName={etapa.name}
-        proteinMin={etapa.proteinMin}
-        proteinMax={etapa.proteinMax}
+        animal={animal}
+        etapa={etapa}
         temp={sel.temp as number}
         humidity={sel.humidity as number}
         // Con `editar`: sin eso, la consulta ya contestada salta sola al
@@ -81,15 +78,6 @@ export default function PaginaResultado() {
         onNueva={nuevaConsulta}
       />
 
-      <p className="mt-6 text-center text-[14.5px] text-muted-foreground">
-        <Link
-          href="/consultas"
-          className="font-semibold text-primary underline underline-offset-2"
-        >
-          Ver mis consultas guardadas
-        </Link>
-      </p>
-      {!activeId && null}
     </Paso>
   );
 }

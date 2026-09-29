@@ -70,8 +70,9 @@ export interface DefinicionFigura {
 export const FIGURAS: DefinicionFigura[] = [
   {
     id: "caja",
+    src: "/figuras/lapiz/caja-recipiente.webp",
     titulo: "La caja y su tapa, limpias y listas",
-    alt: "Una caja plástica rectangular transparente y, al lado, su tapa.",
+    alt: "Una caja plástica rectangular transparente con su tapa.",
     cuando: "Cuando pregunten qué caja sirve, de qué tamaño, o cómo empezar.",
   },
   {
@@ -87,28 +88,32 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "ventilacion",
+    src: "/figuras/lapiz/caja-ventilacion.webp",
     titulo: "La ventana de ventilación en la tapa",
-    alt: "La tapa de la caja con un rectángulo recortado en el centro y malla mosquitero cubriéndolo.",
+    alt: "La tapa de la caja vista desde arriba, con una ventana rectangular cubierta de malla fina.",
     cuando:
       "Cuando pregunten por la ventilación, el calor, la humedad encerrada, el mal olor o cómo evitar que se escapen.",
   },
   {
     id: "sustrato",
+    src: "/figuras/lapiz/caja-sustrato.webp",
     titulo: "La cama pareja en el fondo",
-    alt: "El fondo de la caja cubierto por una capa delgada y pareja de sustrato.",
+    alt: "Un montón pequeño de sustrato seco de viruta y cartón picado.",
     cuando: "Cuando pregunten por la cama, el sustrato o qué poner en el fondo.",
   },
   {
     id: "refugios",
+    src: "/figuras/lapiz/caja-refugios.webp",
     titulo: "Las hueveras paradas, como un acordeón",
-    alt: "Varias hueveras de cartón puestas de canto dentro de la caja, separadas entre sí.",
+    alt: "Dos hueveras de cartón puestas de pie, una junto a la otra.",
     cuando:
       "Cuando pregunten por los refugios, las hueveras, el espacio o dónde se esconden los grillos.",
   },
   {
     id: "agua",
+    src: "/figuras/lapiz/caja-agua.webp",
     titulo: "El alimento y el agua, cada uno en lo suyo",
-    alt: "Dentro de la caja, un plato bajito con alimento y una tapa plástica con agua y un pedazo de manzana.",
+    alt: "Un bebedero pequeño con algodón húmedo en el plato y, al lado, un pedazo de manzana.",
     cuando:
       "Cuando pregunten por el agua, los bebederos, la manzana, cómo darles de comer o si se ahogan.",
   },
@@ -188,29 +193,33 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "dieta-bore",
+    src: "/figuras/lapiz/ing-bore.webp",
     titulo: "D1: harina de bore",
-    alt: "Un cuenco con harina fina y, al lado, una hoja grande de bore con su nervadura y un trozo de tallo.",
+    alt: "Una hoja grande de bore con un trozo de tallo y, al lado, un cuenco con harina fina.",
     cuando:
       "Cuando pregunten por la dieta D1, por el bore, o pidan ver de qué está hecha esa comida.",
   },
   {
     id: "dieta-boton-oro",
+    src: "/figuras/lapiz/ing-boton-oro.webp",
     titulo: "D2: harina de botón de oro",
-    alt: "Un cuenco con harina fina y, al lado, una rama de botón de oro con dos flores abiertas y hojas lobuladas.",
+    alt: "Una rama de botón de oro con dos flores y hojas lobuladas y, al lado, un cuenco con harina.",
     cuando:
       "Cuando pregunten por la dieta D2, por el botón de oro, o pidan ver de qué está hecha esa comida.",
   },
   {
     id: "dieta-salvado",
+    src: "/figuras/lapiz/ing-salvado.webp",
     titulo: "D3: salvado de trigo",
-    alt: "Un cuenco con salvado de trigo en escamas y, al lado, tres espigas de trigo con sus granos y una cuchara de madera.",
+    alt: "Un cuenco con salvado de trigo en escamas y, al lado, dos espigas de trigo.",
     cuando:
       "Cuando pregunten por la dieta D3, por el salvado de trigo, o pidan ver de qué está hecha esa comida.",
   },
   {
     id: "clima",
+    src: "/figuras/lapiz/caja-clima.webp",
     titulo: "El termómetro colgado adentro",
-    alt: "Un termómetro-higrómetro digital pequeño colgado en la pared interior de la caja.",
+    alt: "Un termómetro-higrómetro digital pequeño.",
     cuando:
       "Cuando pregunten por la temperatura, la humedad o dónde poner el termómetro.",
   },

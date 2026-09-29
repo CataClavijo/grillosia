@@ -40,7 +40,7 @@ const CAMINO = [
  */
 const SECUNDARIO = [
   { href: "/consultas", label: "Mis consultas" },
-  { href: "/proyecto", label: "Sobre el proyecto" },
+  { href: "/proyecto", label: "Sobre GrillosIA" },
 ];
 
 export function SiteNav({ variant = "full" }: { variant?: "full" | "focused" }) {

@@ -73,5 +73,5 @@ export function siguienteParada(n: number): Parada | undefined {
  */
 export const BIBLIOTECA = [
   { href: "/consultas", titulo: "Mis consultas" },
-  { href: "/proyecto", titulo: "Sobre el proyecto" },
+  { href: "/proyecto", titulo: "Sobre GrillosIA" },
 ] as const;

@@ -10,6 +10,11 @@
 const DRAFT_KEY = "grillia-wizard-draft";
 
 export interface WizardDraft {
+  /**
+   * Peces, aves o cerdos. Solo hace falta mientras no se ha elegido el
+   * animal: despues se deduce de el. Opcional para leer borradores viejos.
+   */
+  categoryId?: string;
   animalId: string;
   stageId: string;
   temp: number | null;

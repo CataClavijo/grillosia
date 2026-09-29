@@ -70,7 +70,7 @@ Existe una rama preparada con integración de **NextAuth.js** (proveedor Google)
 La mayoría del contenido es data estática en TypeScript, versionada en git:
 
 - **Animales y etapas**: editar `web/src/lib/animals.ts`. Cada entrada define nombre, etapas y metas internas de proteína.
-- **Dietas en estudio**: editar `web/src/lib/animals.ts` (constante `DIETS`). Actualmente D1 harina de bore, D2 harina de botón de oro, D3 salvado de trigo, todas con misma base (choclo 10% + avena 10%).
+- **Dietas en estudio**: editar `web/src/lib/animals.ts` (constante `DIETS`). Actualmente D1 harina de bore, D2 harina de botón de oro, D3 salvado de trigo, todas con 50 % del ingrediente principal y la misma base (harina de maíz 30 % + avena molida 20 %).
 - **Base de conocimiento del chat**: editar `web/src/lib/chat-knowledge.ts` con preguntas frecuentes y respuestas curadas.
 - **Contenido del tutorial**: editar `web/src/lib/content/tutorial.ts`.
 - **Catálogo de grillos**: editar `web/src/lib/content/catalog.ts`.

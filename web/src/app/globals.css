@@ -5,25 +5,26 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ──────────────────────────────────────────────────────────────────────────
-   Paleta — verde profundo del piedemonte llanero, tierra calida, dorado
-   sutil. Alto contraste, tipografia 18px, pensada para audiencia adulta
-   rural leyendo en un celular Android bajo el sol.
+   Paleta — crema, verde oliva oscuro y tonos naturales poco saturados, como
+   en los disenos de referencia de GrillosIA. Alto contraste y tipografia de
+   18px, pensada para audiencia adulta rural leyendo en un celular Android
+   bajo el sol.
    ────────────────────────────────────────────────────────────────────── */
 :root {
   --radius: 0.875rem;
 
   /* tonos crudos */
-  --cream-50: oklch(0.985 0.012 110);
-  --cream-100: oklch(0.965 0.020 105);
-  --cream-200: oklch(0.92 0.028 100);
+  --cream-50: oklch(0.981 0.009 95);
+  --cream-100: oklch(0.962 0.013 100);
+  --cream-200: oklch(0.925 0.020 105);
 
   --ink-900: oklch(0.20 0.025 145);
   --ink-700: oklch(0.34 0.030 145);
   --ink-500: oklch(0.44 0.026 140);
 
-  --forest-700: oklch(0.42 0.092 148); /* verde profundo principal */
-  --forest-600: oklch(0.50 0.105 148);
-  --forest-500: oklch(0.58 0.108 148);
+  --forest-700: oklch(0.41 0.072 132); /* verde oliva oscuro principal */
+  --forest-600: oklch(0.48 0.078 132);
+  --forest-500: oklch(0.58 0.080 132);
   --earth-600: oklch(0.50 0.080 55); /* tierra calida */
   --gold-500: oklch(0.74 0.135 82); /* dorado puntual */
 
@@ -45,8 +46,8 @@
   --gold: var(--gold-500);
   --gold-foreground: var(--ink-900);
   --destructive: oklch(0.52 0.170 27);
-  --border: oklch(0.86 0.024 110);
-  --input: oklch(0.86 0.024 110);
+  --border: oklch(0.885 0.018 100);
+  --input: oklch(0.86 0.020 100);
   --ring: var(--forest-600);
 
   /* banner demo */
@@ -165,7 +166,7 @@
   --font-sans: var(--font-sans);
   --font-heading: var(--font-display);
   --font-display: var(--font-display);
-  --font-serif: var(--font-serif);
+  --font-serif: var(--font-display);
   --font-mono: var(--font-mono);
 }
 
@@ -198,31 +199,6 @@
     font-size: 18px;
     line-height: 1.65;
     -webkit-tap-highlight-color: transparent;
-    background-image:
-      radial-gradient(
-        circle at 12% 8%,
-        oklch(0.94 0.038 148 / 0.45) 0,
-        transparent 50%
-      ),
-      radial-gradient(
-        circle at 92% 96%,
-        oklch(0.93 0.042 90 / 0.50) 0,
-        transparent 55%
-      );
-    background-attachment: fixed;
-  }
-  .dark body {
-    background-image:
-      radial-gradient(
-        circle at 12% 6%,
-        oklch(0.23 0.040 148 / 0.85) 0,
-        transparent 50%
-      ),
-      radial-gradient(
-        circle at 92% 96%,
-        oklch(0.20 0.038 90 / 0.75) 0,
-        transparent 55%
-      );
   }
 }
 
@@ -342,13 +318,13 @@
   opacity: 0.62;
 }
 
-/* Microetiqueta: "PASO 3 DE 4". A 11 px y no a 8, que es lo que la hace
-   legible para el publico de esta aplicacion. */
+/* Microetiqueta: "Paso 3 de 4", "01". En sans y sin versalitas, como en los
+   disenos de referencia; a 12,5 px para que se lea bien. */
 .rotulo {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 /* ──────────────────────────────────────────────────────────────────────────

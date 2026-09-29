@@ -12,7 +12,7 @@
  * En las dos capas el tono es el mismo: se sugiere, no se receta.
  */
 
-import { DIETS } from "@/lib/animals";
+import { DIETS, formatoProteina } from "@/lib/animals";
 
 export interface KnowledgeLink {
   label: string;
@@ -71,13 +71,19 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "animal",
       "animales",
       "tilapia",
+      "cachama",
+      "peces",
+      "pez",
       "pollo",
+      "gallina",
+      "aves",
       "cerdo",
+      "cerdos",
       "para quien",
       "para que sirve",
     ],
     answer: {
-      text: "La harina que estudiamos sirve para tres animales: **tilapia** (le pide entre 30 y 45 % de proteína), **pollo** (18 a 23 %) y **cerdo** (14 a 20 %). Cada uno tiene sus etapas (inicio, crecimiento, engorde). Si me cuenta a cuál va destinada, le sugerimos una comida.",
+      text: "La harina que estudiamos es para tres grupos de animales: **peces** (tilapia, cachama y otras especies), **aves** (pollo de engorde y gallina ponedora) y **cerdos**. Cada uno necesita una cantidad distinta de proteína según su etapa: un alevín no come lo mismo que un pez adulto. En la consulta elige su animal y su etapa, y le mostramos lo que necesita con su fuente científica, o le decimos si ese dato todavía está pendiente.",
       links: [LINKS.wizard],
     },
   },
@@ -102,10 +108,12 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "salvado",
       "salvado de trigo",
       "choclo",
+      "maiz",
+      "harina de maiz",
       "avena",
     ],
     answer: {
-      text: "Estamos probando **tres comidas**. Todas comparten la misma base: **10 % de harina de choclo y 10 % de avena en hojuelas**. Lo que cambia es el 80 % principal:\n\n- **D1** — harina de bore.\n- **D2** — harina de botón de oro.\n- **D3** — salvado de trigo.\n\nPara la hidratación, en las tres ponemos bebederos con agua y pedacitos de manzana.",
+      text: "Estamos probando **tres comidas**. Todas comparten la misma base: **30 % de harina de maíz y 20 % de avena molida**. Lo que cambia es el 50 % principal:\n\n- **D1** — harina de bore.\n- **D2** — harina de botón de oro.\n- **D3** — salvado de trigo.\n\nPara la hidratación, en las tres ponemos bebederos con agua y pedacitos de manzana.",
       links: [LINKS.wizard],
     },
   },
@@ -229,7 +237,7 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "les puedo dar",
     ],
     answer: {
-      text: "Le sugerimos usar solo las comidas que estamos probando (harina de bore, botón de oro o salvado de trigo, con choclo y avena). Sobras de cocina con sal, aceite o químicos les pueden hacer daño. La manzana sí sirve bien para la hidratación.",
+      text: "Le sugerimos usar solo las comidas que estamos probando (harina de bore, botón de oro o salvado de trigo, con harina de maíz y avena molida). Sobras de cocina con sal, aceite o químicos les pueden hacer daño. La manzana sí sirve bien para la hidratación.",
       links: [LINKS.wizard],
     },
   },
@@ -399,8 +407,11 @@ export interface ResultadoModelo {
 export interface ContextoModelo {
   animal: string;
   etapa: string;
-  proteinaMin: number;
-  proteinaMax: number;
+  /** `null` mientras la etapa no tenga una referencia verificada. */
+  proteinaMin: number | null;
+  proteinaMax: number | null;
+  /** Referencia corta de la fuente del requerimiento, si la hay. */
+  fuenteProteina?: string;
   temperatura: number;
   humedad: number;
   resultados: ResultadoModelo[];
@@ -515,24 +526,36 @@ function respuestaConNumeros(
   }
 
   // Pregunta sobre las dietas y la proteína: la más frecuente.
+  const tieneRango = ctx.proteinaMin !== null && ctx.proteinaMax !== null;
+  const necesita = tieneRango
+    ? `Su ${ctx.animal.toLowerCase()} en etapa de ${ctx.etapa.toLowerCase()} necesita ${formatoProteina({ min: ctx.proteinaMin as number, max: ctx.proteinaMax as number })} de proteína${ctx.fuenteProteina ? `, según ${ctx.fuenteProteina}` : ""}.`
+    : `Todavía no tenemos cargada una referencia científica de cuánta proteína necesita su ${ctx.animal.toLowerCase()} en etapa de ${ctx.etapa.toLowerCase()}, así que no le doy un número sin respaldo.`;
+  const encabezado = `${necesita} Con ${ctx.temperatura} °C y ${ctx.humedad} % de humedad, el modelo espera:\n\n${listaDeDietas(ctx)}`;
+
+  // Con datos simulados, o sin requerimiento con fuente, NO se ordena ni se
+  // señala una comida: el orden en datos simulados lo fijó el generador, y
+  // sin requerimiento no hay contra qué medir la cercanía.
+  if (ctx.datosSimulados || !tieneRango) {
+    return {
+      text: `${encabezado}${cola}`,
+      links: [LINKS.methodology, LINKS.wizard],
+    };
+  }
+
+  const min = ctx.proteinaMin as number;
+  const max = ctx.proteinaMax as number;
   const ordenadas = [...ctx.resultados].sort(
     (a, b) =>
-      distanciaAlObjetivo(a.proteina_harina, ctx.proteinaMin, ctx.proteinaMax) -
-      distanciaAlObjetivo(b.proteina_harina, ctx.proteinaMin, ctx.proteinaMax),
+      distanciaAlObjetivo(a.proteina_harina, min, max) -
+      distanciaAlObjetivo(b.proteina_harina, min, max),
   );
   const cerca = ordenadas[0];
-  const distancia = distanciaAlObjetivo(
-    cerca.proteina_harina,
-    ctx.proteinaMin,
-    ctx.proteinaMax,
-  );
-
-  const encabezado = `Su ${ctx.animal.toLowerCase()} en etapa de ${ctx.etapa.toLowerCase()} necesita entre ${ctx.proteinaMin} y ${ctx.proteinaMax} % de proteína. Con ${ctx.temperatura} °C y ${ctx.humedad} % de humedad, el modelo espera:\n\n${listaDeDietas(ctx)}`;
+  const distancia = distanciaAlObjetivo(cerca.proteina_harina, min, max);
 
   const cierre =
     distancia === 0
       ? `\n\nDe las tres, **${nombreDieta(cerca.tipo_dieta)}** es la que le sugerimos mirar primero: cae dentro de lo que su animal necesita.`
-      : cerca.proteina_harina > ctx.proteinaMax
+      : cerca.proteina_harina > max
         ? `\n\nLas tres quedan por encima de lo que su animal necesita, y la más cercana es **${nombreDieta(cerca.tipo_dieta)}**. Pasarse no se desperdicia: se mezcla la harina de grillo con salvado o maíz para bajarla al punto.`
         : `\n\nNinguna de las tres alcanza sola lo que su animal necesita; la más cercana es **${nombreDieta(cerca.tipo_dieta)}**, a ${distancia.toFixed(1)} puntos. Habría que complementar con otra fuente de proteína.`;
 
