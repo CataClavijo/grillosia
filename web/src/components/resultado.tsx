@@ -289,10 +289,14 @@ export function Resultado({
                     <InfoTip termino="biomasa" />
                   </span>
                   , que se mide al cosechar.
-                  {mismaSupervivencia &&
-                    " Entre las tres no hay diferencia apreciable en cuántos grillos llegan vivos."}
                 </span>
               </p>
+              {mismaSupervivencia && (
+                <p className="mt-2 pl-[22px] text-[13.5px] leading-relaxed text-subtle">
+                  Entre las tres no hay diferencia apreciable en cuántos grillos
+                  llegan vivos.
+                </p>
+              )}
             </>
           )}
         </div>

@@ -57,6 +57,9 @@ export function Paso({
         <BarraAcciones
           atras={{ href: anterior }}
           adelante={href ? { href, texto } : undefined}
+          // Sin accion hacia adelante (ultima parada) la barra no se queda
+          // fija flotando sobre el contenido: va al final de la pagina.
+          fija={!!href}
         />
       </main>
     </>
@@ -71,7 +74,9 @@ export function Paso({
 export function BarraAcciones({
   atras,
   adelante,
+  fija = true,
 }: {
+  fija?: boolean;
   atras: { href?: string; onClick?: () => void; texto?: string };
   adelante?: {
     href?: string;
@@ -86,7 +91,13 @@ export function BarraAcciones({
     "inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-6 text-[16px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover disabled:bg-disabled disabled:text-disabled-foreground sm:flex-none sm:min-w-[240px]";
 
   return (
-    <div className="sticky bottom-0 z-20 -mx-5 mt-auto bg-gradient-to-t from-background from-70% to-transparent px-5 pt-6 pb-[calc(env(safe-area-inset-bottom)+14px)] lg:-mx-8 lg:px-8">
+    <div
+      className={
+        fija
+          ? "sticky bottom-0 z-20 -mx-5 mt-auto bg-gradient-to-t from-background from-70% to-transparent px-5 pt-6 pb-[calc(env(safe-area-inset-bottom)+14px)] lg:-mx-8 lg:px-8"
+          : "mt-auto pt-2 pb-[calc(env(safe-area-inset-bottom)+24px)]"
+      }
+    >
       <div className="flex items-center justify-between gap-3">
         {atras.href ? (
           <Link href={atras.href} className={claseAtras}>

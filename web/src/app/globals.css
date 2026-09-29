@@ -355,6 +355,14 @@
 .elevar .lamina {
   transition: transform 400ms var(--ease-natural);
 }
+/* Tarjeta que se eleva Y entra revelandose: las dos transiciones juntas, o
+   la ultima regla pisa a la otra y la "impresion" salta de golpe. */
+[data-revelar] .elevar .lamina,
+[data-revelar].elevar .lamina {
+  transition:
+    clip-path 1100ms var(--ease-natural) calc(var(--retraso, 0ms) + 180ms),
+    transform 400ms var(--ease-natural);
+}
 
 /* Cambio de tema: los colores se cruzan en 300 ms en vez de saltar. */
 html.cambiando-tema,
