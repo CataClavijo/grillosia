@@ -112,43 +112,127 @@ export const VISTAS_EJEMPLAR: VistaEjemplar[] = [
   },
 ];
 
-/** Cómo reconocer un grillo. Aplica a la familia, no a una especie. */
-export const COMO_RECONOCER: { titulo: string; texto: string }[] = [
+/**
+ * Cómo reconocer un grillo. Aplica a la familia, no a una especie.
+ *
+ * Cada rasgo lleva el punto donde se ve en la foto lateral del ejemplar
+ * (`/grillos/recorte-3.webp`, 611 x 379), en porcentaje del ancho y el alto
+ * de la imagen, medido sobre la foto. `rotulo` es donde va la etiqueta corta
+ * que se une al punto con una linea fina (solo en pantallas anchas).
+ */
+export interface RasgoReconocer {
+  id: string;
+  titulo: string;
+  /** Etiqueta corta junto al punto. */
+  corto: string;
+  texto: string;
+  punto: { x: number; y: number };
+  rotulo: { x: number; y: number; ancla: "izquierda" | "derecha" };
+}
+
+export const COMO_RECONOCER: RasgoReconocer[] = [
   {
+    id: "antenas",
     titulo: "Antenas largas",
+    corto: "Antenas",
     texto: "Muy largas y delgadas, a veces más que el cuerpo entero.",
+    punto: { x: 9, y: 40.5 },
+    rotulo: { x: 3, y: 14, ancla: "izquierda" },
   },
   {
-    titulo: "Patas traseras fuertes",
-    texto: "Gruesas y fuertes, adaptadas para saltar.",
-  },
-  {
+    id: "color",
     titulo: "Color café",
+    corto: "Color",
     texto: "Del café claro al casi negro, según el ejemplar.",
+    punto: { x: 33, y: 36 },
+    rotulo: { x: 30, y: 4, ancla: "izquierda" },
   },
   {
+    id: "patas",
+    titulo: "Patas traseras fuertes",
+    corto: "Patas traseras",
+    texto: "Gruesas y fuertes, adaptadas para saltar.",
+    punto: { x: 69, y: 13 },
+    rotulo: { x: 97, y: 4, ancla: "derecha" },
+  },
+  {
+    id: "canto",
     titulo: "El canto",
+    corto: "Alas",
     texto:
       "Los machos frotan las alas y cantan, sobre todo al caer la tarde y en la noche.",
+    punto: { x: 57, y: 41 },
+    rotulo: { x: 52, y: 96, ancla: "izquierda" },
   },
 ];
 
-/** Grillo o saltamontes: la duda más común. */
-export const GRILLO_O_SALTAMONTES = [
-  "Lo más fácil de mirar son las antenas. El grillo las tiene muy largas, casi tan largas como el cuerpo, y las mueve todo el tiempo. El saltamontes las tiene cortas y gruesas.",
-  "El grillo también es más achatado y camina; el saltamontes es más alargado y salta lejos.",
+/**
+ * Grillo o saltamontes: la duda más común. Rasgo por rasgo, con lo que ya
+ * dicen el asistente y la guía; no se agregan rasgos nuevos.
+ */
+export const GRILLO_O_SALTAMONTES: {
+  rasgo: string;
+  grillo: string;
+  saltamontes: string;
+}[] = [
+  {
+    rasgo: "Antenas",
+    grillo: "Muy largas, casi tan largas como el cuerpo. Las mueve todo el tiempo.",
+    saltamontes: "Cortas y gruesas.",
+  },
+  {
+    rasgo: "Cuerpo",
+    grillo: "Más achatado.",
+    saltamontes: "Más alargado.",
+  },
+  {
+    rasgo: "Cómo se mueve",
+    grillo: "Camina.",
+    saltamontes: "Salta lejos.",
+  },
 ];
 
-export const MACHO_HEMBRA = [
-  "La hembra lleva atrás una aguja larga y recta, llamada ovipositor. Con ella pone los huevos en la tierra. El macho no la tiene.",
-  "El que canta es el macho, frotando las alas.",
+/** Lo más fácil de mirar primero. */
+export const GRILLO_O_SALTAMONTES_CLAVE =
+  "Lo más fácil de mirar son las antenas.";
+
+/** Hembra y macho, rasgo por rasgo. */
+export const MACHO_HEMBRA: { rasgo: string; hembra: string; macho: string }[] = [
+  {
+    rasgo: "Aguja al final del cuerpo",
+    hembra:
+      "Sí: una aguja larga y recta, el ovipositor. Con ella pone los huevos en la tierra.",
+    macho: "No la tiene.",
+  },
+  {
+    rasgo: "Canto",
+    hembra: "No canta.",
+    macho: "Canta frotando las alas.",
+  },
 ];
 
-export const CRECIMIENTO = [
-  "Del huevo sale una ninfa: un grillo pequeño, parecido al adulto pero sin alas.",
-  "La ninfa cambia de piel varias veces (a esto se le llama muda) y en cada muda crece. Las alas aparecen al final.",
-  "No pasa por una etapa de capullo, como sí ocurre con las mariposas.",
+/** Etapas del crecimiento, en orden. */
+export const CRECIMIENTO: { etapa: string; texto: string }[] = [
+  {
+    etapa: "Huevo",
+    texto: "La hembra lo pone en la tierra con su ovipositor.",
+  },
+  {
+    etapa: "Ninfa",
+    texto: "Del huevo sale un grillo pequeño, parecido al adulto pero sin alas.",
+  },
+  {
+    etapa: "Mudas",
+    texto: "Cambia de piel varias veces, y en cada muda crece.",
+  },
+  {
+    etapa: "Adulto",
+    texto: "Las alas aparecen al final.",
+  },
 ];
+
+export const CRECIMIENTO_NOTA =
+  "No pasa por una etapa de capullo, como sí ocurre con las mariposas.";
 
 /**
  * Por qué importan los grillos para el proyecto. Sale de lo que ya dice la
