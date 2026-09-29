@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 
 import { Barra } from "@/components/barra";
 import { Estado } from "@/components/ds/estado";
+import { Revelar } from "@/components/ds/revelar";
 import { FuenteCientifica } from "@/components/fuente-cientifica";
 import { InfoTip } from "@/components/info-tip";
 import { LaminaNormalizada } from "@/components/lamina-normalizada";
@@ -504,8 +505,14 @@ function Opcion({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
+      // `elevar` sube la tarjeta 3 px al pasar el raton; la transicion va en
+      // linea para que tambien cubra el filo (box-shadow) de la seleccion.
+      style={{
+        transition:
+          "transform 200ms var(--ease-natural), box-shadow 200ms var(--ease-natural), background-color 200ms var(--ease-natural)",
+      }}
       className={cn(
-        "relative flex w-full rounded-lg text-left ring-inset transition-[box-shadow,background-color] duration-200 ease-[var(--ease-natural)]",
+        "elevar relative flex w-full rounded-lg text-left ring-inset",
         selected
           ? "bg-primary-soft/55 ring-[1.5px] ring-primary"
           : "bg-surface ring-1 ring-border hover:ring-border-strong",
@@ -550,8 +557,8 @@ function PreguntaCategoria({
         aria-labelledby="pregunta-actual"
         className="mt-8 grid gap-3 [--escala:0.5] sm:grid-cols-3 sm:gap-4 sm:[--escala:1]"
       >
-        {CATEGORIAS.map((c) => (
-          <li key={c.id}>
+        {CATEGORIAS.map((c, i) => (
+          <Revelar as="li" key={c.id} retraso={i * 60}>
             <Opcion
               selected={value === c.id}
               onClick={() => onSelect(c.id)}
@@ -572,7 +579,7 @@ function PreguntaCategoria({
                 </span>
               </span>
             </Opcion>
-          </li>
+          </Revelar>
         ))}
       </ul>
     </div>
@@ -606,8 +613,8 @@ function PreguntaAnimal({
           conImagen ? "sm:grid-cols-2 sm:gap-4" : "sm:grid-cols-2 xl:grid-cols-3",
         )}
       >
-        {animales.map((a) => (
-          <li key={a.id}>
+        {animales.map((a, i) => (
+          <Revelar as="li" key={a.id} retraso={i * 60}>
             <Opcion
               selected={value === a.id}
               onClick={() => onSelect(a.id)}
@@ -635,7 +642,7 @@ function PreguntaAnimal({
                 )}
               </span>
             </Opcion>
-          </li>
+          </Revelar>
         ))}
       </ul>
     </div>
@@ -670,8 +677,8 @@ function PreguntaEtapa({
         aria-labelledby="pregunta-actual"
         className="mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3"
       >
-        {animal.stages.map((s) => (
-          <li key={s.id}>
+        {animal.stages.map((s, i) => (
+          <Revelar as="li" key={s.id} retraso={i * 60}>
             <Opcion
               selected={value === s.id}
               onClick={() => onSelect(s.id)}
@@ -692,7 +699,7 @@ function PreguntaEtapa({
                 <ProteinaEtapa etapa={s} compacto />
               </span>
             </Opcion>
-          </li>
+          </Revelar>
         ))}
       </ul>
       {/* La etiqueta de origen y el enlace a la fuente van fuera de los
@@ -747,8 +754,8 @@ function PreguntaClima({
           options.length > 4 ? "grid-cols-2 sm:grid-cols-3 xl:grid-cols-6" : "grid-cols-2 sm:grid-cols-4",
         )}
       >
-        {options.map((opt) => (
-          <li key={opt.value}>
+        {options.map((opt, i) => (
+          <Revelar as="li" key={opt.value} retraso={i * 60}>
             <Opcion
               selected={value === opt.value}
               onClick={() => onSelect(opt.value)}
@@ -760,7 +767,7 @@ function PreguntaClima({
               </span>
               <span className="text-[13px] leading-tight text-subtle">{opt.label}</span>
             </Opcion>
-          </li>
+          </Revelar>
         ))}
       </ul>
     </div>

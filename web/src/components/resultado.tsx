@@ -144,7 +144,7 @@ export function Resultado({
   return (
     <div className="flex flex-col gap-16 lg:gap-20">
       {/* ── 1. Que se consulto ─────────────────────────────────────── */}
-      <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+      <Revelar className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
         <div>
           <p className="t-eyebrow text-subtle">
             Resultado de su consulta{categoria ? ` · ${categoria.name}` : ""}
@@ -171,7 +171,7 @@ export function Resultado({
             Nueva consulta
           </Button>
         </div>
-      </header>
+      </Revelar>
 
       {/* ── 2. Lo que necesita y sus condiciones ──────────────────── */}
       <section
@@ -207,7 +207,7 @@ export function Resultado({
       </section>
 
       {/* ── 3. Que harina daria cada comida ────────────────────────── */}
-      <section aria-labelledby="comparacion">
+      <Revelar as="section" retraso={120}>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="t-eyebrow text-subtle">Comparación</p>
@@ -296,7 +296,7 @@ export function Resultado({
             </>
           )}
         </div>
-      </section>
+      </Revelar>
 
       {/* ── 4. Interpretacion ──────────────────────────────────────── */}
       <Revelar

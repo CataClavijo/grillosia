@@ -7,26 +7,24 @@ import { ArrowRight } from "lucide-react";
 
 import { Logo } from "@/components/logo";
 import { SiteNav } from "@/components/site-nav";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Progreso } from "@/components/ds/progreso";
 import { CAMINO, TOTAL_PARADAS } from "@/lib/camino";
 import { cn } from "@/lib/utils";
 
 /**
- * Cabecera del sitio. Dos modos:
+ * Cabecera del sitio. Es la MISMA en todas las paginas, con dos pesos:
  *
  *  - `sitio` (portada, Sobre GrillosIA, biblioteca): marca, las seis
- *    secciones y "Comenzar consulta". Al bajar se reduce de 76 a 60 px, el
- *    lema se oculta y aparece una linea fina: al leer, la navegacion
- *    estorba menos.
+ *    secciones y "Comenzar consulta". Al bajar se reduce de 76 a 60 px y
+ *    aparece una linea fina.
  *
- *  - `camino` (las cuatro paradas): la navegacion pasa a segundo plano para
- *    que la persona se concentre en la tarea. Solo marca compacta, "Paso 3
- *    de 4 · Consulta" y el menu. La barra fina de abajo es el progreso: una
- *    sola senal, en vez de rotulo + circulos + lineas diciendo lo mismo.
+ *  - `camino` (las cuatro paradas): la navegacion sigue en su sitio pero
+ *    pasa a segundo plano (enlaces atenuados), el boton da paso a "Paso 3
+ *    de 4 · Consulta" y la barra fina del borde inferior marca el progreso.
+ *    Antes la barra se cambiaba entera por una version minima y el menu
+ *    parecia desaparecer de la nada.
  *
- * SIN numeracion en la navegacion del modo `sitio`: los numeros pertenecen al
- * camino, donde dicen cuanto falta.
+ * El cambio de tema (claro/oscuro) no vive aqui: esta en el menu y en el pie.
  */
 const SECCIONES = [
   { href: "/", titulo: "Inicio" },
@@ -62,38 +60,22 @@ export function Barra({
     return () => window.removeEventListener("scroll", alMover);
   }, []);
 
-  if (modo === "camino" && paso) {
-    const etiqueta = `Paso ${paso} de ${TOTAL_PARADAS} · ${CORTO[paso] ?? ""}`;
-    return (
-      <header
-        className={cn(
-          "sticky top-0 z-40 w-full bg-background/90 backdrop-blur-md",
-          className,
-        )}
-      >
-        <div className="mx-auto flex h-14 w-full max-w-[1240px] items-center justify-between gap-4 px-5 lg:h-16 lg:px-8">
-          <Link href="/" aria-label="GrillosIA, ir al inicio" className="shrink-0">
-            <Logo variante="compacto" />
-          </Link>
-          <p className="t-eyebrow truncate text-subtle">
-            Paso {paso} de {TOTAL_PARADAS}
-            <span className="hidden sm:inline"> · {CORTO[paso] ?? ""}</span>
-          </p>
-          <div className="flex items-center gap-1">
-            <ThemeToggle />
-            <SiteNav />
-          </div>
-        </div>
-        <Progreso valor={paso} total={TOTAL_PARADAS} etiqueta={etiqueta} />
-      </header>
-    );
-  }
+  // Una sola cabecera para todo el sitio: la navegacion NO desaparece al
+  // entrar al camino (eso se sentia como si el menu se esfumara). En el
+  // camino solo cambia de peso: los enlaces se atenuan, el boton de
+  // "Comenzar consulta" deja su lugar a "Paso 3 de 4 · Consulta" y aparece
+  // la barra fina de progreso en el borde inferior.
+  const enCamino = modo === "camino" && !!paso;
+  const etiqueta = enCamino
+    ? `Paso ${paso} de ${TOTAL_PARADAS} · ${CORTO[paso!] ?? ""}`
+    : "";
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 w-full border-b bg-background/90 backdrop-blur-md transition-[border-color] duration-[var(--dur-media)]",
-        bajado ? "border-border" : "border-transparent",
+        "sticky top-0 z-40 w-full bg-background/90 backdrop-blur-md",
+        !enCamino && "border-b transition-[border-color] duration-[var(--dur-media)]",
+        !enCamino && (bajado ? "border-border" : "border-transparent"),
         className,
       )}
     >
@@ -118,10 +100,13 @@ export function Barra({
                     href={p.href}
                     aria-current={activa ? "page" : undefined}
                     className={cn(
-                      "relative flex h-9 items-center whitespace-nowrap rounded-md px-2.5 text-[14.5px] font-medium transition-colors duration-150",
+                      "relative flex h-9 items-center whitespace-nowrap rounded-md px-2.5 font-medium transition-[color,font-size] duration-[var(--dur-media)]",
+                      enCamino ? "text-[14px]" : "text-[14.5px]",
                       activa
                         ? "text-foreground"
-                        : "text-subtle hover:text-foreground",
+                        : enCamino
+                          ? "text-faint hover:text-foreground"
+                          : "text-subtle hover:text-foreground",
                     )}
                   >
                     {p.titulo}
@@ -138,20 +123,27 @@ export function Barra({
           </ul>
         </nav>
 
-        <div className="flex shrink-0 items-center gap-1.5">
-          <ThemeToggle />
-          <Link
-            href="/consulta"
-            className="hidden h-10 items-center gap-2 rounded-md bg-primary px-4 text-[14.5px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover lg:inline-flex"
-          >
-            Comenzar consulta
-            <ArrowRight className="size-4" />
-          </Link>
+        <div className="flex shrink-0 items-center gap-2">
+          {enCamino ? (
+            <p className="t-eyebrow whitespace-nowrap text-subtle">
+              Paso {paso} de {TOTAL_PARADAS}
+              <span className="hidden sm:inline"> · {CORTO[paso!] ?? ""}</span>
+            </p>
+          ) : (
+            <Link
+              href="/consulta"
+              className="hidden h-10 items-center gap-2 rounded-md bg-primary px-4 text-[14.5px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover lg:inline-flex"
+            >
+              Comenzar consulta
+              <ArrowRight className="size-4" />
+            </Link>
+          )}
           <div className="lg:hidden">
             <SiteNav />
           </div>
         </div>
       </div>
+      {enCamino && <Progreso valor={paso!} total={TOTAL_PARADAS} etiqueta={etiqueta} />}
     </header>
   );
 }

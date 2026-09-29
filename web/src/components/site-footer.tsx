@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Logo } from "@/components/logo";
+import { CambioTema } from "@/components/theme-toggle";
 import { BIBLIOTECA, CAMINO } from "@/lib/camino";
 
 /**
@@ -79,9 +80,12 @@ export function SiteFooter() {
           contrato 207-2025. Investigación: Dra. Mónica Paola Higuera-Díaz.
           Desarrollo de la plataforma: Catalina Clavijo Agudelo.
         </p>
-        <p className="t-eyebrow shrink-0 text-faint">
-          Piedemonte Llanero, Meta · {new Date().getFullYear()}
-        </p>
+        <div className="flex shrink-0 items-center gap-5">
+          <CambioTema />
+          <p className="t-eyebrow text-faint">
+            Piedemonte Llanero, Meta · {new Date().getFullYear()}
+          </p>
+        </div>
       </div>
     </footer>
   );

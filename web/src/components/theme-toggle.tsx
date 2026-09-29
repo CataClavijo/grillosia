@@ -64,3 +64,33 @@ export function ThemeToggle() {
     </Button>
   );
 }
+
+/**
+ * Cambio de tema con texto, para el pie: "Modo oscuro" / "Modo claro".
+ * Es un enlace sobrio, no un icono suelto en la cabecera.
+ */
+export function CambioTema({ className = "" }: { className?: string }) {
+  const dark = useTemaOscuro();
+  const toggle = useCallback(() => {
+    const next = !dark;
+    const raiz = document.documentElement;
+    raiz.classList.add("cambiando-tema");
+    raiz.classList.toggle("dark", next);
+    window.setTimeout(() => raiz.classList.remove("cambiando-tema"), 350);
+    try {
+      localStorage.setItem(STORAGE_KEY, next ? "dark" : "light");
+    } catch {
+      /* ignore */
+    }
+  }, [dark]);
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className={`inline-flex min-h-10 items-center gap-2 rounded-md text-[14px] font-medium text-subtle transition-colors hover:text-foreground ${className}`}
+    >
+      {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+      {dark ? "Modo claro" : "Modo oscuro"}
+    </button>
+  );
+}
