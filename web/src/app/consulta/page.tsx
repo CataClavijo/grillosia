@@ -1,17 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { CSSProperties } from "react";
-import { ArrowLeft, ArrowRight, Check, HelpCircle } from "lucide-react";
+import { Check } from "lucide-react";
 
 import { Barra } from "@/components/barra";
+import { Estado } from "@/components/ds/estado";
 import { FuenteCientifica } from "@/components/fuente-cientifica";
-import { IndicadorPaso } from "@/components/indicador-paso";
 import { InfoTip } from "@/components/info-tip";
+import { LaminaNormalizada } from "@/components/lamina-normalizada";
 import { OrigenDato } from "@/components/origen-dato";
+import { BarraAcciones } from "@/components/paso";
 import { ProteinaEtapa } from "@/components/proteina-etapa";
 import { TresComidas } from "@/components/tres-comidas";
 import {
@@ -78,9 +77,6 @@ const HUMIDITY_OPTIONS: ClimateOption[] = [
 /** Valores típicos del Piedemonte, preseleccionados: casi nadie tiene termómetro. */
 const TEMP_TIPICA = 28;
 const HUMEDAD_TIPICA = 60;
-
-const d = (ms: number): CSSProperties =>
-  ({ ["--delay" as string]: `${ms}ms` }) as CSSProperties;
 
 /** Las preguntas que tocan con la categoria elegida. */
 function preguntasPara(categoryId: string): Pregunta[] {
@@ -315,41 +311,58 @@ export default function ConsultaPage() {
     setPregunta("categoria");
   };
 
+
   const enListo = pregunta === "listo";
 
   return (
     <>
-      <Barra />
-      <main className="mx-auto flex w-full max-w-[1240px] flex-col px-5 lg:px-8">
-        <IndicadorPaso n={3} titulo="Haga su consulta" />
-
-        <div className="grid gap-8 pb-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10 lg:pb-12">
+      <Barra modo="camino" paso={3} />
+      <main className="mx-auto flex min-h-[calc(100dvh-60px)] w-full max-w-[1240px] flex-col px-5 pt-8 lg:px-8 lg:pt-12">
+        <div className="grid flex-1 content-start gap-10 pb-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-16 lg:pb-16">
           <div className="min-w-0">
-            <h1 className="font-display text-[2.2rem] font-medium leading-[1.08] tracking-[-0.01em] lg:text-[2.9rem]">
-              Haga su consulta
-            </h1>
-            <p className="mt-3 max-w-[56ch] text-[16.5px] leading-relaxed text-foreground/80">
-              Cuéntenos a qué animal le va a dar la harina y en qué etapa está.
-              Con eso le mostramos cuánta proteína necesita y cómo se comparan
-              las tres comidas en estudio.
-            </p>
+            <header>
+              <h1 className="t-h1">Haga su consulta</h1>
+              {/* La explicacion solo hace falta al empezar. En las preguntas
+                  siguientes, en celular, empujaba la pregunta fuera de la
+                  primera pantalla. */}
+              <p
+                className={cn(
+                  "t-lead mt-3",
+                  pregunta !== "categoria" && "hidden lg:block",
+                )}
+              >
+                Cuéntenos a qué animal le va a dar la harina, en qué etapa está
+                y cómo es su clima. Con eso comparamos las tres comidas en
+                estudio para su caso.
+              </p>
+            </header>
 
-            <section className="mt-7 rounded-xl border bg-card/60 p-4 sm:p-6">
+            {/* En celular, lo elegido cabe en una linea: el panel lateral
+                completo empujaria la pregunta fuera de la pantalla. */}
+            <ResumenLinea
+              categoria={categoria}
+              animal={animal}
+              etapa={stage}
+              temp={temp}
+              humidity={humidity}
+              onNueva={categoryId ? nuevaConsulta : undefined}
+              className="mt-6 lg:hidden"
+            />
+
+            <section className="mt-10 lg:mt-14">
               {enListo ? (
-                <p className="py-10 text-center text-[16px] text-muted-foreground">
-                  Preparando su resultado...
-                </p>
+                <Estado tipo="cargando" titulo="Preparando su resultado" compacto>
+                  Guardamos su consulta y abrimos la comparación.
+                </Estado>
               ) : (
-                <>
-                  <p className="text-[13.5px] font-medium text-muted-foreground">
-                    Pregunta {indice + 1} de {preguntas.length}
-                  </p>
+                <div
+                  key={pregunta}
+                  className="animate-in fade-in-0 slide-in-from-bottom-2 duration-[250ms] ease-[var(--ease-natural)]"
+                >
+                  <IndicadorPregunta actual={indice + 1} total={preguntas.length} />
 
                   {pregunta === "categoria" && (
-                    <PreguntaCategoria
-                      value={categoryId}
-                      onSelect={elegirCategoria}
-                    />
+                    <PreguntaCategoria value={categoryId} onSelect={elegirCategoria} />
                   )}
 
                   {pregunta === "animal" && categoria && (
@@ -371,7 +384,7 @@ export default function ConsultaPage() {
                   {pregunta === "temp" && (
                     <PreguntaClima
                       title="¿Qué tan caliente es el lugar donde cría los grillos?"
-                      help="Trabajamos con condiciones objetivo entre 24 y 34 grados. Si no está seguro, deje la que viene marcada."
+                      help="Trabajamos con condiciones objetivo entre 24 y 34 °C. Si no está seguro, deje la que viene marcada."
                       options={TEMP_OPTIONS}
                       unit="°C"
                       value={temp ?? TEMP_TIPICA}
@@ -382,68 +395,73 @@ export default function ConsultaPage() {
                   {pregunta === "humedad" && (
                     <PreguntaClima
                       title="¿Y la humedad del aire?"
-                      help="Buscamos entre 50 y 80 por ciento. Si no está seguro, deje la que viene marcada."
+                      help="Buscamos entre 50 y 80 % de humedad relativa (HR). Si no está seguro, deje la que viene marcada."
                       options={HUMIDITY_OPTIONS}
-                      unit="%"
+                      unit="% HR"
                       value={humidity ?? HUMEDAD_TIPICA}
                       onSelect={elegirHumedad}
                     />
                   )}
-                </>
+                </div>
               )}
             </section>
           </div>
 
-          <aside className="flex flex-col gap-5">
-            <ResumenConsulta
-              categoria={categoria}
-              animal={animal}
-              etapa={stage}
-              temp={temp}
-              humidity={humidity}
-              onNueva={categoryId ? nuevaConsulta : undefined}
-            />
-            <TresComidas compacta className="hidden lg:block" />
+          <aside className="hidden lg:block" aria-label="Resumen de su consulta">
+            <div className="sticky top-24 flex flex-col gap-8 rounded-lg bg-surface-2 p-6">
+              <ResumenConsulta
+                categoria={categoria}
+                animal={animal}
+                etapa={stage}
+                temp={temp}
+                humidity={humidity}
+                onNueva={categoryId ? nuevaConsulta : undefined}
+              />
+              <TresComidas compacta />
+            </div>
           </aside>
         </div>
 
-        {/* Atras / Continuar, fijos abajo como en las demas paradas. */}
-        <div className="sticky bottom-0 z-20 -mx-5 flex items-center gap-3 border-t bg-background/95 px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+14px)] backdrop-blur lg:-mx-8 lg:px-8">
-          {indice > 0 && !enListo ? (
-            <button
-              type="button"
-              onClick={anterior}
-              className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-md border px-4 text-[15px] font-semibold text-foreground/85 transition-colors hover:bg-muted"
-            >
-              <ArrowLeft className="size-4" />
-              Atrás
-            </button>
-          ) : (
-            <Link
-              href="/grillos"
-              className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-md border px-4 text-[15px] font-semibold text-foreground/85 transition-colors hover:bg-muted"
-            >
-              <ArrowLeft className="size-4" />
-              Atrás
-            </Link>
-          )}
-          <button
-            type="button"
-            onClick={continuar}
-            disabled={!puedeContinuar || enListo}
-            className="mx-auto flex min-h-12 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-6 text-[16.5px] font-semibold text-primary-foreground transition-opacity hover:opacity-92 disabled:opacity-40 sm:max-w-[420px]"
-          >
-            {pregunta === "humedad" ? "Ver mi resultado" : "Continuar"}
-            <ArrowRight className="size-4" />
-          </button>
-          <span className="hidden w-[104px] shrink-0 sm:block" aria-hidden />
-        </div>
+        <BarraAcciones
+          atras={indice > 0 && !enListo ? { onClick: anterior } : { href: "/grillos" }}
+          adelante={{
+            texto: pregunta === "humedad" ? "Ver mi resultado" : "Continuar",
+            onClick: continuar,
+            deshabilitado: !puedeContinuar || enListo,
+          }}
+        />
       </main>
     </>
   );
 }
 
 /* ────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * "Pregunta 2 de 5" con cinco trazos finos que se llenan. Es el avance
+ * DENTRO de la consulta; el avance del camino ya lo dice la cabecera. Los
+ * trazos cambian con una transicion de 250 ms.
+ */
+function IndicadorPregunta({ actual, total }: { actual: number; total: number }) {
+  return (
+    <div className="flex items-center gap-4">
+      <p className="t-eyebrow text-subtle">
+        Pregunta {actual} de {total}
+      </p>
+      <span className="flex gap-1" aria-hidden>
+        {Array.from({ length: total }, (_, i) => (
+          <span
+            key={i}
+            className={cn(
+              "h-[3px] w-5 rounded-full transition-colors duration-[250ms] ease-[var(--ease-natural)]",
+              i < actual ? "bg-primary" : "bg-border-strong/70",
+            )}
+          />
+        ))}
+      </span>
+    </div>
+  );
+}
 
 function TituloPregunta({
   children,
@@ -453,25 +471,23 @@ function TituloPregunta({
   ayuda?: React.ReactNode;
 }) {
   return (
-    <div className="mt-2 flex items-start gap-3">
-      <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-        <HelpCircle className="size-5" aria-hidden />
-      </span>
-      <div>
-        <h2 className="font-display text-[1.55rem] font-medium leading-tight lg:text-[1.75rem]">
-          {children}
-        </h2>
-        {ayuda && (
-          <div className="mt-1 text-[14.5px] leading-relaxed text-muted-foreground">
-            {ayuda}
-          </div>
-        )}
-      </div>
+    <div className="mt-3">
+      <h2 id="pregunta-actual" className="t-h2 text-balance">
+        {children}
+      </h2>
+      {ayuda && <div className="t-small mt-2 max-w-[60ch] text-subtle">{ayuda}</div>}
     </div>
   );
 }
 
-/** Tarjeta elegible, con la marca de seleccion arriba a la derecha. */
+/**
+ * Opcion elegible.
+ *
+ * Reposo: superficie blanca con un filo casi invisible. Elegida: filo fino
+ * en terracota, fondo apenas tenido y una marca de check pequena que aparece
+ * con una transicion corta. El estado se lee por el check y por
+ * `aria-pressed`, no solo por el color.
+ */
 function Opcion({
   selected,
   onClick,
@@ -489,21 +505,21 @@ function Opcion({
       onClick={onClick}
       aria-pressed={selected}
       className={cn(
-        "relative flex w-full rounded-xl border-2 bg-background text-left transition-colors",
-        selected ? "border-primary" : "border-border hover:border-primary/40",
+        "relative flex w-full rounded-lg text-left ring-inset transition-[box-shadow,background-color] duration-200 ease-[var(--ease-natural)]",
+        selected
+          ? "bg-primary-soft/55 ring-[1.5px] ring-primary"
+          : "bg-surface ring-1 ring-border hover:ring-border-strong",
         className,
       )}
     >
       <span
-        className={cn(
-          "absolute right-3 top-3 flex size-6 items-center justify-center rounded-full border-2",
-          selected
-            ? "border-primary bg-primary text-primary-foreground"
-            : "border-border bg-background",
-        )}
         aria-hidden
+        className={cn(
+          "absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground transition-[opacity,transform] duration-200 ease-[var(--ease-natural)]",
+          selected ? "scale-100 opacity-100" : "scale-75 opacity-0",
+        )}
       >
-        {selected && <Check className="size-3.5" strokeWidth={3} />}
+        <Check className="size-3" strokeWidth={3} />
       </span>
       {children}
     </button>
@@ -527,29 +543,31 @@ function PreguntaCategoria({
   onSelect: (id: CategoriaId) => void;
 }) {
   return (
-    <div className="reveal" style={d(0)}>
+    <div>
       <TituloPregunta>¿A qué animal le va a dar la harina?</TituloPregunta>
-      <ul className="mt-6 grid gap-3 sm:grid-cols-3">
+      <ul
+        role="group"
+        aria-labelledby="pregunta-actual"
+        className="mt-8 grid gap-3 [--escala:0.5] sm:grid-cols-3 sm:gap-4 sm:[--escala:1]"
+      >
         {CATEGORIAS.map((c) => (
           <li key={c.id}>
             <Opcion
               selected={value === c.id}
               onClick={() => onSelect(c.id)}
-              className="h-full flex-row items-center gap-3 p-3 sm:flex-col sm:items-start sm:p-4"
+              className="h-full items-center gap-4 p-4 sm:flex-col sm:items-stretch sm:gap-5 sm:p-5 sm:pt-7"
             >
-              <Image
+              <LaminaNormalizada
                 src={c.image}
-                alt=""
-                width={280}
-                height={200}
-                aria-hidden
-                className="lamina h-16 w-20 shrink-0 object-contain sm:h-24 sm:w-full sm:pr-8"
+                area={11500}
+                alto={116}
+                className="w-24 shrink-0 sm:w-full"
               />
-              <span className="min-w-0 pr-8 sm:pr-0">
-                <span className="block font-display text-[1.45rem] font-medium leading-tight">
+              <span className="min-w-0 pr-6 sm:pr-0">
+                <span className="block font-display text-[1.6rem] font-semibold leading-none">
                   {c.name}
                 </span>
-                <span className="mt-1 block text-[13.5px] leading-snug text-muted-foreground">
+                <span className="mt-2 block text-[13.5px] leading-snug text-subtle">
                   {pistaCategoria(c)}
                 </span>
               </span>
@@ -576,14 +594,16 @@ function PreguntaAnimal({
   const conImagen = animales.every((a) => a.image);
 
   return (
-    <div className="reveal" style={d(0)}>
+    <div>
       <TituloPregunta ayuda="Lo que necesita comer cambia según la especie y el tipo de producción.">
         {categoria.pregunta}
       </TituloPregunta>
       <ul
+        role="group"
+        aria-labelledby="pregunta-actual"
         className={cn(
-          "mt-6 grid gap-3",
-          conImagen ? "sm:grid-cols-2" : "sm:grid-cols-2 xl:grid-cols-3",
+          "mt-8 grid gap-3 [--escala:0.6] sm:[--escala:1]",
+          conImagen ? "sm:grid-cols-2 sm:gap-4" : "sm:grid-cols-2 xl:grid-cols-3",
         )}
       >
         {animales.map((a) => (
@@ -591,24 +611,25 @@ function PreguntaAnimal({
             <Opcion
               selected={value === a.id}
               onClick={() => onSelect(a.id)}
-              className="h-full items-center gap-3 p-4"
+              className={cn(
+                "h-full items-center gap-4",
+                conImagen ? "p-4 sm:p-5" : "min-h-[76px] px-4 py-3.5",
+              )}
             >
               {conImagen && a.image && (
-                <Image
+                <LaminaNormalizada
                   src={a.image}
-                  alt=""
-                  width={400}
-                  height={400}
-                  aria-hidden
-                  className="lamina size-20 shrink-0 object-contain"
+                  area={9000}
+                  alto={96}
+                  className="w-24 shrink-0 sm:w-32"
                 />
               )}
-              <span className="min-w-0 pr-8">
-                <span className="block font-display text-[1.35rem] font-medium leading-tight">
+              <span className="min-w-0 pr-6">
+                <span className="block text-[16.5px] font-semibold leading-snug">
                   {a.name}
                 </span>
                 {a.scientific && (
-                  <span className="mt-0.5 block text-[13.5px] italic text-muted-foreground">
+                  <span className="mt-0.5 block text-[13.5px] italic text-subtle">
                     {a.scientific}
                   </span>
                 )}
@@ -630,44 +651,44 @@ function PreguntaEtapa({
   value: string;
   onSelect: (id: string) => void;
 }) {
-  const refs = [
-    ...new Set(animal.stages.flatMap((e) => e.protein?.refs ?? [])),
-  ];
+  const refs = [...new Set(animal.stages.flatMap((e) => e.protein?.refs ?? []))];
 
   return (
-    <div className="reveal" style={d(0)}>
+    <div>
       <TituloPregunta
         ayuda={
-          <span>
+          <span className="inline-flex flex-wrap items-center">
             Cada etapa productiva necesita una cantidad distinta de proteína.
-            <InfoTip termino="etapaProductiva" className="ml-1" />
+            <InfoTip termino="etapaProductiva" className="ml-0.5" />
           </span>
         }
       >
         ¿En qué etapa está su {animal.name.toLowerCase()}?
       </TituloPregunta>
-      <ul className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <ul
+        role="group"
+        aria-labelledby="pregunta-actual"
+        className="mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3"
+      >
         {animal.stages.map((s) => (
           <li key={s.id}>
             <Opcion
               selected={value === s.id}
               onClick={() => onSelect(s.id)}
-              className="h-full flex-col gap-3 p-4"
+              className="h-full flex-col p-5"
             >
-              <span className="pr-8">
-                <span className="block font-display text-[1.35rem] font-medium leading-tight">
+              <span className="pr-6">
+                <span className="block text-[16.5px] font-semibold leading-snug">
                   {s.name}
                 </span>
                 {s.detail && (
-                  <span className="mt-0.5 block text-[13.5px] leading-snug text-muted-foreground">
+                  <span className="mt-0.5 block text-[13.5px] leading-snug text-subtle">
                     {s.detail}
                   </span>
                 )}
               </span>
-              <span className="mt-auto block border-t pt-3">
-                <span className="mb-1 block text-[12.5px] font-medium text-muted-foreground">
-                  Necesita
-                </span>
+              <span className="mt-5 flex flex-col gap-1">
+                <span className="t-eyebrow text-faint">Necesita</span>
                 <ProteinaEtapa etapa={s} compacto />
               </span>
             </Opcion>
@@ -676,10 +697,10 @@ function PreguntaEtapa({
       </ul>
       {/* La etiqueta de origen y el enlace a la fuente van fuera de los
           botones: un boton dentro de otro no se puede tocar bien. */}
-      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-[13.5px] text-muted-foreground">
-        <span className="inline-flex items-center gap-0.5">
+      <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13.5px] text-subtle">
+        <span className="inline-flex items-center">
           Necesidad de proteína
-          <InfoTip termino="requerimientoProteina" />
+          <InfoTip termino="requerimientoProteina" className="ml-0.5" />
         </span>
         {refs.length > 0 ? (
           <>
@@ -691,8 +712,8 @@ function PreguntaEtapa({
           </>
         ) : (
           <span>
-            Solo mostramos valores con fuente científica verificada. Los de
-            este animal los estamos cargando.
+            Solo mostramos valores con fuente científica verificada. Los de este
+            animal los estamos cargando.
           </span>
         )}
       </div>
@@ -716,47 +737,60 @@ function PreguntaClima({
   onSelect: (v: number) => void;
 }) {
   return (
-    <div className="reveal" style={d(0)}>
+    <div>
       <TituloPregunta ayuda={help}>{title}</TituloPregunta>
-      <div
+      <ul
+        role="group"
+        aria-labelledby="pregunta-actual"
         className={cn(
-          "mt-6 grid gap-2.5",
-          options.length > 4 ? "grid-cols-3 sm:grid-cols-6" : "grid-cols-2 sm:grid-cols-4",
+          "mt-8 grid gap-3",
+          options.length > 4 ? "grid-cols-2 sm:grid-cols-3 xl:grid-cols-6" : "grid-cols-2 sm:grid-cols-4",
         )}
       >
-        {options.map((opt) => {
-          const selected = value === opt.value;
-          return (
-            <button
-              key={opt.value}
-              type="button"
+        {options.map((opt) => (
+          <li key={opt.value}>
+            <Opcion
+              selected={value === opt.value}
               onClick={() => onSelect(opt.value)}
-              aria-pressed={selected}
-              className={cn(
-                "flex min-h-[80px] flex-col items-center justify-center gap-1 rounded-xl border-2 bg-background py-3 transition-colors",
-                selected
-                  ? "border-primary bg-primary/8"
-                  : "border-border hover:border-primary/40",
-              )}
+              className="min-h-[92px] flex-col justify-end gap-1.5 px-4 pt-6 pb-4"
             >
-              <span className="font-display text-[1.7rem] font-medium leading-none tabular-nums">
+              <span className="t-cifra text-[2rem] text-foreground">
                 {opt.value}
-                <span className="ml-0.5 text-[0.95rem] text-muted-foreground">
-                  {unit}
-                </span>
+                <span className="t-unidad">{unit}</span>
               </span>
-              <span className="text-[12px] font-medium leading-tight text-muted-foreground">
-                {opt.label}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+              <span className="text-[13px] leading-tight text-subtle">{opt.label}</span>
+            </Opcion>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
-/** Lo que lleva elegido, a la derecha en escritorio y debajo en celular. */
+/** Las filas del resumen, compartidas por el panel y la linea de celular. */
+function filasResumen(
+  categoria?: Categoria,
+  animal?: AnimalDestino,
+  etapa?: Etapa,
+  temp?: number | null,
+  humidity?: number | null,
+) {
+  return [
+    {
+      rotulo: "Animal",
+      valor: animal
+        ? animalesDe(animal.category).length > 1
+          ? `${categoria?.name ?? ""} · ${animal.name}`
+          : animal.name
+        : categoria?.name,
+    },
+    { rotulo: "Etapa", valor: etapa?.name },
+    { rotulo: "Temperatura", valor: temp != null ? `${temp} °C` : undefined },
+    { rotulo: "Humedad", valor: humidity != null ? `${humidity} % HR` : undefined },
+  ];
+}
+
+/** Lo que lleva elegido, en el panel lateral de escritorio. */
 function ResumenConsulta({
   categoria,
   animal,
@@ -772,58 +806,85 @@ function ResumenConsulta({
   humidity: number | null;
   onNueva?: () => void;
 }) {
-  const filas: Array<{ rotulo: string; valor: React.ReactNode }> = [
-    {
-      rotulo: "Animal",
-      valor: animal
-        ? animalesDe(animal.category).length > 1
-          ? `${categoria?.name ?? ""} · ${animal.name}`
-          : animal.name
-        : categoria?.name,
-    },
-    { rotulo: "Etapa", valor: etapa?.name },
-    {
-      rotulo: "Necesita",
-      valor: etapa ? <ProteinaEtapa etapa={etapa} compacto /> : undefined,
-    },
-    { rotulo: "Temperatura", valor: temp !== null ? `${temp} °C` : undefined },
-    {
-      rotulo: "Humedad",
-      valor: humidity !== null ? `${humidity} %` : undefined,
-    },
-  ];
+  const filas = filasResumen(categoria, animal, etapa, temp, humidity);
 
   return (
-    <section className="rounded-xl border bg-card/60 p-5">
+    <section aria-labelledby="resumen-consulta">
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="font-display text-[1.4rem] font-medium">Su consulta</h2>
+        <h2 id="resumen-consulta" className="t-eyebrow text-subtle">
+          Su consulta
+        </h2>
         {onNueva && (
           <button
             type="button"
             onClick={onNueva}
-            className="text-[13.5px] font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            className="text-[13px] font-medium text-subtle underline decoration-border-strong underline-offset-4 transition-colors hover:text-foreground"
           >
             Empezar de nuevo
           </button>
         )}
       </div>
-      <dl className="mt-3 divide-y">
+      <dl className="mt-4 flex flex-col gap-3">
         {filas.map((f) => (
-          <div
-            key={f.rotulo}
-            className="flex items-start justify-between gap-4 py-2.5"
-          >
-            <dt className="text-[14px] text-muted-foreground">{f.rotulo}</dt>
-            <dd className="flex justify-end text-right text-[15px] font-medium">
-              {f.valor ?? (
-                <span className="font-normal text-muted-foreground/70">
-                  Por elegir
-                </span>
-              )}
+          <div key={f.rotulo} className="flex items-baseline justify-between gap-4">
+            <dt className="text-[14px] text-subtle">{f.rotulo}</dt>
+            <dd className="text-right text-[14.5px] font-medium">
+              {f.valor ?? <span className="font-normal text-faint">Por elegir</span>}
             </dd>
           </div>
         ))}
+        <div className="flex items-start justify-between gap-4">
+          <dt className="pt-0.5 text-[14px] text-subtle">Necesita</dt>
+          <dd className="flex justify-end text-right">
+            {etapa ? (
+              <ProteinaEtapa etapa={etapa} compacto />
+            ) : (
+              <span className="text-[14.5px] text-faint">Por elegir</span>
+            )}
+          </dd>
+        </div>
       </dl>
     </section>
+  );
+}
+
+/** Lo elegido en una sola linea, para celular y tableta. */
+function ResumenLinea({
+  categoria,
+  animal,
+  etapa,
+  temp,
+  humidity,
+  onNueva,
+  className,
+}: {
+  categoria?: Categoria;
+  animal?: AnimalDestino;
+  etapa?: Etapa;
+  temp: number | null;
+  humidity: number | null;
+  onNueva?: () => void;
+  className?: string;
+}) {
+  const partes = filasResumen(categoria, animal, etapa, temp, humidity)
+    .map((f) => f.valor)
+    .filter(Boolean);
+  if (partes.length === 0) return null;
+  return (
+    <div className={cn("flex flex-wrap items-baseline gap-x-3 gap-y-1", className)}>
+      <p className="text-[14px] text-subtle">
+        <span className="sr-only">Lleva elegido: </span>
+        {partes.join(" · ")}
+      </p>
+      {onNueva && (
+        <button
+          type="button"
+          onClick={onNueva}
+          className="text-[13px] font-medium text-subtle underline decoration-border-strong underline-offset-4 hover:text-foreground"
+        >
+          Empezar de nuevo
+        </button>
+      )}
+    </div>
   );
 }

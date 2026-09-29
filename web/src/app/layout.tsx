@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, IBM_Plex_Mono, Plus_Jakarta_Sans } from "next/font/google";
 
 import "./globals.css";
+import { AsistenteFlotante } from "@/components/asistente-flotante";
 import { SessionGate } from "@/components/session-gate";
 import { SiteFooter } from "@/components/site-footer";
 import { SubirConsultasLocales } from "@/components/subir-consultas-locales";
@@ -113,6 +114,7 @@ export default function RootLayout({
           <SubirConsultasLocales />
           <div className="flex-1">{children}</div>
           <SiteFooter />
+          <AsistenteFlotante />
         </SessionGate>
       </body>
     </html>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { Barra } from "@/components/barra";
+import { BotonAsistente } from "@/components/boton-asistente";
 import { CAMINO, siguienteParada } from "@/lib/camino";
 import { cn } from "@/lib/utils";
 
@@ -98,6 +99,10 @@ export function BarraAcciones({
             {atras.texto ?? "Atrás"}
           </button>
         )}
+        {/* El asistente vive aqui en el camino, junto a la accion principal,
+            y no flotando sobre el contenido. */}
+        <div className="flex flex-1 items-center justify-end gap-2 sm:flex-none">
+        <BotonAsistente />
         {adelante &&
           (adelante.href && !adelante.deshabilitado ? (
             <Link href={adelante.href} className={claseAdelante}>
@@ -115,6 +120,7 @@ export function BarraAcciones({
               <ArrowRight className="size-4" />
             </button>
           ))}
+        </div>
       </div>
     </div>
   );

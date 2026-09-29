@@ -315,20 +315,64 @@
    Con "reducir movimiento" activado aparecen quietas. */
 [data-revelar] {
   opacity: 0;
-  transform: translate3d(0, 12px, 0);
+  transform: translate3d(0, 20px, 0);
   transition:
-    opacity var(--dur-lenta) var(--ease-natural),
-    transform var(--dur-lenta) var(--ease-natural);
+    opacity 600ms var(--ease-natural),
+    transform 600ms var(--ease-natural);
   transition-delay: var(--retraso, 0ms);
 }
 [data-revelar="visible"] {
   opacity: 1;
   transform: none;
 }
+
+/* Firma de movimiento de GrillosIA: cuando una seccion entra, sus grabados
+   se "imprimen" de izquierda a derecha, como una hoja que sale de la prensa. */
+[data-revelar] .lamina {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 1100ms var(--ease-natural);
+  transition-delay: calc(var(--retraso, 0ms) + 180ms);
+}
+[data-revelar="visible"] .lamina {
+  clip-path: inset(0 0 0 0);
+}
+
+/* Elevacion suave al pasar el raton por algo que se puede tocar. */
+.elevar {
+  transition:
+    transform 200ms var(--ease-natural),
+    background-color 200ms var(--ease-natural),
+    border-color 200ms var(--ease-natural);
+}
+@media (hover: hover) {
+  .elevar:hover {
+    transform: translate3d(0, -3px, 0);
+  }
+  .elevar:hover .lamina {
+    transform: scale(1.03);
+  }
+}
+.elevar .lamina {
+  transition: transform 400ms var(--ease-natural);
+}
+
+/* Cambio de tema: los colores se cruzan en 300 ms en vez de saltar. */
+html.cambiando-tema,
+html.cambiando-tema *,
+html.cambiando-tema *::before,
+html.cambiando-tema *::after {
+  transition:
+    background-color 300ms var(--ease-natural),
+    color 300ms var(--ease-natural),
+    border-color 300ms var(--ease-natural),
+    fill 300ms var(--ease-natural) !important;
+}
 @media (prefers-reduced-motion: reduce) {
-  [data-revelar] {
+  [data-revelar],
+  [data-revelar] .lamina {
     opacity: 1;
     transform: none;
+    clip-path: none;
     transition: none;
   }
   *,
@@ -459,10 +503,14 @@
   mix-blend-mode: multiply;
   opacity: 0.95;
 }
+/* En oscuro el grabado se imprime en tinta clara y calida, como un grabado
+   en papel negro. `invert` sola lo dejaba azul acero (el opuesto del cafe);
+   el giro de 180 grados le devuelve el tono calido, y `screen` hace
+   desaparecer el fondo, que tras invertir queda negro. */
 .dark .lamina {
   mix-blend-mode: screen;
-  filter: invert(1);
-  opacity: 0.62;
+  filter: invert(1) hue-rotate(180deg) saturate(0.7) brightness(0.92);
+  opacity: 0.9;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════

@@ -75,6 +75,29 @@ export const PASOS_PORTADA: Record<number, string> = {
 };
 
 /**
+ * Lo que hace GrillosIA con los datos de la consulta, en tres frases. Cierra
+ * la historia de la portada: sus condiciones entran, el modelo las procesa,
+ * usted recibe una interpretacion y puede preguntar.
+ */
+export const COMO_RESPONDE = [
+  {
+    titulo: "Procesa sus condiciones",
+    cuerpo:
+      "El modelo de inteligencia artificial compara las tres comidas con el animal, la etapa y el clima que usted indique.",
+  },
+  {
+    titulo: "Le explica el resultado",
+    cuerpo:
+      "Cada número dice de dónde sale: medido en los ensayos, tomado de la literatura o calculado por el modelo.",
+  },
+  {
+    titulo: "Resuelve sus dudas",
+    cuerpo:
+      "El asistente de GrillosIA responde preguntas sobre su resultado y sobre la cría, con sus palabras o con la voz.",
+  },
+];
+
+/**
  * Foto real del paisaje del Piedemonte Llanero para la seccion del
  * territorio.
  *
@@ -113,8 +136,13 @@ export const FOTO_PORTADA = {
   src: "/fotos/portada-grillo-01.webp",
   alt: "Grillo de campo negro sobre tierra y grava, visto de lado, con las antenas largas hacia adelante.",
   /** Encuadre de la foto: el grillo queda a la derecha del texto. */
-  posicion: "62% 55%",
-  pie: "Grillo de campo (Gryllus campestris), Rumania",
+  posicion: "64% 58%",
+  /**
+   * Pie obligatorio. Deja claro que es una imagen de referencia y no un
+   * ejemplar del proyecto: los grillos del proyecto solo estan confirmados
+   * hasta familia.
+   */
+  pie: "Imagen de referencia: grillo de campo europeo, familia Gryllidae. No corresponde a los ejemplares del proyecto",
   credito: "Foto: xulescu_g, CC BY-SA 2.0, Wikimedia Commons",
   url: "https://commons.wikimedia.org/wiki/File:Gryllus_campestris_(35634613106).jpg",
 };

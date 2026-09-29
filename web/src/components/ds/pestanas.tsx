@@ -74,7 +74,8 @@ export function Pestanas({
 
   return (
     <div className={className}>
-      <div className="relative border-b border-border">
+      {/* El fundido de la derecha avisa en celular que hay mas pestanas. */}
+      <div className="relative border-b border-border after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-10 after:bg-gradient-to-l after:from-background after:to-transparent sm:after:hidden">
         <div
           ref={fila}
           role="tablist"

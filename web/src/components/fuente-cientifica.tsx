@@ -16,9 +16,9 @@ import { cn } from "@/lib/utils";
 /**
  * Enlace discreto "¿De donde sale este valor?".
  *
- * Abre una ventana con la referencia completa de cada valor de literatura.
- * Si un id no tiene referencia cargada, lo dice: nunca se muestra una cita
- * que no este en el registro verificado.
+ * Abre una ventana con la referencia completa de cada valor de literatura,
+ * numerada como en un articulo. Si un id no tiene referencia cargada, lo
+ * dice: nunca se muestra una cita que no este en el registro verificado.
  */
 export function FuenteCientifica({
   ids,
@@ -41,52 +41,52 @@ export function FuenteCientifica({
         <button
           type="button"
           className={cn(
-            "inline-flex items-center gap-1.5 text-[13.5px] font-medium text-muted-foreground underline decoration-dotted underline-offset-4 transition-colors hover:text-foreground",
+            "inline-flex min-h-8 w-fit items-center gap-1.5 rounded-sm text-[13.5px] font-medium text-subtle underline decoration-border-strong decoration-dotted underline-offset-[5px] transition-colors duration-150 hover:text-foreground hover:decoration-foreground/50",
             className,
           )}
         >
-          <BookOpen className="size-3.5" aria-hidden />
+          <BookOpen className="size-3.5 shrink-0" strokeWidth={1.75} aria-hidden />
           {texto}
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-[520px]">
-        <DialogHeader>
-          <DialogTitle className="font-display text-[22px] font-medium">
-            Fuente científica
-          </DialogTitle>
-          <DialogDescription className="text-[14.5px]">
+      <DialogContent className="max-w-[560px] gap-5 rounded-lg p-6 sm:p-7">
+        <DialogHeader className="gap-2 text-left">
+          <p className="t-eyebrow text-subtle">Respaldo del dato</p>
+          <DialogTitle className="t-h2 !text-[1.75rem]">Fuente científica</DialogTitle>
+          <DialogDescription className="text-[15px] leading-relaxed text-subtle">
             {detalle ??
               "Estos valores vienen de la literatura científica, no de los ensayos del proyecto."}
           </DialogDescription>
         </DialogHeader>
         {refs.length === 0 ? (
-          <p className="text-[15px] text-muted-foreground">
+          <p className="text-[15px] text-subtle">
             Todavía no hemos cargado la fuente de este valor.
           </p>
         ) : (
-          <ul className="flex flex-col gap-4">
-            {refs.map((r) => (
-              <li key={r.id} className="text-[15px] leading-relaxed">
-                <p>{r.cita}</p>
-                {r.ubicacion && (
-                  <p className="mt-0.5 text-[13.5px] text-muted-foreground">
-                    {r.ubicacion}
-                  </p>
-                )}
-                {r.url && (
-                  <a
-                    href={r.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-1 inline-flex items-center gap-1 text-[14px] font-semibold text-primary underline underline-offset-2"
-                  >
-                    Consultar la fuente
-                    <ExternalLink className="size-3.5" aria-hidden />
-                  </a>
-                )}
+          <ol className="flex flex-col gap-5">
+            {refs.map((r, i) => (
+              <li key={r.id} className="grid grid-cols-[24px_1fr] gap-x-2 text-[15px] leading-relaxed">
+                <span className="t-eyebrow pt-[5px] text-faint">{i + 1}</span>
+                <div>
+                  <p>{r.cita}</p>
+                  {r.ubicacion && (
+                    <p className="mt-1 text-[13.5px] text-subtle">{r.ubicacion}</p>
+                  )}
+                  {r.url && (
+                    <a
+                      href={r.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-1.5 inline-flex items-center gap-1 text-[14px] font-semibold text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
+                    >
+                      Consultar la fuente
+                      <ExternalLink className="size-3.5" aria-hidden />
+                    </a>
+                  )}
+                </div>
               </li>
             ))}
-          </ul>
+          </ol>
         )}
       </DialogContent>
     </Dialog>

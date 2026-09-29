@@ -456,7 +456,7 @@ export function ManosLibres({
         : respuesta;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-[#12180F]">
+    <div className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-[#16130F]">
       {/* Sin lamina de fondo: el paisaje con palmas ya no es parte de la
           identidad, y el fondo liso deja todo el foco en la conversacion. */}
 
@@ -499,7 +499,7 @@ export function ManosLibres({
                     className="h-auto w-full"
                   />
                 </div>
-                <figcaption className="mt-2.5 text-center text-[13.5px] leading-snug text-[#B9B5A6]">
+                <figcaption className="mt-2.5 text-center text-[13.5px] leading-snug text-[#B5AB9C]">
                   {figura.titulo}
                   {figura.credito && <> · Fotografía: {figura.credito}</>}
                 </figcaption>
@@ -521,7 +521,7 @@ export function ManosLibres({
           <div className="flex flex-col items-center gap-3">
             {(fase === "hablando" ||
               (fase === "escuchando" && estadoDictado !== "escuchando")) && (
-              <span className="text-[13px] text-[#8E9683]">
+              <span className="text-[13px] text-[#9A9186]">
                 {fase !== "hablando"
                   ? "Toque el círculo para hablar"
                   : figura
@@ -529,7 +529,7 @@ export function ManosLibres({
                     : "Toque el círculo para interrumpir"}
               </span>
             )}
-            <span className="rotulo flex items-center gap-2 text-[#A8C08F]">
+            <span className="rotulo flex items-center gap-2 text-[#E0A27F]">
               {figura && fase === "hablando" && (
                 <span className="size-2 animate-pulse rounded-full bg-[#F4F1E7]" />
               )}
@@ -559,12 +559,12 @@ export function ManosLibres({
                         !siguiendo
                           ? // Ya no suena: se puede releer entera, sin que una
                             // linea resalte por encima de las demas.
-                            "text-[#B9B5A6]"
+                            "text-[#B5AB9C]"
                           : i === activa
                             ? "text-[#F4F1E7]"
                             : i < activa
-                              ? "text-[#7C8472]"
-                              : "text-[#5E6555]"
+                              ? "text-[#857C70]"
+                              : "text-[#645C52]"
                       }`}
                     >
                       {conNegritas(linea)}
@@ -583,7 +583,7 @@ export function ManosLibres({
         <button
           type="button"
           onClick={onCerrar}
-          className="mx-auto flex min-h-14 w-full max-w-[320px] items-center justify-center rounded-full bg-[#F4F1E7] text-[16px] font-bold text-[#12180F] transition-opacity hover:opacity-90"
+          className="mx-auto flex min-h-14 w-full max-w-[320px] items-center justify-center rounded-full bg-[#F4F1E7] text-[16px] font-bold text-[#16130F] transition-opacity hover:opacity-90"
         >
           Terminar
         </button>

@@ -1,30 +1,37 @@
 "use client";
 
 import Link from "next/link";
+import { RotateCcw } from "lucide-react";
 
+import { Estado } from "@/components/ds/estado";
+import { Button } from "@/components/ui/button";
+
+/**
+ * Error de una pagina. Explica en palabras simples que paso y que hacer,
+ * sin mostrar nada tecnico.
+ */
 export default function AppError({ reset }: { reset: () => void }) {
   return (
-    <main className="mx-auto flex min-h-[60vh] w-full max-w-[520px] flex-col items-center justify-center gap-3 px-6 text-center">
-      <h1 className="text-[1.5rem] font-bold leading-tight">
-        Hubo un problema
-      </h1>
-      <p className="max-w-[30ch] text-[16px] leading-relaxed text-foreground/85">
-        Puede intentar de nuevo. Si le sigue pasando, entre a{" "}
+    <main className="mx-auto flex min-h-[60vh] w-full max-w-[560px] flex-col justify-center px-5 py-16">
+      <Estado
+        tipo="error"
+        titulo="No pudimos mostrar esta página"
+        accion={
+          <Button onClick={reset}>
+            <RotateCcw />
+            Intentar de nuevo
+          </Button>
+        }
+      >
+        Sus consultas siguen guardadas. Si le vuelve a pasar, puede{" "}
         <Link
           href="/reset"
-          className="font-semibold text-primary underline underline-offset-2"
+          className="font-semibold text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
         >
           restablecer la aplicación
         </Link>
         .
-      </p>
-      <button
-        type="button"
-        onClick={reset}
-        className="mt-4 inline-flex min-h-[52px] items-center justify-center rounded-2xl bg-primary px-6 text-[16px] font-bold text-primary-foreground"
-      >
-        Intentar de nuevo
-      </button>
+      </Estado>
     </main>
   );
 }

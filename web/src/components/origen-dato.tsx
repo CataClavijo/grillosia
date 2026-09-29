@@ -1,4 +1,4 @@
-import { BookOpen, Compass, FlaskConical, Cpu } from "lucide-react";
+import { BookOpen, Compass, Cpu, FlaskConical } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -9,6 +9,9 @@ import { cn } from "@/lib/utils";
  * y los cuatro origenes nunca se mezclan ni se presentan como si fueran lo
  * mismo. Una prediccion del modelo no es un dato medido, y una cifra de la
  * literatura no es un resultado del proyecto.
+ *
+ * Cada origen se distingue por icono Y texto, no solo por color: la etiqueta
+ * se entiende igual en blanco y negro.
  */
 export type Origen = "experimental" | "literatura" | "modelo" | "orientativo";
 
@@ -20,30 +23,27 @@ export const ORIGENES: Record<
     etiqueta: "Dato experimental",
     explicacion: "Medido en los ensayos de cría del proyecto.",
     Icono: FlaskConical,
-    clase: "border-primary/30 bg-primary/8 text-primary",
+    clase: "bg-vegetal-soft text-vegetal",
   },
   literatura: {
     etiqueta: "Valor de referencia científica",
     explicacion:
       "Tomado de artículos o manuales técnicos reconocidos. Puede consultar la fuente.",
     Icono: BookOpen,
-    clase:
-      "border-[oklch(0.62_0.06_60/0.35)] bg-[oklch(0.62_0.06_60/0.08)] text-[oklch(0.42_0.06_55)] dark:text-[oklch(0.80_0.06_60)]",
+    clase: "bg-surface-2 text-foreground/75",
   },
   modelo: {
     etiqueta: "Predicción del modelo GrillosIA",
     explicacion:
       "Calculado por el modelo de inteligencia artificial. No es una medición.",
     Icono: Cpu,
-    clase:
-      "border-[oklch(0.55_0.03_240/0.35)] bg-[oklch(0.55_0.03_240/0.07)] text-[oklch(0.40_0.03_240)] dark:text-[oklch(0.80_0.03_240)]",
+    clase: "bg-transparent text-foreground/75 ring-1 ring-inset ring-border-strong",
   },
   orientativo: {
     etiqueta: "Recomendación orientativa",
     explicacion: "Sugerencia de la plataforma para orientar su decisión.",
     Icono: Compass,
-    clase:
-      "border-[oklch(0.70_0.10_85/0.40)] bg-[oklch(0.70_0.10_85/0.10)] text-[oklch(0.42_0.07_75)] dark:text-[oklch(0.82_0.09_85)]",
+    clase: "bg-warning-soft text-warning",
   },
 };
 
@@ -59,20 +59,21 @@ export function OrigenDato({
     <span
       title={explicacion}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[12.5px] font-semibold leading-5",
+        "inline-flex w-fit items-center gap-1.5 rounded-sm px-2 py-[3px] text-[12px] font-medium leading-4 whitespace-nowrap",
         clase,
         className,
       )}
     >
-      <Icono className="size-3.5 shrink-0" aria-hidden />
+      <Icono className="size-3.5 shrink-0" strokeWidth={1.75} aria-hidden />
       {etiqueta}
     </span>
   );
 }
 
 /**
- * Leyenda con los cuatro origenes, para poner una vez por pagina donde se
- * muestran cifras.
+ * Leyenda con los origenes, para poner una vez por pagina donde se muestran
+ * cifras. Etiqueta arriba y explicacion debajo, en rejilla: en fila, cada
+ * explicacion se cortaba en un lugar distinto.
  */
 export function LeyendaOrigenes({
   origenes = ["experimental", "literatura", "modelo", "orientativo"],
@@ -82,11 +83,11 @@ export function LeyendaOrigenes({
   className?: string;
 }) {
   return (
-    <ul className={cn("grid gap-3 text-[14px] sm:grid-cols-2", className)}>
+    <ul className={cn("grid gap-x-8 gap-y-5 text-[14px] sm:grid-cols-2", className)}>
       {origenes.map((o) => (
         <li key={o} className="flex flex-col items-start gap-1.5">
           <OrigenDato origen={o} />
-          <span className="text-muted-foreground">{ORIGENES[o].explicacion}</span>
+          <span className="leading-snug text-subtle">{ORIGENES[o].explicacion}</span>
         </li>
       ))}
     </ul>

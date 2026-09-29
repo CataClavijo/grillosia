@@ -18,7 +18,8 @@ import { useEffect, useRef } from "react";
 
 type Fase = "escuchando" | "pensando" | "hablando";
 
-const VERDE = "168, 192, 143"; // #A8C08F
+// Terracota claro: el mismo color de accion del sitio, aclarado para fondo oscuro.
+const VERDE = "224, 162, 127"; // #E0A27F
 const CREMA = "244, 241, 231"; // #F4F1E7
 
 export function OrbeVoz({

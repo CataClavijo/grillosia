@@ -12,8 +12,8 @@ export default function GlobalError({ reset }: { reset: () => void }) {
           fontFamily: "system-ui, -apple-system, sans-serif",
           padding: "2rem 1.5rem",
           lineHeight: 1.6,
-          color: "#20301f",
-          background: "#f4f1e7",
+          color: "#1f1b16",
+          background: "#fcfaf5",
         }}
       >
         <h1 style={{ fontSize: "1.35rem", fontWeight: 700, margin: 0 }}>
@@ -21,7 +21,7 @@ export default function GlobalError({ reset }: { reset: () => void }) {
         </h1>
         <p style={{ marginTop: "0.75rem", opacity: 0.8 }}>
           Puede intentar de nuevo. Si le vuelve a pasar, entre a{" "}
-          <a href="/reset" style={{ color: "#2f5d3c", fontWeight: 600 }}>
+          <a href="/reset" style={{ color: "#a4451f", fontWeight: 600 }}>
             restablecer la aplicación
           </a>{" "}
           y le limpiamos los datos guardados.
@@ -34,10 +34,10 @@ export default function GlobalError({ reset }: { reset: () => void }) {
             padding: "0.75rem 1.5rem",
             fontSize: "1rem",
             fontWeight: 600,
-            color: "#f4f1e7",
-            background: "#2f5d3c",
+            color: "#ffffff",
+            background: "#a4451f",
             border: "none",
-            borderRadius: "0.75rem",
+            borderRadius: "6px",
             cursor: "pointer",
           }}
         >

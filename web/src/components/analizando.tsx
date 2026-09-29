@@ -34,8 +34,18 @@ export function Analizando({ etiqueta = "Evaluando las tres comidas" }) {
     canvas.height = alto * dpr;
     ctx.scale(dpr, dpr);
 
-    const VERDE = "47, 93, 60";
-    const OLIVA = "110, 148, 64";
+    // Colores del sistema de diseno, leidos en vivo para que el dibujo se vea
+    // bien en claro y en oscuro: tinta para la estructura, terracota para lo
+    // que se mueve.
+    const css = getComputedStyle(document.documentElement);
+    const rgb = (variable: string, respaldo: string) => {
+      const hex = css.getPropertyValue(variable).trim().replace("#", "");
+      if (!/^[0-9a-f]{6}$/i.test(hex)) return respaldo;
+      const n = parseInt(hex, 16);
+      return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
+    };
+    const VERDE = rgb("--foreground", "31, 27, 22");
+    const OLIVA = rgb("--primary", "164, 69, 31");
 
     // Seis entradas a la izquierda, tres salidas a la derecha.
     const entradas = Array.from({ length: 6 }, (_, i) => ({
@@ -131,13 +141,13 @@ export function Analizando({ etiqueta = "Evaluando las tres comidas" }) {
   }, []);
 
   return (
-    <div className="flex flex-col items-center gap-2 py-6">
+    <div role="status" className="flex flex-col items-center gap-3 py-8">
       <canvas
         ref={lienzo}
         aria-hidden
         style={{ width: 300, height: 120, maxWidth: "100%" }}
       />
-      <p className="rotulo text-muted-foreground" aria-live="polite">
+      <p className="t-eyebrow text-subtle" aria-live="polite">
         {etiqueta}
       </p>
     </div>

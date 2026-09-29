@@ -65,6 +65,53 @@ export const CRICKET_PHOTOS: CricketPhoto[] = [
   },
 ];
 
+/**
+ * Vistas del ejemplar para la lámina de la ficha: las mismas fotos del
+ * proyecto, recortadas sin el fondo de estudio para que se integren a la
+ * página (script en el repositorio de trabajo; los originales siguen en
+ * public/grillos/grillo-*.webp). La foto 2 no se usa recortada: en el
+ * original el cuerpo queda cortado por el borde.
+ */
+export interface VistaEjemplar {
+  id: string;
+  src: string;
+  width: number;
+  height: number;
+  etiqueta: string;
+  alt: string;
+  credit: string;
+}
+
+export const VISTAS_EJEMPLAR: VistaEjemplar[] = [
+  {
+    id: "lateral",
+    src: "/grillos/recorte-3.webp",
+    width: 611,
+    height: 379,
+    etiqueta: "Vista lateral",
+    alt: "Grillo del proyecto, familia Gryllidae, de color café oscuro, visto de lado con las alas plegadas y las antenas largas.",
+    credit: "Sebastián Berrío",
+  },
+  {
+    id: "dorsal-oscuro",
+    src: "/grillos/recorte-4.webp",
+    width: 559,
+    height: 828,
+    etiqueta: "Vista dorsal",
+    alt: "Grillo del proyecto, familia Gryllidae, visto desde arriba, con las antenas muy largas extendidas.",
+    credit: "Catalina Clavijo-Agudelo",
+  },
+  {
+    id: "dorsal-claro",
+    src: "/grillos/recorte-1.webp",
+    width: 510,
+    height: 810,
+    etiqueta: "Ejemplar claro",
+    alt: "Grillo del proyecto, familia Gryllidae, de color café claro, visto desde arriba con las patas traseras extendidas.",
+    credit: "Catalina Clavijo-Agudelo",
+  },
+];
+
 /** Cómo reconocer un grillo. Aplica a la familia, no a una especie. */
 export const COMO_RECONOCER: { titulo: string; texto: string }[] = [
   {

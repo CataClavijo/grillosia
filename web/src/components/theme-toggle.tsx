@@ -40,7 +40,10 @@ export function ThemeToggle() {
 
   const toggle = useCallback(() => {
     const next = !dark;
-    document.documentElement.classList.toggle("dark", next);
+    const raiz = document.documentElement;
+    raiz.classList.add("cambiando-tema");
+    raiz.classList.toggle("dark", next);
+    window.setTimeout(() => raiz.classList.remove("cambiando-tema"), 350);
     try {
       localStorage.setItem(STORAGE_KEY, next ? "dark" : "light");
     } catch {
@@ -53,10 +56,11 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggle}
-      aria-label="Cambiar tema"
-      className="size-9 rounded-full border-foreground/10 text-foreground/70 hover:text-foreground"
+      aria-label={dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+      title={dark ? "Modo claro" : "Modo oscuro"}
+      className="size-10 rounded-md text-foreground/75 hover:text-foreground [&_svg]:transition-transform [&_svg]:duration-300 hover:[&_svg]:rotate-[20deg]"
     >
-      {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      {dark ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
     </Button>
   );
 }

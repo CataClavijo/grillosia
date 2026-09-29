@@ -25,19 +25,32 @@ export function Logo({
   className?: string;
   prioridad?: boolean;
 }) {
+  // Dos versiones del simbolo: en oscuro el trazo cafe del grillo se volvia
+  // invisible, asi que ahi va en tinta clara y el verde un poco mas luminoso.
+  const clase = cn(
+    "h-auto shrink-0 transition-[width] duration-[var(--dur-media)] ease-[var(--ease-natural)]",
+    variante === "completo" ? "w-10" : "w-8",
+  );
   const simbolo = (
-    <Image
-      src="/logo.svg"
-      alt=""
-      width={40}
-      height={42}
-      priority={prioridad}
-      aria-hidden
-      className={cn(
-        "h-auto shrink-0 transition-[width] duration-[var(--dur-media)] ease-[var(--ease-natural)]",
-        variante === "completo" ? "w-10" : "w-8",
-      )}
-    />
+    <>
+      <Image
+        src="/logo.svg"
+        alt=""
+        width={40}
+        height={42}
+        priority={prioridad}
+        aria-hidden
+        className={cn(clase, "dark:hidden")}
+      />
+      <Image
+        src="/logo-oscuro.svg"
+        alt=""
+        width={40}
+        height={42}
+        aria-hidden
+        className={cn(clase, "hidden dark:block")}
+      />
+    </>
   );
 
   if (variante === "simbolo") {

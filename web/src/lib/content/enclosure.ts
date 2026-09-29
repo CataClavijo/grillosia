@@ -33,7 +33,7 @@ export interface EnclosureStep {
   title: string;
   body: string;
   tip?: string;
-  /** Ilustración a lápiz del paso (ruta dentro de /public). */
+  /** Ilustración en grabado del paso (ruta dentro de /public). */
   imagen: string;
 }
 
@@ -54,9 +54,9 @@ export const COST_NOTE =
 /** Ilustración principal de la página: la caja ya armada. */
 export const CAJA_ARMADA = {
   src: "/ilustraciones/caja-cria.webp",
-  alt: "Dibujo a lápiz de una caja plástica de cría abierta, con hueveras de cartón paradas como refugio, un bebedero y un plato de alimento, y la tapa con agujeros de ventilación a un lado.",
-  width: 760,
-  height: 543,
+  alt: "Grabado de una caja plástica de cría abierta, con hueveras de cartón paradas como refugio, un bebedero y un plato de alimento, y la tapa con una ventana de malla a un lado.",
+  width: 1100,
+  height: 681,
 };
 
 export const MATERIALS: Material[] = [
@@ -174,6 +174,12 @@ export const CONDICIONES_OBJETIVO = {
   temperatura: "24 a 34 °C",
   humedad: "50 a 80 %",
 };
+
+/** Los mismos rangos, en cifras, para mostrarlos con su unidad aparte. */
+export const RANGOS_OBJETIVO = {
+  temperatura: { min: 24, max: 34, unidad: "°C" },
+  humedad: { min: 50, max: 80, unidad: "% HR" },
+} as const;
 
 export interface Consejo {
   id: "temperatura" | "humedad" | "ventilacion" | "limpieza" | "registro";

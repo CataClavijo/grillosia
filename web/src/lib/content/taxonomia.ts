@@ -34,7 +34,7 @@ export const TAXONOMIA: RegistroTaxonomico[] = [
     nivelConfirmado: "familia",
     familia: "Gryllidae",
     nombreComun: "Grillos nativos del Piedemonte Llanero",
-    fotos: ["/grillos/grillo-2.webp"],
+    fotos: ["/grillos/recorte-3.webp"],
     estado: "pendiente",
   },
 ];

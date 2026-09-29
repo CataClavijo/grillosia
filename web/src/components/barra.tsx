@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 
 import { Logo } from "@/components/logo";
 import { SiteNav } from "@/components/site-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Progreso } from "@/components/ds/progreso";
 import { CAMINO, TOTAL_PARADAS } from "@/lib/camino";
 import { cn } from "@/lib/utils";
@@ -74,8 +75,14 @@ export function Barra({
           <Link href="/" aria-label="GrillosIA, ir al inicio" className="shrink-0">
             <Logo variante="compacto" />
           </Link>
-          <p className="t-eyebrow truncate text-subtle">{etiqueta}</p>
-          <SiteNav />
+          <p className="t-eyebrow truncate text-subtle">
+            Paso {paso} de {TOTAL_PARADAS}
+            <span className="hidden sm:inline"> · {CORTO[paso] ?? ""}</span>
+          </p>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <SiteNav />
+          </div>
         </div>
         <Progreso valor={paso} total={TOTAL_PARADAS} etiqueta={etiqueta} />
       </header>
@@ -131,7 +138,8 @@ export function Barra({
           </ul>
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1.5">
+          <ThemeToggle />
           <Link
             href="/consulta"
             className="hidden h-10 items-center gap-2 rounded-md bg-primary px-4 text-[14.5px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover lg:inline-flex"

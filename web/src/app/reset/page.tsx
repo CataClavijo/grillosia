@@ -49,8 +49,8 @@ export default function ResetPage() {
         gap: "0.75rem",
         padding: "2rem 1.5rem",
         textAlign: "center",
-        color: "#20301f",
-        background: "#f4f1e7",
+        color: "#1f1b16",
+        background: "#fcfaf5",
       }}
     >
       <h1 style={{ fontSize: "1.5rem", fontWeight: 700, margin: 0 }}>
@@ -62,7 +62,7 @@ export default function ResetPage() {
       </p>
       <p style={{ fontSize: "0.9rem", opacity: 0.7, marginTop: "1rem" }}>
         Si no lo lleva solo,{" "}
-        <a href="/?fresh=1" style={{ color: "#2f5d3c", fontWeight: 600 }}>
+        <a href="/?fresh=1" style={{ color: "#a4451f", fontWeight: 600 }}>
           toque aquí para volver al inicio
         </a>
         .

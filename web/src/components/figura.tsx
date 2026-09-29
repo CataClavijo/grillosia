@@ -252,32 +252,23 @@ export function Figura({
 
   return (
     <figure className={cn("my-4", className)}>
-      {/* Claro en los dos temas: la ilustracion trae fondo blanco. En oscuro
-          se le baja el brillo, porque un recuadro blanco a pantalla completa
-          de noche deslumbra. */}
-      <div
-        className={cn(
-          "overflow-hidden rounded-2xl border",
-          figura.credito
-            ? "border-border"
-            : "border-[#E2DDCB] bg-[#FBF9F2] dark:border-[#2C3A2E]",
-        )}
-      >
+      {/* Las laminas se tratan igual que en el resto del sitio (`.lamina`):
+          en claro la tinta se imprime sobre el fondo (multiply) y en oscuro se
+          invierte a tinta clara, sin recuadro blanco que deslumbre de noche.
+          Las fotografias van tal cual, con esquinas suaves. */}
+      <div className={cn(figura.credito && "overflow-hidden rounded-lg")}>
         <Image
           src={figura.src ?? `/figuras/${figura.id}.webp`}
           alt={figura.alt}
           width={900}
           height={600}
-          className={cn(
-            "h-auto w-full",
-            !figura.credito && "dark:brightness-[0.88] dark:contrast-[1.03]",
-          )}
+          className={cn("h-auto w-full", !figura.credito && "lamina")}
           priority={prioridad}
           loading={prioridad ? "eager" : "lazy"}
           sizes="(max-width: 520px) 100vw, 520px"
         />
       </div>
-      <figcaption className="mt-2 text-[13.5px] leading-relaxed text-muted-foreground">
+      <figcaption className="t-caption mt-2">
         {figura.titulo}
         {figura.credito && (
           <span className="mt-1 block text-[12.5px]">
