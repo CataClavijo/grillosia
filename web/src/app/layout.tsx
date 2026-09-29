@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { EB_Garamond, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { Barlow_Condensed, IBM_Plex_Mono, Plus_Jakarta_Sans } from "next/font/google";
 
 import "./globals.css";
 import { SessionGate } from "@/components/session-gate";
@@ -9,24 +9,25 @@ import { SwKillBoot } from "@/components/sw-kill-boot";
 import { cn } from "@/lib/utils";
 
 /**
- * Tres papeles, cada uno con su razon:
+ * Tres papeles, cada uno con su razon (linea editorial de campo, al modo de
+ * la referencia que eligio Catalina):
  *
- *  - EB Garamond para titulares y la frase de enfasis en cursiva. Es la
- *    tipografia elegante de los disenos de referencia: da el tono de lamina
- *    cientifica sin volverse dificil de leer en tamanos grandes.
+ *  - Barlow Condensed para titulares: condensada y firme, en mayusculas en
+ *    los titulos de pagina y de seccion. Se lee de lejos y ocupa poco ancho
+ *    en un celular.
+ *  - IBM Plex Mono para rotulos, cifras pequenas y etiquetas ("Paso 3 de 4",
+ *    "01"): el toque tecnico, de ficha de laboratorio.
  *  - Plus Jakarta Sans para todo el cuerpo. Para leer de corrido, este
- *    publico necesita la sans.
- *  - JetBrains Mono queda solo para bloques de codigo del asistente.
+ *    publico necesita una sans normal.
  */
-const garamond = EB_Garamond({
+const condensada = Barlow_Condensed({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["500", "600", "700"],
   display: "swap",
 });
 
-const mono = JetBrains_Mono({
+const mono = IBM_Plex_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
   weight: ["400", "500"],
@@ -91,7 +92,7 @@ export default function RootLayout({
       className={cn(
         "h-full antialiased font-sans",
         jakarta.variable,
-        garamond.variable,
+        condensada.variable,
         mono.variable,
       )}
     >

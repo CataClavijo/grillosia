@@ -94,3 +94,27 @@ export interface FotoConCredito {
 }
 
 export const FOTO_PAISAJE: FotoConCredito | null = null;
+
+/**
+ * Foto de la entrada de la portada.
+ *
+ * Es un grillo de campo europeo fotografiado en su ambiente, con licencia
+ * libre. NO es un ejemplar del proyecto, y el pie lo dice: los grillos del
+ * proyecto se identifican solo hasta familia (ver `taxonomia.ts`).
+ *
+ * Alternativas ya preparadas en public/fotos/: portada-grillo-02.webp
+ * (Gryllus campestris macho en su madriguera, Gilles San Martin, CC BY-SA 2.0,
+ * https://commons.wikimedia.org/wiki/File:Gryllus_campestris_male_(4725285630).jpg)
+ * y portada-grillo-03.webp (Melanogryllus desertus sobre una piedra, Gilles
+ * San Martin, CC BY-SA 2.0,
+ * https://commons.wikimedia.org/wiki/File:Melanogryllus_desertus_(21691339633).jpg).
+ */
+export const FOTO_PORTADA = {
+  src: "/fotos/portada-grillo-01.webp",
+  alt: "Grillo de campo negro sobre tierra y grava, visto de lado, con las antenas largas hacia adelante.",
+  /** Encuadre de la foto: el grillo queda a la derecha del texto. */
+  posicion: "62% 55%",
+  pie: "Grillo de campo (Gryllus campestris), Rumania",
+  credito: "Foto: xulescu_g, CC BY-SA 2.0, Wikimedia Commons",
+  url: "https://commons.wikimedia.org/wiki/File:Gryllus_campestris_(35634613106).jpg",
+};
