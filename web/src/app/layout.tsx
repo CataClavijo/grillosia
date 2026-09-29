@@ -1,9 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, IBM_Plex_Mono, Plus_Jakarta_Sans } from "next/font/google";
 
+import Script from "next/script";
+
 import "./globals.css";
 import { AsistenteFlotante } from "@/components/asistente-flotante";
 import { SessionGate } from "@/components/session-gate";
+import { TemaGuardado } from "@/components/theme-toggle";
 import { SiteFooter } from "@/components/site-footer";
 import { SubirConsultasLocales } from "@/components/subir-consultas-locales";
 import { SwKillBoot } from "@/components/sw-kill-boot";
@@ -98,17 +101,18 @@ export default function RootLayout({
       )}
     >
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            // Claro por defecto. Solo se pone oscuro si la persona lo eligio a
-            // mano: se ignora la preferencia del sistema a proposito, porque
-            // muchos celulares Android traen el modo oscuro activado de
-            // fabrica y la aplicacion se disenno en claro.
-            __html: `(function(){try{if(localStorage.getItem("grillia-theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}})()`,
-          }}
-        />
+        {/* Claro por defecto. Solo se pone oscuro si la persona lo eligio a
+            mano: se ignora la preferencia del sistema a proposito, porque
+            muchos celulares Android traen el modo oscuro activado de fabrica
+            y la aplicacion se diseno en claro. Va con next/script antes de
+            hidratar (un <script> suelto hace que React avise y a veces
+            borre la clase al hidratar). */}
+        <Script id="tema-inicial" strategy="beforeInteractive">
+          {`(function(){try{if(localStorage.getItem("grillia-theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}})()`}
+        </Script>
       </head>
       <body className="min-h-full flex flex-col">
+        <TemaGuardado />
         <SessionGate>
           <SwKillBoot />
           <SubirConsultasLocales />

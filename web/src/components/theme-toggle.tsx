@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, useCallback } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { Sun, Moon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -93,4 +93,22 @@ export function CambioTema({ className = "" }: { className?: string }) {
       {dark ? "Modo claro" : "Modo oscuro"}
     </button>
   );
+}
+
+/**
+ * Reaplica el tema guardado al montar. El script de arranque lo pone antes
+ * de pintar, pero la hidratacion de <html> puede volver a escribir su clase
+ * y dejar la pagina en claro aunque la persona eligio oscuro.
+ */
+export function TemaGuardado() {
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(STORAGE_KEY) === "dark") {
+        document.documentElement.classList.add("dark");
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
+  return null;
 }
