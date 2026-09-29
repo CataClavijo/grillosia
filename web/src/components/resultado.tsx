@@ -41,9 +41,9 @@ import { cn } from "@/lib/utils";
  */
 
 const DIBUJO: Record<string, string> = {
-  D1: "/figuras/lapiz/ing-bore.webp",
-  D2: "/figuras/lapiz/ing-boton-oro.webp",
-  D3: "/figuras/lapiz/ing-salvado.webp",
+  D1: "/ilustraciones/ing-bore.webp",
+  D2: "/ilustraciones/ing-boton-oro.webp",
+  D3: "/ilustraciones/ing-salvado.webp",
 };
 
 /** Cuanto se aleja una proteina del rango que el animal necesita. */

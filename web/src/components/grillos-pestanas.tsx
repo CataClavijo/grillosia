@@ -95,7 +95,7 @@ export function GrillosPestanas() {
         {activa === "reconocer" && (
           <TextoConLamina
             titulo="¿Cómo reconocer un grillo?"
-            lamina="/figuras/identificar.webp"
+            lamina="/ilustraciones/identificar.webp"
             laminaAlt="Dibujo a lápiz que compara un grillo, de antenas largas, con un saltamontes, de antenas cortas."
           >
             <ul className="grid gap-4 sm:grid-cols-2">
@@ -123,7 +123,7 @@ export function GrillosPestanas() {
         {activa === "macho-hembra" && (
           <TextoConLamina
             titulo="¿Cuál es hembra y cuál es macho?"
-            lamina="/figuras/macho-hembra.webp"
+            lamina="/ilustraciones/macho-hembra.webp"
             laminaAlt="Dibujo a lápiz de un grillo macho y una grillo hembra; la hembra lleva atrás una aguja larga."
           >
             {MACHO_HEMBRA.map((t) => (
@@ -136,7 +136,7 @@ export function GrillosPestanas() {
         {activa === "crecimiento" && (
           <TextoConLamina
             titulo="Cómo crecen"
-            lamina="/figuras/ciclo.webp"
+            lamina="/ilustraciones/ciclo.webp"
             laminaAlt="Dibujo a lápiz del ciclo de vida del grillo: huevo, ninfa sin alas y adulto con alas."
           >
             <ol className="flex flex-col gap-3">
@@ -187,7 +187,7 @@ export function GrillosPestanas() {
         {activa === "capturar" && (
           <TextoConLamina
             titulo="Dónde buscarlos y cómo capturarlos"
-            lamina="/figuras/donde-buscar.webp"
+            lamina="/ilustraciones/donde-buscar.webp"
             laminaAlt="Dibujo a lápiz de hojarasca, piedras y pastos al pie de un muro, donde se esconden los grillos."
           >
             <ul className="flex flex-col gap-2.5">

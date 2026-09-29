@@ -53,7 +53,7 @@ export const COST_NOTE =
 
 /** Ilustración principal de la página: la caja ya armada. */
 export const CAJA_ARMADA = {
-  src: "/arte/caja-cria.webp",
+  src: "/ilustraciones/caja-cria.webp",
   alt: "Dibujo a lápiz de una caja plástica de cría abierta, con hueveras de cartón paradas como refugio, un bebedero y un plato de alimento, y la tapa con agujeros de ventilación a un lado.",
   width: 760,
   height: 543,
@@ -110,56 +110,56 @@ export const MATERIALS: Material[] = [
 export const ENCLOSURE_STEPS: EnclosureStep[] = [
   {
     number: 1,
-    imagen: "/figuras/lapiz/caja-recipiente.webp",
+    imagen: "/ilustraciones/caja-recipiente.webp",
     title: "Prepare la caja",
     body: "Lávela con agua y jabón suave, sin cloro fuerte, y séquela bien al sol. Revise que no tenga huecos ni grietas.",
     tip: "Los productos de olor fuerte, como el límpido puro, afectan a los grillos.",
   },
   {
     number: 2,
-    imagen: "/figuras/lapiz/caja-ventilacion.webp",
+    imagen: "/ilustraciones/caja-ventilacion.webp",
     title: "Abra la ventilación",
     body: "Recorte un cuadrado grande en la tapa, dejando un marco de unos 4 cm. Pegue la malla por dentro, bien estirada, con silicona o cinta resistente.",
     tip: "Sin buena ventilación se acumula humedad y los grillos se enferman.",
   },
   {
     number: 3,
-    imagen: "/figuras/lapiz/caja-sustrato.webp",
+    imagen: "/ilustraciones/caja-sustrato.webp",
     title: "Ponga el sustrato",
     body: "Cubra el fondo con una capa delgada de material seco. Ayuda a mantener la caja seca y facilita la limpieza.",
     tip: "No use materiales húmedos ni con olor a moho.",
   },
   {
     number: 4,
-    imagen: "/figuras/lapiz/caja-refugios.webp",
+    imagen: "/ilustraciones/caja-refugios.webp",
     title: "Arme los refugios",
     body: "Coloque las hueveras de cartón paradas o cruzadas, formando túneles. Deje libre una esquina para el alimento y el agua.",
     tip: "Con más refugios hay menos peleas y mejor crecimiento.",
   },
   {
     number: 5,
-    imagen: "/figuras/lapiz/caja-alimento.webp",
+    imagen: "/ilustraciones/caja-alimento.webp",
     title: "Ponga el alimento",
     body: "En la esquina libre, ponga una tapa o un plato bajo con la comida que esté usando.",
     tip: "Retire la comida vieja cada dos o tres días.",
   },
   {
     number: 6,
-    imagen: "/figuras/lapiz/caja-agua.webp",
+    imagen: "/ilustraciones/caja-agua.webp",
     title: "Ponga el agua",
     body: "Ofrezca pedazos de manzana fresca. Si usa bebedero, póngale algodón o piedras pequeñas para que no se ahoguen.",
     tip: "Cambie el agua y la manzana cada dos días.",
   },
   {
     number: 7,
-    imagen: "/figuras/lapiz/caja-clima.webp",
+    imagen: "/ilustraciones/caja-clima.webp",
     title: "Vigile el clima",
     body: "Ponga el termómetro-higrómetro dentro de la caja, en un lugar visible. Ubique la caja en un sitio tranquilo, sin sol directo ni corrientes de aire frío.",
     tip: "Si en la noche hace mucho frío, cubra parte de la caja con un trapo.",
   },
   {
     number: 8,
-    imagen: "/figuras/lapiz/caja-limpieza.webp",
+    imagen: "/ilustraciones/caja-limpieza.webp",
     title: "Mantenga la caja limpia",
     body: "Cada dos o tres días retire la comida vieja y los grillos muertos. Cada semana limpie el fondo y cambie el sustrato si está sucio.",
     tip: "Si hay mal olor o charcos, aumente la ventilación y revise los bebederos.",

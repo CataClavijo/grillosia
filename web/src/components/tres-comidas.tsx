@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
  * contradigan.
  */
 const DIBUJO: Record<string, string> = {
-  D1: "/figuras/lapiz/ing-bore.webp",
-  D2: "/figuras/lapiz/ing-boton-oro.webp",
-  D3: "/figuras/lapiz/ing-salvado.webp",
+  D1: "/ilustraciones/ing-bore.webp",
+  D2: "/ilustraciones/ing-boton-oro.webp",
+  D3: "/ilustraciones/ing-salvado.webp",
 };
 
 const QUE_ES: Record<string, string> = {
@@ -24,8 +24,8 @@ const QUE_ES: Record<string, string> = {
 };
 
 const BASE_DIBUJO: Record<string, string> = {
-  "Harina de maíz": "/figuras/lapiz/ing-maiz.webp",
-  "Avena molida": "/figuras/lapiz/ing-avena.webp",
+  "Harina de maíz": "/ilustraciones/ing-maiz.webp",
+  "Avena molida": "/ilustraciones/ing-avena.webp",
 };
 
 export function TresComidas({
