@@ -373,6 +373,21 @@
   transform: none;
 }
 
+/* Foto protagonista que "respira": un acercamiento lento de ida y vuelta.
+   Solo transform, para no costar cuadros en celulares modestos. */
+@keyframes foto-respira {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+.foto-respira {
+  animation: foto-respira 20s var(--ease-natural) infinite alternate;
+  will-change: transform;
+}
+
 /* Elevacion suave al pasar el raton por algo que se puede tocar. */
 .elevar {
   transition:
@@ -424,6 +439,9 @@ html.cambiando-tema *::after {
   [data-revelar] .diagrama-trazo {
     stroke-dashoffset: 0;
     transition: none;
+  }
+  .foto-respira {
+    animation: none;
   }
   *,
   *::before,

@@ -136,7 +136,7 @@ export const FOTO_PORTADA = {
   src: "/fotos/portada-grillo-01.webp",
   alt: "Grillo de campo negro sobre tierra y grava, visto de lado, con las antenas largas hacia adelante.",
   /** Encuadre de la foto: el grillo queda a la derecha del texto. */
-  posicion: "64% 58%",
+  posicion: "70% 58%",
   /**
    * Pie obligatorio. Deja claro que es una imagen de referencia y no un
    * ejemplar del proyecto: los grillos del proyecto solo estan confirmados
@@ -147,50 +147,6 @@ export const FOTO_PORTADA = {
   url: "https://commons.wikimedia.org/wiki/File:Gryllus_campestris_(35634613106).jpg",
 };
 
-/**
- * Escenas del carrusel de la entrada.
- *
- * La primera es la foto real (con su pie de "imagen de referencia"); las
- * otras dos son acuarelas que ilustran la cria y un animal destino. Cada una
- * lleva su propio pie, que cambia con la escena visible.
- *
- *  - `foto`: cubre todo el panel.
- *  - `lamina`: ilustracion sobre papel, contenida, sin recortarla.
- */
-export interface EscenaPortada {
-  tipo: "foto" | "lamina";
-  src: string;
-  alt: string;
-  /** Encuadre de una foto (object-position). */
-  posicion?: string;
-  pie: string;
-  credito?: string;
-  url?: string;
-}
-
-export const ESCENAS_PORTADA: EscenaPortada[] = [
-  {
-    tipo: "foto",
-    src: FOTO_PORTADA.src,
-    alt: FOTO_PORTADA.alt,
-    posicion: "58% 58%",
-    pie: FOTO_PORTADA.pie,
-    credito: FOTO_PORTADA.credito,
-    url: FOTO_PORTADA.url,
-  },
-  {
-    tipo: "lamina",
-    src: "/escenas/caja-acuarela.webp",
-    alt: "Acuarela de una caja de cría abierta: hueveras de cartón paradas, una tapita con algodón húmedo, un plato con alimento y la tapa con su ventana de malla.",
-    pie: "Ilustración: una caja de cría armada, como la de la guía",
-  },
-  {
-    tipo: "lamina",
-    src: "/escenas/gallina-acuarela.webp",
-    alt: "Acuarela de una gallina ponedora de perfil.",
-    pie: "Ilustración: gallina ponedora, uno de los animales que puede consultar",
-  },
-];
 
 /**
  * La consulta, en tres pasos: lo primordial de la plataforma. Es lo que le
