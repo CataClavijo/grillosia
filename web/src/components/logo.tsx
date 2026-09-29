@@ -4,17 +4,14 @@ import { cn } from "@/lib/utils";
 
 /**
  * Marca de GrillosIA: el simbolo (grillo sobre la hoja, con la curva de
- * datos) y el nombre, con el lema debajo.
+ * datos) y el nombre. Sin lema: Catalina pidio quitarlo (2026-09-29).
  *
  * El simbolo es un vector (`/logo.svg`) trazado del dibujo original con el
  * trazo un poco mas grueso, para que se vea nitido y solido desde 24 px.
  *
- *  - `completo`: simbolo + nombre + lema. Cabecera de escritorio y pie.
- *  - `compacto`: simbolo + nombre. Cabecera al bajar, celular y el camino
- *    guiado, donde el lema ya no se lee y solo ocupa sitio.
+ *  - `completo`: simbolo y nombre a tamano pleno. Cabecera y pie.
+ *  - `compacto`: un poco mas pequeno. Cabecera al bajar y celular.
  *  - `simbolo`: solo el simbolo, para espacios minimos.
- *
- * El lema se alinea con el inicio del nombre, no con el simbolo.
  */
 export function Logo({
   variante = "completo",
@@ -65,20 +62,13 @@ export function Logo({
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       {simbolo}
-      <span className="flex flex-col">
-        <span
-          className={cn(
-            "font-display font-semibold leading-none tracking-[0.005em] text-foreground",
-            variante === "completo" ? "text-[26px]" : "text-[23px]",
-          )}
-        >
-          Grillos<span className="text-primary">IA</span>
-        </span>
-        {variante === "completo" && (
-          <span className="mt-1 text-[11.5px] font-medium leading-none tracking-[0.01em] text-subtle">
-            Inteligencia natural para decisiones reales
-          </span>
+      <span
+        className={cn(
+          "font-display font-semibold leading-none tracking-[0.005em] text-foreground",
+          variante === "completo" ? "text-[26px]" : "text-[23px]",
         )}
+      >
+        Grillos<span className="text-primary">IA</span>
       </span>
     </span>
   );
