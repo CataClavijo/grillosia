@@ -8,29 +8,33 @@ import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { SiteNav } from "@/components/site-nav";
 import { Progreso } from "@/components/ds/progreso";
-import { CAMINO, TOTAL_PARADAS } from "@/lib/camino";
+import { TOTAL_PARADAS } from "@/lib/camino";
 import { cn } from "@/lib/utils";
 
 /**
- * Cabecera del sitio. Es la MISMA en todas las paginas, con dos pesos:
+ * Cabecera del sitio. La misma en todas las paginas.
  *
- *  - `sitio` (portada, Sobre GrillosIA, biblioteca): marca, las seis
- *    secciones y "Comenzar consulta". Al bajar se reduce de 76 a 60 px y
- *    aparece una linea fina.
+ * Esta ordenada alrededor de lo principal: HACER LA CONSULTA, que es la que
+ * le dice al productor que comida conviene. Por eso:
+ *  - a la derecha, siempre visible, el boton "Hacer mi consulta" (en celular
+ *    tambien, compacto, al lado del menu);
+ *  - a la izquierda, separado, lo que se aprende: la guia de cria (caja y
+ *    grillos) y "Sobre GrillosIA";
+ *  - "Mis consultas" junto al boton, porque es volver a lo mismo.
+ * "Inicio" no va (el logo lleva al inicio) y "Vea su resultado" tampoco:
+ * el resultado se alcanza haciendo o abriendo una consulta.
  *
- *  - `camino` (las cuatro paradas): la navegacion sigue en su sitio pero
- *    pasa a segundo plano (enlaces atenuados), el boton da paso a "Paso 3
- *    de 4 · Consulta" y la barra fina del borde inferior marca el progreso.
- *    Antes la barra se cambiaba entera por una version minima y el menu
- *    parecia desaparecer de la nada.
+ * En el camino guiado (modo `camino`) la cabecera no cambia de forma: solo
+ * aparece la barra fina de progreso abajo, y en las paradas 3 y 4 el boton
+ * da paso a "Paso 3 de 4 · Consulta", porque la persona ya esta en ella.
  *
- * El cambio de tema (claro/oscuro) no vive aqui: esta en el menu y en el pie.
+ * El cambio de tema (claro/oscuro) esta en el menu y en el pie.
  */
-const SECCIONES = [
-  { href: "/", titulo: "Inicio" },
-  ...CAMINO.map((p) => ({ href: p.href, titulo: p.titulo })),
-  { href: "/proyecto", titulo: "Sobre GrillosIA" },
+const APRENDER = [
+  { href: "/caja", titulo: "Arme su caja" },
+  { href: "/grillos", titulo: "Conozca sus grillos" },
 ];
+const PROYECTO = { href: "/proyecto", titulo: "Sobre GrillosIA" };
 
 /** Nombre corto de cada parada para la cabecera del camino. */
 const CORTO: Record<number, string> = {
@@ -60,15 +64,33 @@ export function Barra({
     return () => window.removeEventListener("scroll", alMover);
   }, []);
 
-  // Una sola cabecera para todo el sitio: la navegacion NO desaparece al
-  // entrar al camino (eso se sentia como si el menu se esfumara). En el
-  // camino solo cambia de peso: los enlaces se atenuan, el boton de
-  // "Comenzar consulta" deja su lugar a "Paso 3 de 4 · Consulta" y aparece
-  // la barra fina de progreso en el borde inferior.
   const enCamino = modo === "camino" && !!paso;
+  const enConsulta = enCamino && paso! >= 3;
   const etiqueta = enCamino
     ? `Paso ${paso} de ${TOTAL_PARADAS} · ${CORTO[paso!] ?? ""}`
     : "";
+
+  const enlace = (href: string, titulo: string) => {
+    const activa = pathname === href;
+    return (
+      <Link
+        href={href}
+        aria-current={activa ? "page" : undefined}
+        className={cn(
+          "relative flex h-9 items-center whitespace-nowrap rounded-md px-3 text-[14.5px] font-medium transition-colors duration-150",
+          activa ? "text-foreground" : "text-subtle hover:text-foreground",
+        )}
+      >
+        {titulo}
+        {activa && (
+          <span
+            aria-hidden
+            className="absolute inset-x-3 -bottom-px h-[2px] rounded-full bg-primary"
+          />
+        )}
+      </Link>
+    );
+  };
 
   return (
     <header
@@ -81,8 +103,8 @@ export function Barra({
     >
       <div
         className={cn(
-          "mx-auto flex w-full max-w-[1240px] items-center justify-between gap-6 px-5 transition-[height] duration-[var(--dur-media)] ease-[var(--ease-natural)] lg:px-8",
-          bajado ? "h-[60px]" : "h-[68px] lg:h-[76px]",
+          "mx-auto flex w-full max-w-[1240px] items-center gap-4 px-5 transition-[height] duration-[var(--dur-media)] ease-[var(--ease-natural)] lg:gap-8 lg:px-8",
+          bajado ? "h-[60px]" : "h-[64px] lg:h-[72px]",
         )}
       >
         <Link href="/" aria-label="GrillosIA, ir al inicio" className="shrink-0">
@@ -90,41 +112,34 @@ export function Barra({
           <Logo variante="compacto" prioridad className="lg:hidden" />
         </Link>
 
-        <nav className="hidden lg:block" aria-label="Secciones">
-          <ul className="flex items-center gap-1 xl:gap-2">
-            {SECCIONES.map((p) => {
-              const activa = pathname === p.href;
-              return (
-                <li key={p.href}>
-                  <Link
-                    href={p.href}
-                    aria-current={activa ? "page" : undefined}
-                    className={cn(
-                      "relative flex h-9 items-center whitespace-nowrap rounded-md px-2.5 font-medium transition-[color,font-size] duration-[var(--dur-media)]",
-                      enCamino ? "text-[14px]" : "text-[14.5px]",
-                      activa
-                        ? "text-foreground"
-                        : enCamino
-                          ? "text-faint hover:text-foreground"
-                          : "text-subtle hover:text-foreground",
-                    )}
-                  >
-                    {p.titulo}
-                    {activa && (
-                      <span
-                        aria-hidden
-                        className="absolute inset-x-2.5 -bottom-px h-[2px] rounded-full bg-primary"
-                      />
-                    )}
-                  </Link>
-                </li>
-              );
-            })}
+        {/* Lo que se aprende: a la izquierda, junto a la marca. */}
+        <nav className="hidden lg:block" aria-label="Guía y proyecto">
+          <ul className="flex items-center">
+            <li className="t-eyebrow mr-1 text-faint" aria-hidden>
+              Guía
+            </li>
+            {APRENDER.map((a) => (
+              <li key={a.href}>{enlace(a.href, a.titulo)}</li>
+            ))}
+            <li aria-hidden className="mx-2 h-4 w-px bg-border-strong" />
+            <li>{enlace(PROYECTO.href, PROYECTO.titulo)}</li>
           </ul>
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2">
-          {enCamino ? (
+        {/* Lo principal: la consulta, a la derecha. */}
+        <div className="ml-auto flex shrink-0 items-center gap-2">
+          <Link
+            href="/consultas"
+            className={cn(
+              "hidden h-10 items-center rounded-md px-3 text-[14.5px] font-medium transition-colors lg:inline-flex",
+              pathname === "/consultas"
+                ? "text-foreground"
+                : "text-subtle hover:text-foreground",
+            )}
+          >
+            Mis consultas
+          </Link>
+          {enConsulta ? (
             <p className="t-eyebrow whitespace-nowrap text-subtle">
               Paso {paso} de {TOTAL_PARADAS}
               <span className="hidden sm:inline"> · {CORTO[paso!] ?? ""}</span>
@@ -132,9 +147,10 @@ export function Barra({
           ) : (
             <Link
               href="/consulta"
-              className="hidden h-10 items-center gap-2 rounded-md bg-primary px-4 text-[14.5px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover lg:inline-flex"
+              className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3.5 text-[14px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover lg:h-10 lg:px-4 lg:text-[14.5px]"
             >
-              Comenzar consulta
+              <span className="lg:hidden">Consultar</span>
+              <span className="hidden lg:inline">Hacer mi consulta</span>
               <ArrowRight className="size-4" />
             </Link>
           )}

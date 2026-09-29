@@ -23,16 +23,13 @@ import { cn } from "@/lib/utils";
 /**
  * Menu de celular (y del camino guiado en escritorio).
  *
- * No es el menu de escritorio encogido: esta pensado para el pulgar. Arriba
- * el recorrido numerado con una linea de que se hace en cada paso, porque en
- * celular es la forma de entender el sitio completo de un vistazo. Debajo lo
- * que se consulta y no se recorre. Al final, la accion principal al alcance
- * del pulgar. Filas de 56 px.
+ * No es el menu de escritorio encogido: esta pensado para el pulgar. Arriba,
+ * lo principal: hacer la consulta (y volver a las guardadas). Debajo, la guia
+ * de cria y lo demas. Filas de 48 a 56 px.
  */
 const OTRAS = [
-  { href: "/", titulo: "Inicio" },
   { href: "/proyecto", titulo: "Sobre GrillosIA" },
-  { href: "/consultas", titulo: "Mis consultas" },
+  { href: "/", titulo: "Inicio" },
 ];
 
 export function SiteNav() {
@@ -53,7 +50,7 @@ export function SiteNav() {
         </button>
       </SheetTrigger>
 
-      <SheetContent side="right" className="w-full gap-0 border-l bg-background sm:max-w-[400px]">
+      <SheetContent side="right" className="w-full gap-0 border-l bg-background data-[side=right]:w-full sm:max-w-[400px] data-[side=right]:sm:max-w-[400px]">
         <SheetHeader className="px-5 pt-5 pb-2">
           <SheetTitle asChild>
             <div>
@@ -64,9 +61,35 @@ export function SiteNav() {
         </SheetHeader>
 
         <nav className="flex-1 overflow-y-auto px-3 pb-4" aria-label="Menú">
-          <p className="t-eyebrow px-2 pt-5 pb-2 text-faint">El recorrido</p>
-          <ol className="flex flex-col">
-            {CAMINO.map((p) => {
+          {/* Lo principal primero: la consulta. */}
+          <div className="mx-2 mt-4 rounded-lg bg-surface-2 p-4">
+            <p className="t-h4">¿Qué comida les conviene a sus grillos?</p>
+            <p className="mt-1 text-[14px] leading-snug text-subtle">
+              Cuéntenos su animal y su clima, y comparamos las tres comidas en
+              estudio para su caso.
+            </p>
+            <SheetClose asChild>
+              <Link
+                href="/consulta"
+                className="mt-3 flex h-12 items-center justify-center gap-2 rounded-md bg-primary text-[16px] font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+              >
+                Hacer mi consulta
+                <ArrowRight className="size-4" />
+              </Link>
+            </SheetClose>
+            <SheetClose asChild>
+              <Link
+                href="/consultas"
+                className="mt-1 flex h-11 items-center justify-center text-[15px] font-medium text-foreground/85 hover:text-foreground"
+              >
+                Mis consultas guardadas
+              </Link>
+            </SheetClose>
+          </div>
+
+          <p className="t-eyebrow px-2 pt-6 pb-2 text-faint">Guía de cría</p>
+          <ul className="flex flex-col">
+            {CAMINO.filter((p) => p.n <= 2).map((p) => {
               const activa = pathname === p.href;
               return (
                 <li key={p.href}>
@@ -79,9 +102,6 @@ export function SiteNav() {
                         activa && "bg-surface-2",
                       )}
                     >
-                      <span className="t-eyebrow mt-[3px] w-6 shrink-0 text-primary">
-                        0{p.n}
-                      </span>
                       <span className="flex flex-col">
                         <span className="text-[16px] font-semibold leading-snug">{p.titulo}</span>
                         <span className="text-[14px] leading-snug text-subtle">{p.resumen}</span>
@@ -91,7 +111,7 @@ export function SiteNav() {
                 </li>
               );
             })}
-          </ol>
+          </ul>
 
           <p className="t-eyebrow px-2 pt-6 pb-2 text-faint">Más</p>
           <ul className="flex flex-col">
@@ -112,15 +132,6 @@ export function SiteNav() {
         </nav>
 
         <div className="flex flex-col gap-1 border-t px-5 pt-4 pb-[calc(env(safe-area-inset-bottom)+16px)]">
-          <SheetClose asChild>
-            <Link
-              href="/consulta"
-              className="flex h-[52px] items-center justify-center gap-2 rounded-md bg-primary text-[16px] font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
-            >
-              Comenzar consulta
-              <ArrowRight className="size-4" />
-            </Link>
-          </SheetClose>
           <SessionBlock onNavigate={() => setOpen(false)} />
           <div className="flex min-h-12 items-center justify-between">
             <span className="text-[15px] text-subtle">

@@ -337,6 +337,42 @@
   clip-path: inset(0 0 0 0);
 }
 
+/* Diagramas hechos con codigo: los trazos se dibujan al entrar en pantalla
+   (pathLength = 1) y las marcas numeradas aparecen despues. */
+[data-revelar] .diagrama-trazo {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1400ms var(--ease-natural);
+  transition-delay: var(--d, 0ms);
+}
+[data-revelar="visible"] .diagrama-trazo {
+  stroke-dashoffset: 0;
+}
+[data-revelar] .diagrama-marca {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0.6);
+  transition:
+    opacity 300ms var(--ease-natural),
+    transform 300ms var(--ease-natural);
+  transition-delay: var(--d, 0ms);
+}
+[data-revelar="visible"] .diagrama-marca {
+  opacity: 1;
+  transform: none;
+}
+/* Barras que crecen al entrar (composicion de las comidas, cifras). */
+[data-revelar] .barra-crece {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 900ms var(--ease-natural);
+  transition-delay: var(--d, 200ms);
+}
+[data-revelar="visible"] .barra-crece {
+  transform: none;
+}
+
 /* Elevacion suave al pasar el raton por algo que se puede tocar. */
 .elevar {
   transition:
@@ -377,10 +413,16 @@ html.cambiando-tema *::after {
 }
 @media (prefers-reduced-motion: reduce) {
   [data-revelar],
-  [data-revelar] .lamina {
+  [data-revelar] .lamina,
+  [data-revelar] .diagrama-marca,
+  [data-revelar] .barra-crece {
     opacity: 1;
     transform: none;
     clip-path: none;
+    transition: none;
+  }
+  [data-revelar] .diagrama-trazo {
+    stroke-dashoffset: 0;
     transition: none;
   }
   *,
