@@ -3,14 +3,14 @@
 import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUp, Mic, Square, Volume2, VolumeX } from "lucide-react";
+import { ArrowRight, ArrowUp, AudioLines, Mic, Square, Volume2, VolumeX, X } from "lucide-react";
 
 import { Estado } from "@/components/ds/estado";
 import { STARTER_QUESTIONS } from "@/lib/chat-knowledge";
 import { inlineMarkdown } from "@/lib/markdown";
 import { textoConFiguras } from "@/lib/figuras-en-texto";
 import type { Conversacion as ConversacionApi, MensajeConversacion } from "@/lib/use-conversacion";
-import type { EstadoDictado, EstadoLectura } from "@/lib/voz";
+import type { ErrorDictado, EstadoDictado, EstadoLectura } from "@/lib/voz";
 import { cn } from "@/lib/utils";
 
 /**
@@ -36,8 +36,48 @@ export interface VozConversacion {
     parcial: string;
     empezar: () => void;
     parar: () => void;
+    /** El navegador esta pasando la voz a texto. */
+    procesando?: boolean;
+    error?: ErrorDictado | null;
+    limpiarError?: () => void;
   };
+  /** Abre la conversacion por voz continua (modo manos libres). */
+  abrirManosLibres?: () => void;
 }
+
+/**
+ * Que decir cuando el dictado falla. En humano, con lo que la persona puede
+ * hacer, y nunca el codigo del navegador.
+ */
+const MENSAJE_ERROR: Record<ErrorDictado | "no-disponible", { titulo: string; texto: string }> = {
+  permiso: {
+    titulo: "No tenemos permiso para usar el micrófono",
+    texto:
+      "Actívelo en la configuración del navegador (toque el candado junto a la dirección de la página, luego Micrófono, Permitir) y vuelva a intentarlo. También puede escribir su pregunta.",
+  },
+  "sin-microfono": {
+    titulo: "No encontramos un micrófono",
+    texto:
+      "Revise que el equipo tenga micrófono y que ninguna otra aplicación lo esté usando.",
+  },
+  "sin-red": {
+    titulo: "El dictado necesita internet",
+    texto: "Revise la conexión o escriba su pregunta.",
+  },
+  "sin-voz": {
+    titulo: "No alcanzamos a oírle",
+    texto: "Toque el micrófono y hable cerca del teléfono, sin prisa.",
+  },
+  otro: {
+    titulo: "No pudimos abrir el micrófono",
+    texto: "Inténtelo de nuevo en un momento o escriba su pregunta.",
+  },
+  "no-disponible": {
+    titulo: "Este navegador no permite dictar",
+    texto:
+      "Para hablar en vez de escribir, abra GrillosIA en Chrome (Android o computador) o en Safari (iPhone).",
+  },
+};
 
 /** Preguntas para empezar, segun haya o no una consulta terminada. */
 function sugerencias(conv: ConversacionApi): string[] {
@@ -84,7 +124,30 @@ export function Conversacion({
     yaEstaban.current = new Set(conv.messages.map((m) => m.id));
   }
 
-  const escuchando = voz?.dictado.estado === "escuchando";
+  // Al terminar de hablar, el reconocimiento sigue abierto un momento
+  // mientras entrega el texto: en ese rato se muestra "pasando a texto" y no
+  // "le escuchamos", que confundiria (la persona ya callo).
+  const procesando = !!voz?.dictado.procesando;
+  const oyendo = voz?.dictado.estado === "escuchando";
+  const escuchando = oyendo && !procesando;
+  const sinDictado = voz?.dictado.estado === "no-disponible";
+  /** Se muestra al tocar el microfono en un navegador que no dicta. */
+  const [avisoSinDictado, setAvisoSinDictado] = useState(false);
+  const errorVoz = voz?.dictado.error
+    ? MENSAJE_ERROR[voz.dictado.error]
+    : avisoSinDictado
+      ? MENSAJE_ERROR["no-disponible"]
+      : null;
+
+  const tocarMicrofono = () => {
+    if (!voz) return;
+    if (sinDictado) {
+      setAvisoSinDictado(true);
+      return;
+    }
+    if (escuchando) voz.dictado.parar();
+    else voz.dictado.empezar();
+  };
 
   const enviar = (texto: string) => {
     const limpio = texto.trim();
@@ -118,13 +181,15 @@ export function Conversacion({
     };
   }, []);
 
-  // El campo crece con el texto, hasta cuatro lineas.
+  // El campo crece con el texto, hasta cuatro lineas. Tambien con lo que se
+  // va dictando: si no, la frase dictada quedaba cortada.
+  const dictando = voz?.dictado.parcial ?? "";
   useEffect(() => {
     const c = campo.current;
     if (!c) return;
     c.style.height = "auto";
     c.style.height = `${Math.min(c.scrollHeight, 132)}px`;
-  }, [input]);
+  }, [input, dictando, oyendo]);
 
   const hayMensajes = conv.messages.length > 0;
   const panel = variante === "panel";
@@ -168,6 +233,23 @@ export function Conversacion({
                 ))}
               </ul>
             </div>
+            {voz?.abrirManosLibres && !sinDictado && (
+              <button
+                type="button"
+                onClick={voz.abrirManosLibres}
+                className="group flex w-full items-center gap-3 rounded-lg border border-border-strong px-4 py-3.5 text-left transition-colors duration-150 hover:border-primary/50 hover:bg-primary-soft/60"
+              >
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary">
+                  <AudioLines className="size-5" aria-hidden />
+                </span>
+                <span className="flex flex-col">
+                  <span className="text-[15px] font-semibold">Prefiero hablar</span>
+                  <span className="t-small text-subtle">
+                    Conversación por voz: usted pregunta y el asistente le responde en voz alta.
+                  </span>
+                </span>
+              </button>
+            )}
             {!conv.consultaLista && (
               <Link
                 href="/consulta"
@@ -223,6 +305,53 @@ export function Conversacion({
           panel ? "border-t border-border px-5" : "",
         )}
       >
+        {/* Lo que esta pasando con la voz, dicho en voz alta a los lectores de
+            pantalla y a la vista de todos. */}
+        <div aria-live="polite" className="empty:hidden">
+          {escuchando && (
+            <div className="mb-2.5 flex items-center gap-3 rounded-md bg-primary-soft px-3 py-2.5 text-[14px] text-foreground">
+              <Ondas />
+              <span className="flex-1 leading-snug">
+                <span className="font-semibold">Le escuchamos.</span>{" "}
+                <span className="text-subtle">Al callar, enviamos su pregunta.</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => voz?.dictado.parar()}
+                className="min-h-9 shrink-0 rounded-md px-2.5 text-[13.5px] font-semibold text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
+              >
+                Ya terminé
+              </button>
+            </div>
+          )}
+          {procesando && (
+            <div className="mb-2.5 flex items-center gap-3 rounded-md bg-surface-2 px-3 py-2.5 text-[14px] text-subtle">
+              <Puntos />
+              Pasando su voz a texto…
+            </div>
+          )}
+          {errorVoz && !escuchando && (
+            <div role="alert" className="mb-2.5 flex items-start gap-3 rounded-md bg-surface-2 px-3 py-2.5 text-[14px]">
+              <Mic className="mt-0.5 size-4 shrink-0 text-destructive" aria-hidden />
+              <span className="flex-1 leading-snug">
+                <span className="block font-semibold">{errorVoz.titulo}</span>
+                <span className="block text-subtle">{errorVoz.texto}</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setAvisoSinDictado(false);
+                  voz?.dictado.limpiarError?.();
+                }}
+                aria-label="Cerrar el aviso"
+                className="-mr-1 flex size-8 shrink-0 items-center justify-center rounded-md text-subtle hover:bg-accent hover:text-foreground"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          )}
+        </div>
+
         <label htmlFor={idCampo} className="sr-only">
           Escriba su pregunta
         </label>
@@ -231,7 +360,7 @@ export function Conversacion({
             ref={campo}
             id={idCampo}
             rows={1}
-            value={escuchando ? voz?.dictado.parcial : input}
+            value={oyendo ? voz?.dictado.parcial : input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -239,24 +368,38 @@ export function Conversacion({
                 enviar(input);
               }
             }}
-            readOnly={escuchando}
-            placeholder={escuchando ? "Le escuchamos..." : "Escriba su pregunta"}
+            readOnly={oyendo}
+            placeholder={escuchando ? "Le escuchamos…" : voz ? "Escriba o toque el micrófono" : "Escriba su pregunta"}
             className="max-h-[132px] min-h-11 flex-1 resize-none bg-transparent py-2.5 text-[16px] leading-snug outline-none placeholder:text-faint focus-visible:outline-none"
             autoComplete="off"
           />
-          {voz && voz.dictado.estado !== "no-disponible" && (
+          {voz && (
             <button
               type="button"
-              aria-label={escuchando ? "Dejar de hablar" : "Hablar en vez de escribir"}
-              onClick={() => (escuchando ? voz.dictado.parar() : voz.dictado.empezar())}
+              aria-label={escuchando ? "Terminar de hablar y enviar" : "Hablar en vez de escribir"}
+              aria-pressed={escuchando}
+              title={escuchando ? "Terminar de hablar" : "Hablar"}
+              onClick={tocarMicrofono}
+              disabled={procesando || conv.thinking}
               className={cn(
-                "flex size-11 shrink-0 items-center justify-center rounded-md transition-colors duration-150",
+                "relative flex size-11 shrink-0 items-center justify-center rounded-md border transition-colors duration-150 disabled:opacity-60",
                 escuchando
-                  ? "bg-primary text-primary-foreground"
-                  : "text-subtle hover:bg-surface-2 hover:text-foreground",
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-primary/35 text-primary hover:border-primary hover:bg-primary-soft",
+                sinDictado && "border-border-strong text-subtle hover:border-border-strong hover:bg-surface-2",
               )}
             >
-              {escuchando ? <Square className="size-4 fill-current" /> : <Mic className="size-5" />}
+              {escuchando && (
+                <span
+                  aria-hidden
+                  className="absolute inset-0 animate-ping rounded-md bg-primary/30 [animation-duration:1.6s] motion-reduce:hidden"
+                />
+              )}
+              {escuchando ? (
+                <Square className="relative size-4 fill-current" />
+              ) : (
+                <Mic className="size-5" />
+              )}
             </button>
           )}
           <button
@@ -386,5 +529,38 @@ function Pensando() {
         Consultando los datos del proyecto
       </span>
     </div>
+  );
+}
+
+/**
+ * Ondas de "le escuchamos": cuatro barras que suben y bajan, sobrias. Con
+ * "reducir movimiento" se quedan quietas.
+ */
+function Ondas() {
+  return (
+    <span className="flex h-5 shrink-0 items-center gap-[3px]" aria-hidden>
+      <style>{`@keyframes grillosia-onda{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}`}</style>
+      {[0, 1, 2, 3].map((i) => (
+        <span
+          key={i}
+          className="h-full w-[3px] origin-center rounded-full bg-primary motion-reduce:[animation:none]"
+          style={{ animation: `grillosia-onda 900ms ${i * 140}ms ease-in-out infinite` }}
+        />
+      ))}
+    </span>
+  );
+}
+
+function Puntos() {
+  return (
+    <span className="flex gap-1" aria-hidden>
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="size-1.5 animate-pulse rounded-full bg-foreground/45"
+          style={{ animationDelay: `${i * 180}ms` }}
+        />
+      ))}
+    </span>
   );
 }

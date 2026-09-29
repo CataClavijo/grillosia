@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Maximize2, Sparkles, Trash2, X } from "lucide-react";
+import { AudioLines, Maximize2, Sparkles, Trash2, X } from "lucide-react";
 
 import {
   Sheet,
@@ -13,8 +13,10 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Conversacion } from "@/components/conversacion";
+import { ManosLibres } from "@/components/manos-libres";
 import { EVENTO_ABRIR_ASISTENTE, type OpcionesAsistente } from "@/lib/asistente";
 import { useConversacion } from "@/lib/use-conversacion";
+import { useDictado, useLectura } from "@/lib/voz";
 import { cn } from "@/lib/utils";
 
 /**
@@ -32,6 +34,12 @@ import { cn } from "@/lib/utils";
  * En las paradas del camino no flota: el acceso vive en la barra de acciones
  * (`BotonAsistente`, junto a "Continuar"), para no tapar nunca contenido.
  * El panel si es el mismo y se abre por el evento de `lib/asistente.ts`.
+ *
+ * Voz: el panel trae el microfono para dictar, "Escuchar" en cada respuesta
+ * y "Conversar por voz" (el modo manos libres, igual que en /chat). Manos
+ * libres ocupa la pantalla entera, asi que se abre FUERA del panel: el panel
+ * se cierra, la conversacion por voz sigue en el mismo hilo (se comparte por
+ * `useConversacion`), y al salir de ella el panel vuelve a abrirse.
  */
 const OCULTO = ["/chat", "/reset"];
 const CAMINO = ["/caja", "/grillos", "/consulta", "/resultado"];
@@ -40,6 +48,7 @@ export function AsistenteFlotante() {
   const pathname = usePathname() ?? "/";
   const [abierto, setAbierto] = useState(false);
   const [pregunta, setPregunta] = useState<string | undefined>();
+  const [manosLibres, setManosLibres] = useState(false);
   // Cuando aparece el boton:
   //  - En la portada, solo despues de pasar la foto de entrada: ahi arriba
   //    ya estan "Comenzar consulta" y "Conozca como funciona", y el boton
@@ -95,6 +104,7 @@ export function AsistenteFlotante() {
   // Al cambiar de pagina se cierra: el panel habla de lo que se estaba viendo.
   useEffect(() => {
     setAbierto(false);
+    setManosLibres(false);
   }, [pathname]);
 
   if (OCULTO.some((r) => pathname.startsWith(r))) return null;
@@ -136,12 +146,36 @@ export function AsistenteFlotante() {
             <PanelAsistente
               pregunta={pregunta}
               onCerrar={() => setAbierto(false)}
+              onManosLibres={() => {
+                setPregunta(undefined);
+                setAbierto(false);
+                setManosLibres(true);
+              }}
             />
           )}
         </SheetContent>
       </Sheet>
+
+      {manosLibres && (
+        <ManosLibresAsistente
+          onCerrar={() => {
+            setManosLibres(false);
+            setAbierto(true);
+          }}
+        />
+      )}
     </>
   );
+}
+
+/**
+ * Manos libres con su propia instancia de la conversacion: el panel ya se
+ * cerro, pero el hilo es el mismo porque `useConversacion` lo guarda y lo
+ * comparte.
+ */
+function ManosLibresAsistente({ onCerrar }: { onCerrar: () => void }) {
+  const conv = useConversacion();
+  return <ManosLibres abierto onCerrar={onCerrar} preguntar={conv.preguntar} />;
 }
 
 /**
@@ -151,12 +185,18 @@ export function AsistenteFlotante() {
 function PanelAsistente({
   pregunta,
   onCerrar,
+  onManosLibres,
 }: {
   pregunta?: string;
   onCerrar: () => void;
+  onManosLibres: () => void;
 }) {
   const conv = useConversacion();
   const hayMensajes = conv.messages.length > 0;
+  // Voz: el dictado envia en cuanto la persona termina de hablar.
+  const { estado: lectura, leyendo, leer, callar } = useLectura();
+  const dictado = useDictado((texto) => void conv.preguntar(texto));
+  const hayDictado = dictado.estado !== "no-disponible";
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -176,6 +216,18 @@ function PanelAsistente({
             </SheetTitle>
           </div>
           <div className="-mr-2 flex shrink-0 items-center">
+            {hayDictado && (
+              <button
+                type="button"
+                onClick={onManosLibres}
+                aria-label="Conversar por voz"
+                title="Conversar por voz"
+                className="mr-1 inline-flex h-10 items-center gap-1.5 rounded-md border border-border-strong px-3 text-[14px] font-semibold text-foreground transition-colors hover:border-primary/50 hover:bg-primary-soft"
+              >
+                <AudioLines className="size-4 text-primary" aria-hidden />
+                <span className="hidden min-[400px]:inline">Hablar</span>
+              </button>
+            )}
             {hayMensajes && (
               <button
                 type="button"
@@ -213,7 +265,16 @@ function PanelAsistente({
         </SheetDescription>
       </header>
 
-      <Conversacion conv={conv} variante="panel" preguntaInicial={pregunta} />
+      <Conversacion
+        conv={conv}
+        variante="panel"
+        preguntaInicial={pregunta}
+        voz={{
+          lectura: { estado: lectura, leyendo, leer, callar },
+          dictado,
+          abrirManosLibres: hayDictado ? onManosLibres : undefined,
+        }}
+      />
     </div>
   );
 }

@@ -123,6 +123,13 @@ export default function ChatPage() {
           voz={{
             lectura: { estado: lectura, leyendo, leer, callar },
             dictado,
+            abrirManosLibres:
+              dictado.estado !== "no-disponible"
+                ? () => {
+                    desbloquear();
+                    setManosLibres(true);
+                  }
+                : undefined,
           }}
         />
       </main>

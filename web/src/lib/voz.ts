@@ -44,12 +44,50 @@ export function hayDictado(): boolean {
 export type EstadoDictado = "inactivo" | "escuchando" | "no-disponible";
 
 /**
+ * Por que fallo el dictado, dicho de forma que se pueda explicar en humano.
+ * `permiso`: la persona (o el navegador) nego el microfono.
+ * `sin-microfono`: no hay microfono o lo tiene otra aplicacion.
+ * `sin-red`: el reconocimiento de Chrome necesita internet.
+ * `sin-voz`: se abrio el microfono pero no se oyo nada.
+ * `otro`: cualquier otra cosa.
+ */
+export type ErrorDictado = "permiso" | "sin-microfono" | "sin-red" | "sin-voz" | "otro";
+
+function traducirError(codigo: unknown): ErrorDictado | null {
+  switch (codigo) {
+    case "not-allowed":
+    case "service-not-allowed":
+      return "permiso";
+    case "audio-capture":
+      return "sin-microfono";
+    case "network":
+      return "sin-red";
+    case "no-speech":
+      return "sin-voz";
+    case "aborted":
+      // Lo cerramos nosotros (otro reconocimiento, cambio de pagina): no es
+      // un fallo que haya que contarle a nadie.
+      return null;
+    default:
+      return "otro";
+  }
+}
+
+/**
  * Dictado por voz. Devuelve lo que se va oyendo para que el campo de texto lo
  * muestre en vivo: sin eso, el productor no sabe si lo esta escuchando.
  */
 export function useDictado(alTerminar: (texto: string) => void) {
   const [estado, setEstado] = useState<EstadoDictado>("inactivo");
   const [parcial, setParcial] = useState("");
+  /**
+   * Entre "ya termine de hablar" y que el navegador entregue el texto pasa un
+   * momento. Sin mostrarlo, parecia que el boton no habia hecho nada.
+   * Va aparte de `estado` a proposito: el modo manos libres compara `estado`
+   * con "escuchando" y no debe cambiar de comportamiento.
+   */
+  const [procesando, setProcesando] = useState(false);
+  const [error, setError] = useState<ErrorDictado | null>(null);
   const rec = useRef<Reconocedor | null>(null);
   const final = useRef("");
   /**
@@ -98,8 +136,11 @@ export function useDictado(alTerminar: (texto: string) => void) {
     // Pulsar el boton significa "ya termine de hablar", no "cancela": el
     // texto que alcanzo a oirse se envia igual.
     queremosOir.current = false;
+    if (rec.current) setProcesando(true);
     rec.current?.stop();
   }, []);
+
+  const limpiarError = useCallback(() => setError(null), []);
 
   const empezar = useCallback(() => {
     const r = crearReconocedor();
@@ -107,6 +148,8 @@ export function useDictado(alTerminar: (texto: string) => void) {
       setEstado("no-disponible");
       return;
     }
+    setError(null);
+    setProcesando(false);
 
     // Se CIERRA el anterior antes de abrir otro.
     //
@@ -187,14 +230,19 @@ export function useDictado(alTerminar: (texto: string) => void) {
               : ESPERA_CORRIENTE_MS;
         silencio.current = window.setTimeout(() => {
           queremosOir.current = false;
+          setProcesando(true);
           rec.current?.stop();
         }, espera);
       }
     };
 
-    r.onerror = () => {
+    r.onerror = (e: unknown) => {
       if (silencio.current) window.clearTimeout(silencio.current);
       queremosOir.current = false;
+      setProcesando(false);
+      // "no-speech" solo es un fallo si de verdad no se oyo nada.
+      const motivo = traducirError((e as { error?: unknown })?.error);
+      if (motivo && !(motivo === "sin-voz" && ultimo.current)) setError(motivo);
       setEstado("inactivo");
     };
     r.onend = () => {
@@ -215,6 +263,7 @@ export function useDictado(alTerminar: (texto: string) => void) {
       }
       if (silencio.current) window.clearTimeout(silencio.current);
       queremosOir.current = false;
+      setProcesando(false);
       setEstado("inactivo");
       // Se toma lo definitivo si existe; si no, lo ultimo que se oyo.
       const texto = (final.current.trim() || ultimo.current).trim();
@@ -234,6 +283,7 @@ export function useDictado(alTerminar: (texto: string) => void) {
       // el modo dejaba de oir.
       console.warn("[voz] no se pudo abrir el microfono:", e);
       queremosOir.current = false;
+      setError("otro");
       setEstado("inactivo");
     }
   }, [alTerminar]);
@@ -247,7 +297,7 @@ export function useDictado(alTerminar: (texto: string) => void) {
     [],
   );
 
-  return { estado, parcial, empezar, parar };
+  return { estado, parcial, empezar, parar, procesando, error, limpiarError };
 }
 
 /**
