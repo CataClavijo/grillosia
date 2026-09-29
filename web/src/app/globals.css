@@ -119,32 +119,32 @@
 }
 
 .dark {
-  --background: #16130f;
-  --foreground: #f1ece2;
-  --surface: #1e1a15;
-  --surface-2: #26211b;
-  --text-secondary: #b5ab9c;
-  --text-tertiary: #8c8478;
+  --background: #141512;
+  --foreground: #edeae2;
+  --surface: #1c1d19;
+  --surface-2: #24251f;
+  --text-secondary: #b3afa4;
+  --text-tertiary: #8a867c;
 
-  --primary: #d06a3f;
-  --primary-hover: #e07a4d;
+  --primary: #d77a4f;
+  --primary-hover: #e48b61;
   --primary-soft: #3a2419;
-  --primary-foreground: #16130f;
+  --primary-foreground: #141512;
 
-  --vegetal: #a9b67f;
+  --vegetal: #b5c18c;
   --vegetal-soft: #2a2d1f;
   --success: #93b98a;
   --success-soft: #1f2a1d;
   --warning: #e0b35e;
   --warning-soft: #33280f;
   --destructive: #e07a6c;
-  --disabled: #2c2721;
+  --disabled: #2a2b25;
   --disabled-foreground: #7d756a;
 
-  --border: #332d25;
-  --border-strong: #463e33;
-  --input: #463e33;
-  --ring: #d06a3f;
+  --border: #2e2f29;
+  --border-strong: #3f403a;
+  --input: #3f403a;
+  --ring: #d77a4f;
 
   --card: var(--surface);
   --card-foreground: var(--foreground);
@@ -154,7 +154,7 @@
   --secondary-foreground: #ddd5c8;
   --muted: var(--surface-2);
   --muted-foreground: var(--text-secondary);
-  --accent: #2c2721;
+  --accent: #2c2d27;
   --accent-foreground: var(--foreground);
   --gold: var(--warning);
   --gold-foreground: #16130f;
@@ -584,11 +584,21 @@ html.cambiando-tema *::after {
 /* Acuarelas: vienen con el papel ya transparente (ver scripts de
    optimizacion), asi que se ven igual en claro y en oscuro, sin mezclas ni
    filtros. Se reconocen por su carpeta, /acuarelas/. */
-img.lamina[src*="acuarelas"],
+img.lamina[src*="acuarelas"] {
+  mix-blend-mode: normal;
+  filter: none;
+  opacity: 1;
+}
+/* En oscuro la acuarela no se invierte (quedaria en negativo): se imprime
+   sobre una hoja de papel marfil, como una lamina enmarcada en una pared
+   oscura. El papel va en el propio <img> (fondo + relleno). */
 .dark img.lamina[src*="acuarelas"] {
   mix-blend-mode: normal;
   filter: none;
   opacity: 1;
+  background-color: #efe9dc;
+  padding: 6%;
+  border-radius: 10px;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -614,14 +624,14 @@ img.lamina[src*="acuarelas"],
     font-family: var(--font-display);
     font-weight: 700;
     text-transform: uppercase;
-    font-size: clamp(2.125rem, 1.7rem + 1.6vw, 3rem);
+    font-size: clamp(2.5rem, 1.8rem + 2.4vw, 3.75rem);
     line-height: 1;
     letter-spacing: 0;
   }
   .t-h2 {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: clamp(1.75rem, 1.45rem + 1.1vw, 2.375rem);
+    font-size: clamp(1.9rem, 1.5rem + 1.4vw, 2.75rem);
     line-height: 1.05;
     letter-spacing: 0;
   }
@@ -639,8 +649,8 @@ img.lamina[src*="acuarelas"],
     line-height: 1.4;
   }
   .t-lead {
-    font-size: 1.125rem;
-    line-height: 1.6;
+    font-size: clamp(1.125rem, 1.05rem + 0.3vw, 1.25rem);
+    line-height: 1.55;
     color: var(--text-secondary);
     max-width: 60ch;
   }
