@@ -196,15 +196,15 @@ export default function PaginaProyecto() {
 
         {/* ── 4. Territorio: banda con el mapa ─────────────────────── */}
         <section className="bg-surface-2 py-16 lg:py-24">
-          <Contenedor className="grid gap-12 lg:grid-cols-12 lg:gap-12">
-            <Revelar className="lg:col-span-4">
+          <Contenedor>
+            <Revelar>
               <EncabezadoSeccion
                 rotulo="Territorio"
                 titulo="Cubarral y Granada, Meta"
                 entrada="Las actividades del proyecto se desarrollan en estos dos municipios del Piedemonte Llanero, donde la cordillera baja a la llanura."
               />
             </Revelar>
-            <Revelar retraso={80} className="lg:col-span-8">
+            <Revelar retraso={80} className="mt-10 lg:mt-12">
               <MapaTerritorio />
             </Revelar>
           </Contenedor>
@@ -383,12 +383,14 @@ export default function PaginaProyecto() {
             <div>
               <h2 className="t-eyebrow text-faint">Créditos</h2>
               <p className="t-small mt-3 max-w-[60ch] text-subtle">
-                Fotografías de los grillos del proyecto: Catalina
-                Clavijo-Agudelo y Sebastián Berrío. La foto de la portada es
-                una imagen de referencia de Wikimedia Commons y no corresponde
-                a los ejemplares del proyecto. Ilustraciones hechas para
-                GrillosIA. Límites del mapa: DANE, Marco Geoestadístico
-                Nacional 2025 (CC BY 4.0).
+                Fotografías de grillos: son imágenes de referencia de la
+                familia Gryllidae tomadas de Wikimedia Commons, redimensionadas,
+                y no corresponden a los ejemplares del proyecto (xulescu_g, CC
+                BY-SA 2.0; Gilles San Martin, CC BY-SA 2.0; Holger Krisp, CC BY
+                3.0). Fotografías de los ejemplares del proyecto, en el
+                asistente: Catalina Clavijo-Agudelo y Sebastián Berrío.
+                Ilustraciones hechas para GrillosIA. Límites del mapa: DANE,
+                Marco Geoestadístico Nacional 2025 (CC BY 4.0).
               </p>
             </div>
             <div>

@@ -304,21 +304,31 @@ export default function Inicio() {
         <section className="py-16 lg:py-24">
           <Contenedor className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
             <Revelar className="order-2 lg:order-1">
-              {/* Foto real de un ejemplar del proyecto, recortada sobre el
-                  fondo: nada de marco blanco pegado encima de la pagina. */}
-              {/* En oscuro, el grillo cafe oscuro desaparecia sobre el
-                  carbon: va sobre la misma hoja de papel que las acuarelas. */}
-              <figure className="rounded-lg bg-surface-2 px-6 pt-10 pb-6 sm:px-10 dark:bg-[#efe9dc]">
-                <Image
-                  src="/grillos/recorte-3.webp"
-                  alt="Grillo del proyecto, de la familia Gryllidae, visto de lado."
-                  width={611}
-                  height={379}
-                  sizes="(min-width: 1024px) 600px, 90vw"
-                  className="mx-auto h-auto w-full max-w-[480px]"
-                />
-                <figcaption className="t-caption mt-5 text-center dark:text-[#5f594e]">
-                  Ejemplar del proyecto, familia Gryllidae. Foto: Sebastián Berrío.
+              {/* Foto profesional de referencia (otra especie de la misma
+                  familia): las fotos del proyecto tienen poca resolucion. El
+                  pie lo dice, con autor y licencia. */}
+              <figure>
+                <div className="relative aspect-[3/2] w-full overflow-hidden rounded-lg">
+                  <Image
+                    src="/fotos/referencia-grillo-piedra.webp"
+                    alt="Grillo negro brillante sobre una piedra, visto de lado, con las antenas largas y las alas plegadas."
+                    fill
+                    sizes="(min-width: 1024px) 600px, 92vw"
+                    className="object-cover"
+                    style={{ objectPosition: "50% 55%" }}
+                  />
+                </div>
+                <figcaption className="t-caption mt-3">
+                  Imagen de referencia, familia Gryllidae; no corresponde a los
+                  ejemplares del proyecto.{" "}
+                  <a
+                    href="https://commons.wikimedia.org/wiki/File:Melanogryllus_desertus_(21691339633).jpg"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline underline-offset-2 hover:text-foreground"
+                  >
+                    Foto: Gilles San Martin, CC BY-SA 2.0, Wikimedia Commons (redimensionada)
+                  </a>
                 </figcaption>
               </figure>
             </Revelar>
@@ -368,12 +378,13 @@ export default function Inicio() {
           </Contenedor>
         </section>
 
-        {/* ── 7. Territorio: el mapa manda ─────────────────────────── */}
+        {/* ── 7. Territorio ─────────────────────────────────────────── */}
         <section className="bg-surface-2 py-16 lg:py-24">
-          <Contenedor className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-16">
-            {/* El texto se alinea arriba con el mapa y lo acompana al bajar:
-                centrado, flotaba en medio de la columna alta del mapa. */}
-            <Revelar className="lg:sticky lg:top-28 lg:pt-6">
+          {/* El texto arriba, a todo el ancho; debajo el mapa (grande) con
+              sus fichas al lado. Antes el texto flotaba abajo a la izquierda
+              y el mapa quedaba chico con un hueco encima. */}
+          <Contenedor>
+            <Revelar className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
               <EncabezadoSeccion
                 rotulo="Territorio"
                 titulo="Cubarral y Granada, Meta"
@@ -381,14 +392,14 @@ export default function Inicio() {
               />
               <Link
                 href="/proyecto"
-                className="mt-7 inline-flex items-center gap-1.5 text-[15px] font-semibold text-primary underline decoration-primary/35 underline-offset-4 transition-colors hover:decoration-primary"
+                className="inline-flex shrink-0 items-center gap-1.5 text-[15px] font-semibold text-primary underline decoration-primary/35 underline-offset-4 transition-colors hover:decoration-primary lg:pb-2"
               >
                 Sobre GrillosIA
                 <ArrowRight className="size-4" />
               </Link>
             </Revelar>
-            <Revelar retraso={80}>
-              <MapaTerritorio className="mx-auto w-full max-w-[640px]" />
+            <Revelar retraso={80} className="mt-10 lg:mt-12">
+              <MapaTerritorio />
             </Revelar>
           </Contenedor>
         </section>

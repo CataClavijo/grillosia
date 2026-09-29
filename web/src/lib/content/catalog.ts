@@ -82,6 +82,25 @@ export interface VistaEjemplar {
   credit: string;
 }
 
+/**
+ * Foto de referencia para la lamina anotada de "¿Como reconocer un grillo?".
+ *
+ * NO es un ejemplar del proyecto: es un Gryllus bimaculatus (familia
+ * Gryllidae) fotografiado por Holger Krisp, con licencia CC BY 3.0. Se usa
+ * porque las fotos del proyecto tienen poca resolucion y el recorte quedaba
+ * sucio. Los rasgos que se senalan son de la familia, no de la especie.
+ * Redimensionada a 1600 px, sin recorte.
+ */
+export const FOTO_REFERENCIA_LATERAL = {
+  src: "/fotos/referencia-grillo-lateral.webp",
+  width: 1600,
+  height: 1067,
+  alt: "Grillo adulto de color café muy oscuro, visto de lado sobre una piedra, con las antenas largas, las alas plegadas y las patas traseras con espinas.",
+  pie: "Imagen de referencia, familia Gryllidae; no corresponde a los ejemplares del proyecto.",
+  credito: "Foto: Holger Krisp, CC BY 3.0, Wikimedia Commons (redimensionada)",
+  url: "https://commons.wikimedia.org/wiki/File:Zweifleckgrille_Gryllus_bimaculatus_1.jpg",
+};
+
 export const VISTAS_EJEMPLAR: VistaEjemplar[] = [
   {
     id: "lateral",
@@ -115,9 +134,9 @@ export const VISTAS_EJEMPLAR: VistaEjemplar[] = [
 /**
  * Cómo reconocer un grillo. Aplica a la familia, no a una especie.
  *
- * Cada rasgo lleva el punto donde se ve en la foto lateral del ejemplar
- * (`/grillos/recorte-3.webp`, 611 x 379), en porcentaje del ancho y el alto
- * de la imagen, medido sobre la foto. `rotulo` es donde va la etiqueta corta
+ * Cada rasgo lleva el punto donde se ve en la foto de referencia lateral
+ * (`FOTO_REFERENCIA_LATERAL`, 1600 x 1067), en porcentaje del ancho y el alto
+ * de la imagen, medido sobre la foto con una cuadricula. `rotulo` es donde va la etiqueta corta
  * que se une al punto con una linea fina (solo en pantallas anchas).
  */
 export interface RasgoReconocer {
@@ -136,24 +155,24 @@ export const COMO_RECONOCER: RasgoReconocer[] = [
     titulo: "Antenas largas",
     corto: "Antenas",
     texto: "Muy largas y delgadas, a veces más que el cuerpo entero.",
-    punto: { x: 9, y: 40.5 },
-    rotulo: { x: 3, y: 14, ancla: "izquierda" },
+    punto: { x: 14, y: 55 },
+    rotulo: { x: 4, y: 30, ancla: "izquierda" },
   },
   {
     id: "color",
     titulo: "Color café",
     corto: "Color",
     texto: "Del café claro al casi negro, según el ejemplar.",
-    punto: { x: 33, y: 36 },
-    rotulo: { x: 30, y: 4, ancla: "izquierda" },
+    punto: { x: 33, y: 45 },
+    rotulo: { x: 26, y: 18, ancla: "izquierda" },
   },
   {
     id: "patas",
     titulo: "Patas traseras fuertes",
     corto: "Patas traseras",
     texto: "Gruesas y fuertes, adaptadas para saltar.",
-    punto: { x: 69, y: 13 },
-    rotulo: { x: 97, y: 4, ancla: "derecha" },
+    punto: { x: 77, y: 68 },
+    rotulo: { x: 96, y: 86, ancla: "derecha" },
   },
   {
     id: "canto",
@@ -161,8 +180,8 @@ export const COMO_RECONOCER: RasgoReconocer[] = [
     corto: "Alas",
     texto:
       "Los machos frotan las alas y cantan, sobre todo al caer la tarde y en la noche.",
-    punto: { x: 57, y: 41 },
-    rotulo: { x: 52, y: 96, ancla: "izquierda" },
+    punto: { x: 60, y: 44 },
+    rotulo: { x: 62, y: 18, ancla: "izquierda" },
   },
 ];
 

@@ -7,7 +7,7 @@ import { Paso } from "@/components/paso";
 import {
   CATALOG_INTRO,
   COMO_RECONOCER,
-  VISTAS_EJEMPLAR,
+  FOTO_REFERENCIA_LATERAL,
 } from "@/lib/content/catalog";
 import { TAXONOMIA } from "@/lib/content/taxonomia";
 
@@ -35,7 +35,6 @@ export const metadata = {
  */
 export default function PaginaGrillos() {
   const ejemplar = TAXONOMIA[0];
-  const lateral = VISTAS_EJEMPLAR.find((v) => v.id === "lateral") ?? VISTAS_EJEMPLAR[0];
 
   return (
     <Paso n={2} titulo="Conozca sus grillos">
@@ -66,17 +65,11 @@ export default function PaginaGrillos() {
         <EncabezadoSeccion
           rotulo="Guía de campo"
           titulo="¿Cómo reconocer un grillo?"
-          entrada="Cuatro señas que sirven para toda la familia Gryllidae. Toque cada número sobre la foto."
+          entrada="Cuatro señas que sirven para toda la familia Gryllidae, vistas en una foto de referencia. Toque cada número."
         />
         <LaminaAnotada
           className="mt-10"
-          foto={{
-            src: lateral.src,
-            width: lateral.width,
-            height: lateral.height,
-            alt: lateral.alt,
-            credito: lateral.credit,
-          }}
+          foto={FOTO_REFERENCIA_LATERAL}
           rasgos={COMO_RECONOCER}
         />
       </Revelar>

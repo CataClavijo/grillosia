@@ -28,7 +28,16 @@ export function LaminaAnotada({
   rasgos,
   className,
 }: {
-  foto: { src: string; width: number; height: number; alt: string; credito: string };
+  foto: {
+    src: string;
+    width: number;
+    height: number;
+    alt: string;
+    credito: string;
+    /** Pie propio (por ejemplo, "imagen de referencia"). */
+    pie?: string;
+    url?: string;
+  };
   rasgos: RasgoReconocer[];
   className?: string;
 }) {
@@ -62,12 +71,11 @@ export function LaminaAnotada({
 
   return (
     <div className={cn("grid items-center gap-10 lg:grid-cols-12 lg:gap-14", className)}>
-      {/* La foto acompana a la lista (7 de 12 columnas, no 8). En oscuro va
-          sobre papel marfil: el grillo cafe oscuro se perdia en el carbon. */}
-      <figure className="lg:col-span-7 dark:rounded-xl dark:bg-[#efe9dc] dark:p-5 dark:text-[#1f1b16]">
+      {/* La foto acompana a la lista (7 de 12 columnas, no 8). */}
+      <figure className="lg:col-span-7">
         <div
           ref={caja}
-          className="relative mx-auto w-full max-w-[600px]"
+          className="relative mx-auto w-full max-w-[640px] overflow-hidden rounded-lg"
           style={{ aspectRatio: `${W} / ${H}` }}
         >
           <Image
@@ -102,7 +110,7 @@ export function LaminaAnotada({
                   strokeWidth={on ? 1.5 : 1}
                   className={cn(
                     "transition-[stroke-dashoffset,stroke] duration-700 ease-[var(--ease-natural)]",
-                    on ? "stroke-primary" : "stroke-foreground/45 dark:stroke-[#5f594e]",
+                    on ? "stroke-primary" : "stroke-[#1f1b16]/55",
                   )}
                   style={{
                     strokeDasharray: largo,
@@ -178,9 +186,14 @@ export function LaminaAnotada({
             );
           })}
         </div>
-        <figcaption className="t-caption mt-4 text-center dark:text-[#5f594e]">
-          Ejemplar del proyecto, familia Gryllidae. Foto: {foto.credito}. Toque
-          un número para ver el rasgo.
+        <figcaption className="t-caption mt-4 text-center">
+          {foto.pie ?? `Ejemplar del proyecto, familia Gryllidae. Foto: ${foto.credito}.`}{" "}
+          {foto.url ? (
+            <a href={foto.url} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-foreground">
+              {foto.credito}
+            </a>
+          ) : null}
+          <span className="block">Toque un número para ver el rasgo.</span>
         </figcaption>
       </figure>
 

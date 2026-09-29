@@ -219,7 +219,14 @@ export function MapaTerritorio({ className }: { className?: string }) {
   ] as const;
 
   return (
-    <figure className={cn("w-full", className)}>
+    <figure
+      className={cn(
+        "grid w-full gap-6 lg:grid-cols-12 lg:items-start lg:gap-10",
+        className,
+      )}
+    >
+      {/* Columna del mapa: grande, con las vistas pegadas encima. */}
+      <div className="lg:col-span-7">
       <div
         ref={caja}
         className="relative w-full overflow-hidden rounded-lg bg-surface-2"
@@ -441,30 +448,32 @@ export function MapaTerritorio({ className }: { className?: string }) {
           />
           <span className="t-eyebrow mt-1 block text-[10px]">{km} km</span>
         </div>
+        {/* Vistas: volver a cualquiera de los tres niveles, pegadas al mapa. */}
+        <div role="group" aria-label="Vista del mapa" className="absolute top-3 left-3 flex flex-wrap gap-1 rounded-md bg-background/85 p-1 ring-1 ring-border backdrop-blur-sm">
+          {VISTAS.map((v) => (
+            <button
+              key={v.id}
+              type="button"
+              aria-pressed={vista === v.id}
+              onClick={() => elegir(v.id)}
+              className={cn(
+                "inline-flex h-8 items-center rounded-[5px] px-2.5 text-[13.5px] font-medium transition-colors duration-150",
+                vista === v.id
+                  ? "bg-foreground text-background"
+                  : "text-subtle hover:bg-surface-2 hover:text-foreground",
+              )}
+            >
+              {v.titulo}
+            </button>
+          ))}
+        </div>
+      </div>
       </div>
 
-      {/* Vistas: volver a cualquiera de los tres niveles. */}
-      <div role="group" aria-label="Vista del mapa" className="mt-4 flex flex-wrap gap-1.5">
-        {VISTAS.map((v) => (
-          <button
-            key={v.id}
-            type="button"
-            aria-pressed={vista === v.id}
-            onClick={() => elegir(v.id)}
-            className={cn(
-              "inline-flex h-9 items-center rounded-md px-3 text-[14px] font-medium transition-colors duration-150",
-              vista === v.id
-                ? "bg-foreground text-background"
-                : "text-subtle ring-1 ring-inset ring-border-strong hover:text-foreground",
-            )}
-          >
-            {v.titulo}
-          </button>
-        ))}
-      </div>
-
+      {/* Panel: las dos fichas, la leyenda y las fuentes. */}
+      <div className="flex flex-col gap-5 lg:col-span-5">
       {/* Fichas de los dos municipios: tambien por teclado y en celular. */}
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
         {(Object.keys(FICHAS) as Muni[]).map((k) => {
           const f = FICHAS[k];
           const sel = activo === k;
@@ -487,10 +496,10 @@ export function MapaTerritorio({ className }: { className?: string }) {
             >
               <span className="flex items-center gap-2">
                 <span aria-hidden className="size-2.5 rounded-full bg-primary" />
-                <span className="t-h4">{f.nombre}</span>
+                <span className="font-display text-[1.4rem] font-semibold leading-none">{f.nombre}</span>
                 <span className="t-caption">· Meta</span>
               </span>
-              <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-[14px]">
+              <dl className="mt-3 grid grid-cols-[max-content_1fr] gap-x-5 gap-y-1.5 text-[14.5px]">
                 <dt className="text-subtle">Altura de la cabecera</dt>
                 <dd className="tabular-nums">{f.altura}&nbsp;m s.&nbsp;n.&nbsp;m.</dd>
                 <dt className="text-subtle">Área del municipio</dt>
@@ -509,7 +518,7 @@ export function MapaTerritorio({ className }: { className?: string }) {
       </div>
 
       {/* Leyenda */}
-      <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[13px] text-subtle">
+      <ul className="flex flex-wrap gap-x-5 gap-y-2 text-[13px] text-subtle">
         <li className="flex items-center gap-2">
           <span aria-hidden className="size-3 rounded-[2px] bg-primary" />
           Municipios del proyecto
@@ -535,13 +544,14 @@ export function MapaTerritorio({ className }: { className?: string }) {
         </li>
       </ul>
 
-      <figcaption className="t-caption mt-4 max-w-[80ch]">
+      <figcaption className="t-caption max-w-[80ch]">
         Límites, cabeceras, alturas, áreas y fechas de creación: DANE, Marco
         Geoestadístico Nacional 2025 (CC BY 4.0), formas simplificadas.
         Relieve: Terrain Tiles de AWS Open Data (SRTM). Ríos: © colaboradores
         de OpenStreetMap (ODbL). Distancias en línea recta, calculadas entre
         cabeceras.
       </figcaption>
+      </div>
     </figure>
   );
 }
