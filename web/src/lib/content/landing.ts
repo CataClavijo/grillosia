@@ -146,3 +146,67 @@ export const FOTO_PORTADA = {
   credito: "Foto: xulescu_g, CC BY-SA 2.0, Wikimedia Commons",
   url: "https://commons.wikimedia.org/wiki/File:Gryllus_campestris_(35634613106).jpg",
 };
+
+/**
+ * Escenas del carrusel de la entrada.
+ *
+ * La primera es la foto real (con su pie de "imagen de referencia"); las
+ * otras dos son acuarelas que ilustran la cria y un animal destino. Cada una
+ * lleva su propio pie, que cambia con la escena visible.
+ *
+ *  - `foto`: cubre todo el panel.
+ *  - `lamina`: ilustracion sobre papel, contenida, sin recortarla.
+ */
+export interface EscenaPortada {
+  tipo: "foto" | "lamina";
+  src: string;
+  alt: string;
+  /** Encuadre de una foto (object-position). */
+  posicion?: string;
+  pie: string;
+  credito?: string;
+  url?: string;
+}
+
+export const ESCENAS_PORTADA: EscenaPortada[] = [
+  {
+    tipo: "foto",
+    src: FOTO_PORTADA.src,
+    alt: FOTO_PORTADA.alt,
+    posicion: "58% 58%",
+    pie: FOTO_PORTADA.pie,
+    credito: FOTO_PORTADA.credito,
+    url: FOTO_PORTADA.url,
+  },
+  {
+    tipo: "lamina",
+    src: "/escenas/caja-acuarela.webp",
+    alt: "Acuarela de una caja de cría abierta: hueveras de cartón paradas, una tapita con algodón húmedo, un plato con alimento y la tapa con su ventana de malla.",
+    pie: "Ilustración: una caja de cría armada, como la de la guía",
+  },
+  {
+    tipo: "lamina",
+    src: "/escenas/gallina-acuarela.webp",
+    alt: "Acuarela de una gallina ponedora de perfil.",
+    pie: "Ilustración: gallina ponedora, uno de los animales que puede consultar",
+  },
+];
+
+/**
+ * La consulta, en tres pasos: lo primordial de la plataforma. Es lo que le
+ * dice a cada productor que comida conviene para su caso.
+ */
+export const CONSULTA_PASOS = [
+  {
+    titulo: "Elija su animal y su etapa",
+    cuerpo: "Peces, aves o cerdos, y el momento de vida en que están: cada etapa pide una proteína distinta.",
+  },
+  {
+    titulo: "Cuéntenos su clima",
+    cuerpo: "La temperatura y la humedad donde cría sus grillos. Con eso el modelo ajusta su cálculo.",
+  },
+  {
+    titulo: "Compare las tres comidas",
+    cuerpo: "Vea qué harina daría cada comida frente a lo que su animal necesita, y pregunte lo que no entienda.",
+  },
+];

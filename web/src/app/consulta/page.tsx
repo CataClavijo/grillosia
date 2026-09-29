@@ -99,6 +99,13 @@ export default function ConsultaPage() {
   const [temp, setTemp] = useState<number | null>(null);
   const [humidity, setHumidity] = useState<number | null>(null);
   const guardado = useRef(false);
+  /**
+   * Categoria que llega de la portada (`/consulta?categoria=peces`).
+   * `undefined`: aun no se leyo; `null`: no hay, o la persona ya contesto
+   * algo. Se conserva hasta la primera respuesta porque las consultas
+   * guardadas pueden cargar un momento despues del primer render.
+   */
+  const categoriaUrl = useRef<CategoriaId | null | undefined>(undefined);
 
   useEffect(() => {
     marcarPaso("3");
@@ -115,9 +122,39 @@ export default function ConsultaPage() {
      * `useSearchParams`, para no obligar a envolver la pagina en un Suspense
      * por un dato que solo importa en el navegador.
      */
-    const editar =
-      typeof window !== "undefined" &&
-      new URLSearchParams(window.location.search).has("editar");
+    const params =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search)
+        : new URLSearchParams();
+    const editar = params.has("editar");
+
+    /**
+     * Inicio rapido desde la portada: la categoria elegida alli manda. Se
+     * lee de la URL una sola vez y se quita de la direccion, para que
+     * recargar la pagina no vuelva a reiniciar la consulta.
+     */
+    if (categoriaUrl.current === undefined) {
+      const c = params.get("categoria");
+      categoriaUrl.current = !editar && c && categoriaPorId(c) ? (c as CategoriaId) : null;
+      if (categoriaUrl.current) router.replace("/consulta", { scroll: false });
+    }
+    const forzada = categoriaUrl.current;
+
+    if (forzada && active) {
+      // Si la consulta abierta es de otra categoria, o ya esta terminada,
+      // la persona viene a empezar una nueva: se suelta la activa (queda
+      // guardada en "Mis consultas") y el efecto vuelve a correr sin ella.
+      const a = animalPorId(active.selection.animalId);
+      const terminada =
+        !!etapaPorId(a, active.selection.stageId) &&
+        active.selection.temp !== undefined &&
+        active.selection.humidity !== undefined;
+      if (a?.category !== forzada || terminada) {
+        setActive(null);
+        return;
+      }
+      categoriaUrl.current = null;
+    }
 
     if (active && active.selection.animalId) {
       const a = animalPorId(active.selection.animalId);
@@ -143,6 +180,24 @@ export default function ConsultaPage() {
       return;
     }
     const draft = loadWizardDraft();
+    if (forzada) {
+      const catDraft = draft
+        ? (animalPorId(draft.animalId)?.category ?? draft.categoryId ?? "")
+        : "";
+      if (catDraft !== forzada) {
+        // Empieza con la categoria elegida en la portada. El clima que ya
+        // hubiera contestado se conserva: no depende del animal.
+        const lista = animalesDe(forzada);
+        const unico = lista.length === 1 ? lista[0].id : "";
+        setCategoryId(forzada);
+        setAnimalId(unico);
+        setStageId("");
+        setTemp(draft?.temp ?? null);
+        setHumidity(draft?.humidity ?? null);
+        setPregunta(unico ? "etapa" : "animal");
+        return;
+      }
+    }
     if (draft) {
       const a = animalPorId(draft.animalId);
       const e = etapaPorId(a, draft.stageId);
@@ -180,6 +235,9 @@ export default function ConsultaPage() {
   };
 
   const siguiente = (desde: Pregunta, cat = categoryId) => {
+    // En cuanto la persona contesta algo, la categoria de la portada ya
+    // cumplio su papel: una consulta que se guarde despues no debe soltarse.
+    categoriaUrl.current = null;
     const lista = preguntasPara(cat);
     const i = lista.indexOf(desde);
     setPregunta(i + 1 < lista.length ? lista[i + 1] : "listo");
