@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-import { IconoCategoria } from "@/components/icono-categoria";
 import { CATEGORIAS } from "@/lib/animals";
 import { FOTO_PORTADA } from "@/lib/content/landing";
 
@@ -19,8 +18,9 @@ import { FOTO_PORTADA } from "@/lib/content/landing";
  * En celular la foto va arriba y el texto debajo, sobre fondo oscuro, para no
  * tapar el grillo.
  *
- * El inicio rapido (Peces / Aves / Cerdos) abre la consulta con la categoria
- * ya elegida.
+ * Un solo boton principal, "Hacer mi consulta". Debajo, los atajos Peces /
+ * Aves / Cerdos como texto (sin tarjetas ni iconos, que se veian de juguete)
+ * abren la consulta con la categoria ya elegida.
  */
 export function PortadaHero() {
   const f = FOTO_PORTADA;
@@ -70,40 +70,40 @@ export function PortadaHero() {
             que su animal necesita.
           </p>
 
-          {/* Inicio rapido de la consulta. */}
+          {/* La accion principal: un solo boton firme. Debajo, sin cajas ni
+              iconos, los atajos por categoria como texto, para quien ya sabe
+              que animal consulta. */}
           <div className={`mt-9 ${entrada} delay-[360ms]`}>
-            <p id="inicio-rapido" className="t-eyebrow text-white/70">
-              Empiece su consulta
-            </p>
-            <ul aria-labelledby="inicio-rapido" className="mt-3 grid grid-cols-3 gap-2.5 sm:max-w-[460px]">
+            <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
+              <Link
+                href="/consulta"
+                className="inline-flex h-[52px] items-center gap-2.5 rounded-md bg-primary px-7 text-[16.5px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover"
+              >
+                Hacer mi consulta
+                <ArrowRight className="size-[18px]" />
+              </Link>
+              <Link
+                href="#como-funciona"
+                className="inline-flex min-h-11 items-center text-[15px] font-medium text-white/80 underline decoration-white/30 underline-offset-[6px] transition-colors hover:text-white hover:decoration-white/70"
+              >
+                ¿Cómo funciona?
+              </Link>
+            </div>
+
+            <nav aria-label="Empezar por categoría" className="mt-8 flex flex-wrap items-baseline gap-x-5 gap-y-2 border-t border-white/15 pt-5">
+              <span className="t-eyebrow text-white/55">O vaya directo a</span>
               {CATEGORIAS.map((c, i) => (
-                <li
+                <Link
                   key={c.id}
-                  className={entrada}
-                  style={{ animationDelay: `${440 + i * 70}ms` }}
+                  href={`/consulta?categoria=${c.id}`}
+                  className={`group inline-flex items-center gap-1.5 font-display text-[22px] font-semibold tracking-[0.01em] text-white/90 transition-colors hover:text-[#efb28e] ${entrada}`}
+                  style={{ animationDelay: `${460 + i * 70}ms` }}
                 >
-                  <Link
-                    href={`/consulta?categoria=${c.id}`}
-                    className="group flex h-full min-h-[92px] flex-col justify-between gap-3 rounded-lg bg-[#17110c]/55 p-3.5 ring-1 ring-white/20 backdrop-blur-sm transition-[background-color,box-shadow,transform] duration-200 ease-[var(--ease-natural)] ring-inset hover:-translate-y-0.5 hover:bg-[#17110c]/75 hover:ring-white/40 sm:min-h-[100px] sm:p-4"
-                  >
-                    <IconoCategoria
-                      categoria={c.id}
-                      className="size-7 text-[#efb28e] transition-transform duration-200 group-hover:scale-105"
-                    />
-                    <span className="flex items-center justify-between gap-1 text-[16px] font-semibold sm:text-[17px]">
-                      {c.name}
-                      <ArrowRight className="size-4 shrink-0 text-white/60 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-white" />
-                    </span>
-                  </Link>
-                </li>
+                  {c.name}
+                  <ArrowRight className="size-4 -translate-x-1 opacity-0 transition-[opacity,transform] duration-200 group-hover:translate-x-0 group-hover:opacity-100" />
+                </Link>
               ))}
-            </ul>
-            <Link
-              href="#como-funciona"
-              className="mt-5 inline-flex min-h-10 items-center gap-1.5 text-[15px] font-medium text-white/80 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white hover:decoration-white/70"
-            >
-              ¿Primera vez? Así funciona la consulta
-            </Link>
+            </nav>
           </div>
         </div>
       </div>

@@ -8,7 +8,6 @@ import { DatoPendiente } from "@/components/dato-pendiente";
 import { EncabezadoSeccion } from "@/components/ds/encabezado-seccion";
 import { Revelar } from "@/components/ds/revelar";
 import { FuenteCientifica } from "@/components/fuente-cientifica";
-import { IconoCategoria } from "@/components/icono-categoria";
 import { InfoTip } from "@/components/info-tip";
 import { MapaTerritorio } from "@/components/mapa-territorio";
 import { OrigenDato } from "@/components/origen-dato";
@@ -197,10 +196,7 @@ export default function Inicio() {
                         </div>
                       </div>
                       <div className="flex flex-1 flex-col px-5 pt-5 pb-5 lg:px-6 lg:pb-6">
-                        <h3 className="t-h2 flex items-center gap-2.5">
-                          <IconoCategoria categoria={c.id} className="size-6 text-primary" />
-                          {c.name}
-                        </h3>
+                        <h3 className="t-h2">{c.name}</h3>
                         <p className="t-small mt-2 text-subtle">
                           {animales.map((a) => a.name).join(" · ")}
                         </p>
