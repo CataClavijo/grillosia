@@ -33,19 +33,19 @@ export const CATEGORIAS: Categoria[] = [
   {
     id: "peces",
     name: "Peces",
-    image: "/ilustraciones/tilapia.webp",
+    image: "/acuarelas/tilapia.webp",
     pregunta: "¿Qué pez cría?",
   },
   {
     id: "aves",
     name: "Aves",
-    image: "/ilustraciones/pollo-engorde.webp",
+    image: "/acuarelas/pollo-engorde.webp",
     pregunta: "¿Qué tipo de ave cría?",
   },
   {
     id: "cerdos",
     name: "Cerdos",
-    image: "/ilustraciones/cerdo.webp",
+    image: "/acuarelas/cerdo.webp",
     pregunta: "¿En qué etapa están sus cerdos?",
   },
 ];
@@ -87,7 +87,7 @@ export const ANIMALS: AnimalDestino[] = [
     category: "peces",
     name: "Tilapia",
     scientific: "Oreochromis niloticus",
-    image: "/ilustraciones/tilapia.webp",
+    image: "/acuarelas/tilapia.webp",
     stages: [
       { id: "alevin", name: "Alevín", detail: "1 a 10 g", protein: { min: 35, max: 40, refs: ["fao-affris-tilapia"], nota: "Valores para tilapia del Nilo. No encontramos una fuente revisada específica para tilapia roja." } },
       { id: "juvenil", name: "Juvenil", detail: "10 a 25 g", protein: { min: 30, max: 35, refs: ["fao-affris-tilapia"], nota: "Valores para tilapia del Nilo. No encontramos una fuente revisada específica para tilapia roja." }, alias: ["crecimiento"] },
@@ -155,7 +155,7 @@ export const ANIMALS: AnimalDestino[] = [
     id: "pollo",
     category: "aves",
     name: "Pollo de engorde",
-    image: "/ilustraciones/pollo-engorde.webp",
+    image: "/acuarelas/pollo-engorde.webp",
     stages: [
       { id: "inicio", name: "Inicio", detail: "0 a 3 semanas", protein: { min: 23, max: 23, refs: ["nrc-1994-aves"], nota: "El NRC aclara que son niveles típicos de una dieta de maíz y soya." } },
       { id: "crecimiento", name: "Crecimiento", detail: "3 a 6 semanas", protein: { min: 20, max: 20, refs: ["nrc-1994-aves"], nota: "El NRC aclara que son niveles típicos de una dieta de maíz y soya." } },
@@ -180,7 +180,7 @@ export const ANIMALS: AnimalDestino[] = [
     id: "cerdo",
     category: "cerdos",
     name: "Cerdo",
-    image: "/ilustraciones/cerdo.webp",
+    image: "/acuarelas/cerdo.webp",
     stages: [
       { id: "inicio", name: "Inicio", detail: "5 a 11 kg", protein: { min: 22, max: 26, refs: ["msd-nrc-2012-cerdos"], nota: "Proteína aproximada para una dieta de maíz y soya; el NRC 2012 fija las necesidades en aminoácidos." } },
       { id: "crecimiento", name: "Levante", detail: "11 a 50 kg", protein: { min: 19.3, max: 23, refs: ["msd-nrc-2012-cerdos"], nota: "Proteína aproximada para una dieta de maíz y soya; el NRC 2012 fija las necesidades en aminoácidos." } },

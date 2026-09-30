@@ -17,9 +17,9 @@ import { cn } from "@/lib/utils";
  * cajas de la misma altura y la misma area, para que pesen igual.
  */
 const DIBUJO: Record<string, string> = {
-  D1: "/ilustraciones/ing-bore.webp",
-  D2: "/ilustraciones/ing-boton-oro.webp",
-  D3: "/ilustraciones/ing-salvado.webp",
+  D1: "/acuarelas/ing-bore.webp",
+  D2: "/acuarelas/ing-boton-oro.webp",
+  D3: "/acuarelas/ing-salvado.webp",
 };
 
 const QUE_ES: Record<string, string> = {
@@ -29,8 +29,8 @@ const QUE_ES: Record<string, string> = {
 };
 
 const BASE_DIBUJO: Record<string, string> = {
-  "Harina de maíz": "/ilustraciones/ing-maiz.webp",
-  "Avena molida": "/ilustraciones/ing-avena.webp",
+  "Harina de maíz": "/acuarelas/ing-maiz.webp",
+  "Avena molida": "/acuarelas/ing-avena.webp",
 };
 
 /** "30 % de harina de maíz + 20 % de avena molida" */

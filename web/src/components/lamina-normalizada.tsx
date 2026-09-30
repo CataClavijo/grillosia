@@ -12,15 +12,15 @@ import { cn } from "@/lib/utils";
  * parejas a la vista.
  */
 const PROPORCION: Record<string, number> = {
-  "/ilustraciones/tilapia.webp": 1.63,
-  "/ilustraciones/pollo-engorde.webp": 0.98,
+  "/acuarelas/tilapia.webp": 1.63,
+  "/acuarelas/pollo-engorde.webp": 0.98,
   "/acuarelas/gallina.webp": 0.98,
-  "/ilustraciones/cerdo.webp": 1.95,
-  "/ilustraciones/ing-bore.webp": 0.93,
-  "/ilustraciones/ing-boton-oro.webp": 1.16,
-  "/ilustraciones/ing-salvado.webp": 1.58,
-  "/ilustraciones/ing-maiz.webp": 1.33,
-  "/ilustraciones/ing-avena.webp": 0.91,
+  "/acuarelas/cerdo.webp": 1.95,
+  "/acuarelas/ing-bore.webp": 0.93,
+  "/acuarelas/ing-boton-oro.webp": 1.16,
+  "/acuarelas/ing-salvado.webp": 1.58,
+  "/acuarelas/ing-maiz.webp": 1.33,
+  "/acuarelas/ing-avena.webp": 0.91,
 };
 
 /**

@@ -55,9 +55,9 @@ import { cn } from "@/lib/utils";
  */
 
 const DIBUJO: Record<string, string> = {
-  D1: "/ilustraciones/ing-bore.webp",
-  D2: "/ilustraciones/ing-boton-oro.webp",
-  D3: "/ilustraciones/ing-salvado.webp",
+  D1: "/acuarelas/ing-bore.webp",
+  D2: "/acuarelas/ing-boton-oro.webp",
+  D3: "/acuarelas/ing-salvado.webp",
 };
 
 /** Preguntas que abren el asistente ya escritas. */

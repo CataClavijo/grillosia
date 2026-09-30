@@ -70,7 +70,7 @@ export interface DefinicionFigura {
 export const FIGURAS: DefinicionFigura[] = [
   {
     id: "caja",
-    src: "/ilustraciones/caja-recipiente.webp",
+    src: "/acuarelas/caja-recipiente.webp",
     titulo: "La caja y su tapa, limpias y listas",
     alt: "Una caja plástica rectangular transparente con su tapa.",
     cuando: "Cuando pregunten qué caja sirve, de qué tamaño, o cómo empezar.",
@@ -88,7 +88,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "ventilacion",
-    src: "/ilustraciones/caja-ventilacion.webp",
+    src: "/acuarelas/caja-ventilacion.webp",
     titulo: "La ventana de ventilación en la tapa",
     alt: "La tapa de la caja vista desde arriba, con una ventana rectangular cubierta de malla fina.",
     cuando:
@@ -96,14 +96,14 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "sustrato",
-    src: "/ilustraciones/caja-sustrato.webp",
+    src: "/acuarelas/caja-sustrato.webp",
     titulo: "La cama pareja en el fondo",
     alt: "Un montón pequeño de sustrato seco de viruta y cartón picado.",
     cuando: "Cuando pregunten por la cama, el sustrato o qué poner en el fondo.",
   },
   {
     id: "refugios",
-    src: "/ilustraciones/caja-refugios.webp",
+    src: "/acuarelas/caja-refugios.webp",
     titulo: "Las hueveras paradas, como un acordeón",
     alt: "Dos hueveras de cartón puestas de pie, una junto a la otra.",
     cuando:
@@ -111,7 +111,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "agua",
-    src: "/ilustraciones/caja-agua.webp",
+    src: "/acuarelas/caja-agua.webp",
     titulo: "El alimento y el agua, cada uno en lo suyo",
     alt: "Un bebedero pequeño con algodón húmedo en el plato y, al lado, un pedazo de manzana.",
     cuando:
@@ -137,7 +137,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "donde-buscar",
-    src: "/ilustraciones/donde-buscar.webp",
+    src: "/acuarelas/donde-buscar.webp",
     titulo: "Dónde buscarlos: hojarasca, leña y piedra",
     alt: "Un rincón de patio con hojarasca acumulada, leña vieja apilada y un muro bajo de piedra, alumbrado por una linterna.",
     cuando:
@@ -145,7 +145,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "trampa-vaso",
-    src: "/ilustraciones/trampa-vaso.webp",
+    src: "/acuarelas/trampa-vaso.webp",
     titulo: "Trampa de vaso enterrado",
     alt: "Corte del suelo: un vaso plástico enterrado a ras de tierra con un pedazo de fruta dentro, y encima una teja apoyada en dos piedras que deja un hueco de entrada y tapa la lluvia.",
     cuando:
@@ -153,7 +153,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "atrapar-mano",
-    src: "/ilustraciones/atrapar-mano.webp",
+    src: "/acuarelas/atrapar-mano.webp",
     titulo: "Atraparlos a mano, sin apretar",
     alt: "Dos manos: una baja ahuecada sobre un grillo posado en el suelo y la otra espera al lado para cerrar el hueco entre ambas.",
     cuando:
@@ -161,7 +161,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "trampa-carton",
-    src: "/ilustraciones/trampa-carton.webp",
+    src: "/acuarelas/trampa-carton.webp",
     titulo: "Cartón enrollado y huevera como refugio",
     alt: "Un pedazo de cartón corrugado enrollado y una huevera de cartón, con grillos metidos entre los pliegues.",
     cuando:
@@ -169,7 +169,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "identificar",
-    src: "/ilustraciones/identificar.webp",
+    src: "/acuarelas/identificar.webp",
     titulo: "Grillo arriba, saltamontes abajo: mire las antenas",
     alt: "Dos insectos de perfil: arriba un grillo con antenas muy largas; abajo un saltamontes con antenas cortas.",
     cuando:
@@ -177,7 +177,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "macho-hembra",
-    src: "/ilustraciones/macho-hembra.webp",
+    src: "/acuarelas/macho-hembra.webp",
     titulo: "La hembra lleva una aguja atrás; el macho no",
     alt: "Dos grillos de perfil: arriba una hembra con un ovipositor largo y recto saliendo del abdomen; abajo un macho sin él.",
     cuando:
@@ -185,7 +185,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "ciclo",
-    src: "/ilustraciones/ciclo.webp",
+    src: "/acuarelas/ciclo.webp",
     titulo: "Huevo, ninfa y adulto",
     alt: "Tres etapas en fila: un huevo ovalado, una ninfa pequeña sin alas y un grillo adulto con alas.",
     cuando:
@@ -193,7 +193,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "cosecha",
-    src: "/ilustraciones/cosecha.webp",
+    src: "/acuarelas/cosecha.webp",
     titulo: "Un cedazo para separar, un frasco para guardar",
     alt: "Un cedazo circular de marco de madera sobre una mesa y, al lado, un frasco de vidrio con tapa perforada.",
     cuando:
@@ -201,7 +201,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "dieta-bore",
-    src: "/ilustraciones/ing-bore.webp",
+    src: "/acuarelas/ing-bore.webp",
     titulo: "D1: harina de bore",
     alt: "Una hoja grande de bore con un trozo de tallo y, al lado, un cuenco con harina fina.",
     cuando:
@@ -209,7 +209,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "dieta-boton-oro",
-    src: "/ilustraciones/ing-boton-oro.webp",
+    src: "/acuarelas/ing-boton-oro.webp",
     titulo: "D2: harina de botón de oro",
     alt: "Una rama de botón de oro con dos flores y hojas lobuladas y, al lado, un cuenco con harina.",
     cuando:
@@ -217,7 +217,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "dieta-salvado",
-    src: "/ilustraciones/ing-salvado.webp",
+    src: "/acuarelas/ing-salvado.webp",
     titulo: "D3: salvado de trigo",
     alt: "Un cuenco con salvado de trigo en escamas y, al lado, dos espigas de trigo.",
     cuando:
@@ -225,7 +225,7 @@ export const FIGURAS: DefinicionFigura[] = [
   },
   {
     id: "clima",
-    src: "/ilustraciones/caja-clima.webp",
+    src: "/acuarelas/caja-clima.webp",
     titulo: "El termómetro colgado adentro",
     alt: "Un termómetro-higrómetro digital pequeño.",
     cuando:

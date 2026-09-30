@@ -59,7 +59,7 @@ export function GrillosPestanas() {
                 b: f.saltamontes,
               }))}
               lamina={{
-                src: "/ilustraciones/identificar.webp",
+                src: "/acuarelas/identificar.webp",
                 alt: "Un grillo, de antenas largas, arriba, y un saltamontes, de antenas cortas, abajo.",
                 pie: "Arriba, un grillo; abajo, un saltamontes.",
               }}
@@ -76,7 +76,7 @@ export function GrillosPestanas() {
               columnas={["Hembra", "Macho"]}
               filas={MACHO_HEMBRA.map((f) => ({ rasgo: f.rasgo, a: f.hembra, b: f.macho }))}
               lamina={{
-                src: "/ilustraciones/macho-hembra.webp",
+                src: "/acuarelas/macho-hembra.webp",
                 alt: "Una hembra, arriba, con una aguja larga y recta al final del cuerpo, y un macho, abajo, sin ella.",
                 pie: "Arriba, la hembra con su ovipositor; abajo, el macho.",
               }}
@@ -225,7 +225,7 @@ function Crecimiento() {
         <figure className="lg:col-span-5">
           <div className="relative mx-auto h-32 w-full max-w-[420px] sm:h-40">
             <Image
-              src="/ilustraciones/ciclo.webp"
+              src="/acuarelas/ciclo.webp"
               alt="El ciclo de vida del grillo: huevo, ninfa sin alas y adulto con alas."
               fill
               sizes="(max-width: 1024px) 90vw, 420px"
@@ -332,7 +332,7 @@ function ImportanciaCaptura() {
           <h3 className="t-h2">Dónde buscarlos</h3>
           <div className="relative mt-6 h-44 w-full max-w-[360px]">
             <Image
-              src="/ilustraciones/donde-buscar.webp"
+              src="/acuarelas/donde-buscar.webp"
               alt="Hojarasca, leña vieja y piedras, donde se esconden los grillos."
               fill
               sizes="360px"
