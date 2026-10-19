@@ -76,10 +76,15 @@ COLUMNAS_EXTRA = [
     ("observaciones", "Observaciones"),
 ]
 
+#: Formulación vigente de las tres dietas. En septiembre de 2026 se ajustó
+#: para estandarizar las proporciones y favorecer el consumo: antes el
+#: ingrediente principal iba al 80 % con harina de choclo y avena en hojuelas.
+#: La avena va molida porque los grillos se llevan las hojuelas y dejan el
+#: resto de la comida sin consumir.
 DIETAS = [
-    ("D1", "Harina de bore (80%), harina de choclo (10%), avena en hojuelas (10%)"),
-    ("D2", "Harina de botón de oro (80%), harina de choclo (10%), avena en hojuelas (10%)"),
-    ("D3", "Salvado de trigo (80%), harina de choclo (10%), avena en hojuelas (10%)"),
+    ("D1", "Harina de bore (50%), harina de maíz (30%), avena molida (20%)"),
+    ("D2", "Harina de botón de oro (50%), harina de maíz (30%), avena molida (20%)"),
+    ("D3", "Salvado de trigo (50%), harina de maíz (30%), avena molida (20%)"),
 ]
 
 # --------------------------------------------------------------------------

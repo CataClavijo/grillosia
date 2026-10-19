@@ -18,7 +18,7 @@ No hay librerías de estado global ni frameworks CSS-in-JS. La superficie de dep
 
 El código vive dentro de la carpeta `web/`:
 
-- **`web/src/app/`** — Rutas del App Router de Next.js. Cada carpeta es una ruta (`/`, `/tutorial`, `/catalogo`, `/como-armar`, `/wizard`, `/chat`, `/proyectos`, `/contacto`, `/metodologia`, `/proyecto`, `/reset`). Incluye `layout.tsx` raíz con el banner y footer demo, y `page.tsx` por ruta.
+- **`web/src/app/`** — Rutas del App Router de Next.js. Cada carpeta es una ruta: `/` (portada), `/consulta` (las cuatro preguntas), `/resultado` (las tres dietas comparadas), `/chat` (asistente), `/caja` (armado de la caja), `/grillos` (guía visual de campo), `/proyecto`, `/consultas` (consultas guardadas), `/entrar` (inicio de sesión) y `/reset`. Bajo `api/` viven las rutas de servidor: `chat`, `voz`, `consultas` y `auth`.
 - **`web/src/components/`** — Componentes reutilizables (UI primitives, cards de proyecto, pasos del wizard, burbujas de chat, banner demo, footer demo, etc.).
 - **`web/src/lib/`** — Lógica pura y datos: `animals.ts` (catálogo de animales y etapas con metas de proteína), `chat-knowledge.ts` (base de conocimiento del chat informativo), `projects-store.ts` (hook de consultas guardadas), `journey.ts` y `use-paso.ts` (puntero del recorrido), `content/*.ts` (contenido de tutorial, catálogo, guía cajas, metodología).
 
