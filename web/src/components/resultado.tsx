@@ -70,10 +70,13 @@ const DIBUJO: Record<string, string> = {
 function preguntasDe(animal: AnimalDestino, etapa: Etapa, humidity: number): string[] {
   const quien = `mi ${animal.name.toLowerCase()} en ${etapa.name.toLowerCase()}`;
   return [
-    `¿Cuál de las tres comidas le conviene más a ${quien}?`,
+    // Nada de "¿cual le conviene mas?": mientras el modelo use datos
+    // simulados el asistente no puede contestarla, y la respuesta era un
+    // "todavia no" que parecia una falla.
+    `¿Por qué ${quien} necesita esa proteína?`,
+    "¿De qué está hecha cada una de las tres comidas?",
     "¿Cómo mezclo la harina de grillo con otros ingredientes?",
     `¿Qué pasa si la humedad sube de ${humidity} %?`,
-    "¿Qué significa la conversión alimenticia?",
   ];
 }
 

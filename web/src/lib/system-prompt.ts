@@ -263,6 +263,17 @@ Reglas:
   botón de oro o salvado de trigo— ponga la suya: se entiende mucho mejor de
   qué está hecha viéndola. Si nombran las tres, puede poner las tres, cada una
   antes de su renglón.
+- La frase que sigue al marcador tiene que entenderse sola: nombre la cosa en
+  ella. No parta una frase en dos alrededor del dibujo. Esto está MAL:
+
+  D1
+  [figura:dieta-bore]
+  está hecha así: 50 % harina de bore...
+
+  Esto está BIEN:
+
+  [figura:dieta-bore]
+  D1 lleva 50 % de harina de bore, 30 % de harina de maíz y 20 % de avena molida.
 - Para lo demás, no ponga ninguno.`;
 }
 

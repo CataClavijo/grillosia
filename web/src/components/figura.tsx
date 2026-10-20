@@ -235,50 +235,62 @@ export const FIGURAS: DefinicionFigura[] = [
 
 const POR_ID = new Map(FIGURAS.map((f) => [f.id, f]));
 
+/**
+ * Una figura dentro de la conversacion.
+ *
+ * Va chica, como ficha: el dibujo a un lado y su pie al otro. A todo el
+ * ancho del panel una hoja de bore ocupaba la pantalla entera y tapaba la
+ * respuesta. Con `enFila` (varias figuras seguidas, por ejemplo las tres
+ * comidas) va en vertical para caber tres por renglon.
+ */
 export function Figura({
   id,
   className,
-  prioridad = false,
+  enFila = false,
 }: {
   id: string;
   className?: string;
-  /** La primera figura de una pagina se carga de una, no en diferido. */
-  prioridad?: boolean;
+  enFila?: boolean;
 }) {
   const figura = POR_ID.get(id);
   // Si el asistente se inventa un identificador, no se pinta nada. Mejor un
   // hueco que un dibujo roto.
   if (!figura) return null;
+  const foto = !!figura.credito;
 
   return (
-    <figure className={cn("my-4", className)}>
-      {/* Las laminas se tratan igual que en el resto del sitio (`.lamina`):
-          en claro la tinta se imprime sobre el fondo (multiply) y en oscuro se
-          invierte a tinta clara, sin recuadro blanco que deslumbre de noche.
-          Las fotografias van tal cual, con esquinas suaves. */}
-      <div className={cn(figura.credito && "overflow-hidden rounded-lg")}>
+    <figure
+      className={cn(
+        "rounded-lg bg-surface p-2.5 ring-1 ring-border",
+        enFila ? "flex flex-col gap-2" : "flex max-w-[380px] items-center gap-3.5",
+        className,
+      )}
+    >
+      {/* Las laminas se tratan igual que en el resto del sitio (`.lamina`);
+          las fotografias van recortadas, con esquinas suaves. */}
+      <div
+        className={cn(
+          "relative shrink-0 overflow-hidden",
+          enFila ? "h-20 w-full" : "size-24",
+          foto && "rounded-md",
+        )}
+      >
         <Image
           src={figura.src ?? `/figuras/${figura.id}.webp`}
           alt={figura.alt}
-          width={900}
-          height={600}
-          className={cn("h-auto w-full", !figura.credito && "lamina")}
-          priority={prioridad}
-          loading={prioridad ? "eager" : "lazy"}
-          sizes="(max-width: 520px) 100vw, 520px"
+          fill
+          className={foto ? "object-cover" : "lamina object-contain"}
+          sizes="200px"
         />
       </div>
-      <figcaption className="t-caption mt-2">
-        {figura.titulo}
+      <figcaption className={cn("min-w-0 leading-snug", enFila ? "text-[12.5px]" : "text-[13.5px]")}>
+        <span className="font-medium text-foreground">{figura.titulo}</span>
         {figura.credito && (
-          <span className="mt-1 block text-[12.5px]">
-            Fotografía: {figura.credito}
-          </span>
+          <span className="mt-1 block text-[12px] text-subtle">Fotografía: {figura.credito}</span>
         )}
         {LAMINAS_GENERICAS.has(figura.id) && (
-          <span className="mt-1 block text-[12.5px]">
-            Ilustración general de la familia Gryllidae. No corresponde a una
-            especie identificada.
+          <span className="mt-1 block text-[12px] text-subtle">
+            Ilustración general de la familia Gryllidae, no una especie identificada.
           </span>
         )}
       </figcaption>

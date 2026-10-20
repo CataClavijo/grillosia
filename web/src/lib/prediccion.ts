@@ -85,7 +85,9 @@ export function usePrediccion(
 
     void (async () => {
       try {
-        const res = await fetch(`${API}/api/v1/predict`, {
+        // Por el servidor de la pagina (ver app/api/prediccion): el modelo
+        // solo acepta pedidos directos del navegador desde grillosia.com.
+        const res = await fetch("/api/prediccion", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify(cuerpo),
