@@ -702,6 +702,8 @@ function PreguntaClima({
         columnas="grid-cols-2 sm:grid-cols-4"
       />
 
+      {/* Con las dos elegidas sobra: ya esta "Ver mi resultado" abajo. */}
+      {(temp == null || humidity == null) && (
       <button
         type="button"
         onClick={() => onTerminar(temp ?? TEMP_TIPICA, humidity ?? HUMEDAD_TIPICA)}
@@ -716,13 +718,12 @@ function PreguntaClima({
               ? `Usar lo típico del Piedemonte: ${TEMP_TIPICA} °C y ${HUMEDAD_TIPICA} % de humedad`
               : temp == null
                 ? `Usar ${TEMP_TIPICA} °C, lo típico del Piedemonte`
-                : humidity == null
-                  ? `Usar ${HUMEDAD_TIPICA} % de humedad, lo típico del Piedemonte`
-                  : "Ver mi resultado con lo que eligió"}
+                : `Usar ${HUMEDAD_TIPICA} % de humedad, lo típico del Piedemonte`}
           </span>
         </span>
         <ArrowRight className="size-4 shrink-0 text-subtle transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
       </button>
+      )}
     </div>
   );
 }
