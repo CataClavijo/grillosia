@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 
 import { Logo } from "@/components/logo";
 import { SiteNav } from "@/components/site-nav";
-import { Pasos } from "@/components/ds/pasos";
 import { cn } from "@/lib/utils";
 
 /**
@@ -18,14 +17,16 @@ import { cn } from "@/lib/utils";
  *  - a la derecha, siempre visible, el boton "Hacer mi consulta" (en celular
  *    tambien, compacto, al lado del menu);
  *  - a la izquierda, separado, lo que se aprende: la guia de cria (caja y
- *    grillos) y "Sobre GrillosIA";
+ *    grillos) y "Sobre GrillosIA". Sin el rotulo "Guia" delante: parecia un
+ *    enlace y no hacia nada;
  *  - "Mis consultas" junto al boton, porque es volver a lo mismo.
  * "Inicio" no va (el logo lleva al inicio) y "Vea su resultado" tampoco:
  * el resultado se alcanza haciendo o abriendo una consulta.
  *
- * En el camino guiado (modo `camino`) la cabecera no cambia de forma: debajo
- * aparece el indicador de pasos (ver `Pasos`), y en las paradas 3 y 4 se
- * quita el boton de la consulta, porque la persona ya esta en ella.
+ * Mientras se contesta la consulta (modo `enfocado`) la cabecera se reduce
+ * al logo y a "Salir": cuatro preguntas seguidas se contestan mejor sin un
+ * menu que invite a irse a otra parte. Los pasos de la consulta van debajo,
+ * en la pagina (ver `Pasos`).
  *
  * El cambio de tema (claro/oscuro) esta en el menu y en el pie.
  */
@@ -37,12 +38,9 @@ const PROYECTO = { href: "/proyecto", titulo: "Sobre GrillosIA" };
 
 export function Barra({
   modo = "sitio",
-  paso,
   className,
 }: {
-  modo?: "sitio" | "camino";
-  /** Numero de la parada, en modo `camino`. */
-  paso?: number;
+  modo?: "sitio" | "enfocado";
   className?: string;
 }) {
   const pathname = usePathname();
@@ -55,8 +53,7 @@ export function Barra({
     return () => window.removeEventListener("scroll", alMover);
   }, []);
 
-  const enCamino = modo === "camino" && !!paso;
-  const enConsulta = enCamino && paso! >= 3;
+  const enfocado = modo === "enfocado";
 
   const enlace = (href: string, titulo: string) => {
     const activa = pathname === href;
@@ -79,12 +76,11 @@ export function Barra({
   };
 
   return (
-    <>
     <header
       className={cn(
         "sticky top-0 z-40 w-full border-b bg-background/90 backdrop-blur-md transition-[border-color] duration-[var(--dur-media)]",
-        // En el camino la linea va siempre: separa la cabecera de los pasos.
-        bajado || enCamino ? "border-border" : "border-transparent",
+        // En modo enfocado la linea va siempre: separa la cabecera de los pasos.
+        bajado || enfocado ? "border-border" : "border-transparent",
         className,
       )}
     >
@@ -99,12 +95,19 @@ export function Barra({
           <Logo variante="compacto" prioridad className="lg:hidden" />
         </Link>
 
+        {enfocado && (
+          <Link
+            href="/"
+            className="ml-auto inline-flex h-10 items-center gap-1.5 rounded-md px-3 text-[14.5px] font-medium text-subtle transition-colors hover:bg-foreground/[0.04] hover:text-foreground"
+          >
+            <X className="size-4" />
+            Salir
+          </Link>
+        )}
+
         {/* Lo que se aprende: a la izquierda, junto a la marca. */}
-        <nav className="hidden lg:block" aria-label="Guía y proyecto">
+        <nav className={cn("hidden", !enfocado && "lg:block")} aria-label="Guía y proyecto">
           <ul className="flex items-center">
-            <li className="t-eyebrow mr-2 text-faint" aria-hidden>
-              Guía
-            </li>
             {APRENDER.map((a) => (
               <li key={a.href}>{enlace(a.href, a.titulo)}</li>
             ))}
@@ -114,7 +117,7 @@ export function Barra({
         </nav>
 
         {/* Lo principal: la consulta, a la derecha. */}
-        <div className="ml-auto flex shrink-0 items-center gap-2">
+        <div className={cn("ml-auto shrink-0 items-center gap-2", enfocado ? "hidden" : "flex")}>
           <Link
             href="/consultas"
             className={cn(
@@ -126,7 +129,7 @@ export function Barra({
           >
             Mis consultas
           </Link>
-          {!enConsulta && (
+          {pathname !== "/consulta" && (
             <Link
               href="/consulta"
               className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3.5 text-[14px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover lg:h-10 lg:px-4 lg:text-[14.5px]"
@@ -142,7 +145,5 @@ export function Barra({
         </div>
       </div>
     </header>
-    {enCamino && <Pasos actual={paso!} />}
-    </>
   );
 }

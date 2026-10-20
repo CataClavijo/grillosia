@@ -18,10 +18,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { Carrusel } from "@/components/ds/carrusel";
 import { EncabezadoSeccion } from "@/components/ds/encabezado-seccion";
 import { Revelar } from "@/components/ds/revelar";
-import { DiagramaCaja } from "@/components/diagrama-caja";
+import { MapaPasosCaja } from "@/components/mapa-pasos-caja";
 import { Paso } from "@/components/paso";
 import {
   CAJA_ARMADA,
@@ -32,7 +31,6 @@ import {
   MATERIALS,
   NOTA_IMPORTANTE,
   RANGOS_OBJETIVO,
-  type EnclosureStep,
   type IconoMaterial,
 } from "@/lib/content/enclosure";
 import { cn } from "@/lib/utils";
@@ -176,26 +174,10 @@ export default function PaginaCaja() {
             <EncabezadoSeccion
               rotulo="Paso a paso"
               titulo="Arme y cuide su caja en ocho pasos"
-              entrada="Cada número del mapa es un paso. Deslice para verlos y vuelva a cualquiera cuando lo necesite."
+              entrada="Cada número del mapa es un paso: tóquelo para verlo. También puede deslizar las tarjetas."
             />
           </Revelar>
-          <div className="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-12">
-            <div className="lg:col-span-5">
-              <div className="lg:sticky lg:top-28">
-                <p className="t-eyebrow mb-4 text-subtle">Mapa de la caja, vista desde arriba</p>
-                <DiagramaCaja leyenda={false} />
-              </div>
-            </div>
-            <Revelar className="min-w-0 lg:col-span-7" retraso={80}>
-              <Carrusel
-                etiqueta="Pasos para armar la caja"
-                claseElemento="basis-[86%] sm:basis-[calc(50%-10px)]"
-                elementos={ENCLOSURE_STEPS.map((s) => (
-                  <TarjetaPaso key={s.number} paso={s} total={ENCLOSURE_STEPS.length} />
-                ))}
-              />
-            </Revelar>
-          </div>
+          <MapaPasosCaja pasos={ENCLOSURE_STEPS} />
         </section>
 
         {/* ── 4. Condiciones objetivo: banda invertida y centrada ────── */}
@@ -297,41 +279,6 @@ function Banda({
 }
 
 /** Un paso del carrusel: numero, dibujo en caja fija, titulo y texto. */
-function TarjetaPaso({ paso: s, total }: { paso: EnclosureStep; total: number }) {
-  return (
-    <article className="flex h-full flex-col rounded-lg bg-surface p-6 ring-1 ring-border">
-      {/* El numero del paso manda (cifra grande, igual al del mapa); el
-          contador "07 / 08" queda como dato secundario. */}
-      <div className="flex items-baseline justify-between">
-        <span className="t-cifra text-[2.75rem] leading-none text-primary">
-          {dos(s.number)}
-        </span>
-        <span className="t-eyebrow text-subtle">de {dos(total)}</span>
-      </div>
-      {/* Caja fija para los ocho dibujos: mismo alto y misma base, sin
-          importar la proporcion de cada uno. */}
-      <div className="relative mt-5 h-32 w-full">
-        <Image
-          src={s.imagen}
-          alt=""
-          aria-hidden
-          fill
-          sizes="(max-width: 640px) 80vw, (max-width: 1024px) 45vw, 340px"
-          className="lamina object-contain object-bottom"
-        />
-      </div>
-      <h3 className="mt-6 font-display text-[1.6rem] font-semibold leading-tight">{s.title}</h3>
-      <p className="t-body mt-2 text-subtle">{s.body}</p>
-      {s.tip && (
-        <p className="t-caption mt-auto pt-5">
-          <span className="font-semibold text-foreground">Consejo: </span>
-          {s.tip}
-        </p>
-      )}
-    </article>
-  );
-}
-
 /** Rango con cifra grande y unidad aparte: "24–34 °C". Pensado para la banda invertida. */
 function Rango({
   etiqueta,

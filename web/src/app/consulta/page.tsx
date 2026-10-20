@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Check } from "lucide-react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ArrowRight, Check } from "lucide-react";
 
 import { Barra } from "@/components/barra";
 import { Estado } from "@/components/ds/estado";
+import { Pasos } from "@/components/ds/pasos";
 import { Revelar } from "@/components/ds/revelar";
 import { FuenteCientifica } from "@/components/fuente-cientifica";
 import { InfoTip } from "@/components/info-tip";
@@ -15,51 +17,57 @@ import { BarraAcciones } from "@/components/paso";
 import { ProteinaEtapa } from "@/components/proteina-etapa";
 import { TresComidas } from "@/components/tres-comidas";
 import {
-  CATEGORIAS,
   animalPorId,
   animalesDe,
   categoriaPorId,
   etapaPorId,
+  CATEGORIAS,
   type AnimalDestino,
   type Categoria,
   type CategoriaId,
   type Etapa,
 } from "@/lib/animals";
-import { useProjects } from "@/lib/projects-store";
+import {
+  PANTALLAS,
+  pantallasPara,
+  pasosConsulta,
+  primeraSinContestar,
+  type Pantalla,
+} from "@/lib/consulta-pasos";
 import { marcarPaso } from "@/lib/journey";
+import { useProjects } from "@/lib/projects-store";
 import { cn } from "@/lib/utils";
 import {
   clearWizardDraft,
   loadWizardDraft,
   saveWizardDraft,
+  type WizardDraft,
 } from "@/lib/wizard-draft";
 
 /**
- * Parada 3: la consulta.
+ * La consulta: lo que su animal necesita y que comida le conviene.
  *
- * Pregunta en orden de lo general a lo particular, porque lo que su animal
- * necesita cambia en cada nivel:
- *   categoria (peces, aves, cerdos) -> animal -> etapa productiva ->
- *   temperatura -> humedad.
- * Si una categoria tiene un solo animal (cerdos), esa pregunta se salta.
+ * Es su propio recorrido, separado de la guia de cria, con sus pasos a la
+ * vista: Animal · Etapa · Clima · Resultado.
  *
- * Al tocar una opcion se pasa sola a la siguiente pregunta: para quien usa el
- * celular con el pulgar, un toque menos es mucho. El boton "Continuar" de
- * abajo sirve para aceptar lo que ya viene marcado.
+ * Reglas que la hacen entendible:
+ *  - UNA pregunta por pantalla, y la pregunta es el titulo.
+ *  - Tocar una opcion pasa a la siguiente. No hay boton "Continuar" que
+ *    obligue a tocar dos veces ni que aparezca gris sin explicacion.
+ *  - Cada pantalla tiene su direccion (`/consulta?p=etapa`), asi que la
+ *    flecha de atras del navegador y la de la pagina hacen lo mismo.
+ *  - El clima va en una sola pantalla y nada viene marcado: o la persona
+ *    elige, o toca "No lo se" y se usa lo tipico del Piedemonte, dicho en
+ *    voz alta.
+ *  - Entrar a `/consulta` sin pantalla es empezar una consulta NUEVA. Las
+ *    anteriores quedan en "Mis consultas"; antes, el boton "Hacer mi
+ *    consulta" llevaba al resultado viejo y no dejaba hacer otra.
  *
- * Lo que se guarda en la consulta sigue siendo `animalId` y `stageId`, como
- * antes: la categoria se deduce del animal, y las etapas con nombre viejo se
- * leen con `etapaPorId`.
+ * Lo contestado vive en el borrador de la sesion (`wizard-draft`). Al
+ * terminar se guarda como consulta y se abre el resultado.
  */
 
-type Pregunta = "categoria" | "animal" | "etapa" | "temp" | "humedad";
-
-interface ClimateOption {
-  value: number;
-  label: string;
-}
-
-const TEMP_OPTIONS: ClimateOption[] = [
+const TEMP_OPTIONS = [
   { value: 24, label: "Fresquito" },
   { value: 26, label: "Suave" },
   { value: 28, label: "Cálido" },
@@ -68,402 +76,237 @@ const TEMP_OPTIONS: ClimateOption[] = [
   { value: 34, label: "Muy caliente" },
 ];
 
-const HUMIDITY_OPTIONS: ClimateOption[] = [
+const HUMIDITY_OPTIONS = [
   { value: 50, label: "Seca" },
   { value: 60, label: "Normal" },
   { value: 70, label: "Húmeda" },
   { value: 80, label: "Muy húmeda" },
 ];
 
-/** Valores típicos del Piedemonte, preseleccionados: casi nadie tiene termómetro. */
+/** Lo tipico del Piedemonte, para quien no tiene termometro. */
 const TEMP_TIPICA = 28;
 const HUMEDAD_TIPICA = 60;
 
-/** Las preguntas que tocan con la categoria elegida. */
-function preguntasPara(categoryId: string): Pregunta[] {
-  const unSoloAnimal =
-    categoryId !== "" && animalesDe(categoryId as CategoriaId).length === 1;
-  return unSoloAnimal
-    ? ["categoria", "etapa", "temp", "humedad"]
-    : ["categoria", "animal", "etapa", "temp", "humedad"];
-}
+const VACIO: WizardDraft = {
+  categoryId: "",
+  animalId: "",
+  stageId: "",
+  temp: null,
+  humidity: null,
+};
 
 export default function ConsultaPage() {
-  const { active, activeId, create, setActive, updateSelection } = useProjects();
+  // `useSearchParams` necesita un Suspense alrededor para que la pagina se
+  // pueda generar de antemano.
+  return (
+    <Suspense fallback={<Barra modo="enfocado" />}>
+      <Consulta />
+    </Suspense>
+  );
+}
 
+function Consulta() {
   const router = useRouter();
-  const [pregunta, setPregunta] = useState<Pregunta | "listo">("categoria");
-  const [categoryId, setCategoryId] = useState("");
-  const [animalId, setAnimalId] = useState("");
-  const [stageId, setStageId] = useState("");
-  const [temp, setTemp] = useState<number | null>(null);
-  const [humidity, setHumidity] = useState<number | null>(null);
-  const guardado = useRef(false);
-  /**
-   * Categoria que llega de la portada (`/consulta?categoria=peces`).
-   * `undefined`: aun no se leyo; `null`: no hay, o la persona ya contesto
-   * algo. Se conserva hasta la primera respuesta porque las consultas
-   * guardadas pueden cargar un momento despues del primer render.
-   */
-  const categoriaUrl = useRef<CategoriaId | null | undefined>(undefined);
+  const params = useSearchParams();
+  const { active, activeId, loading, create, updateSelection } = useProjects();
+
+  const [r, setR] = useState<WizardDraft | null>(null);
+  const [guardando, setGuardando] = useState(false);
+  const iniciado = useRef(false);
+
+  const pedida = params.get("p") as Pantalla | null;
+  const pantalla: Pantalla = pedida && PANTALLAS.includes(pedida) ? pedida : "animal";
 
   useEffect(() => {
     marcarPaso("3");
   }, []);
 
-  // Hidratación: proyecto activo primero, si no el borrador.
+  /**
+   * Arranque. Se decide una sola vez, segun como se llego:
+   *  - `?editar=1`: corregir la consulta abierta (desde el resultado).
+   *  - `?categoria=peces`: consulta nueva con la categoria ya elegida.
+   *  - `?p=...`: seguir con el borrador (recargar, o volver con el navegador).
+   *  - nada: consulta nueva desde cero.
+   */
   useEffect(() => {
-    /**
-     * ¿Vino a cambiar sus respuestas?
-     *
-     * Sin esto, entrar con una consulta ya contestada saltaba al final, que
-     * a su vez empuja a /resultado: el boton "cambiar" mandaba aqui y rebotaba
-     * de vuelta al instante. Se lee de la URL ya montado, no con
-     * `useSearchParams`, para no obligar a envolver la pagina en un Suspense
-     * por un dato que solo importa en el navegador.
-     */
-    const params =
-      typeof window !== "undefined"
-        ? new URLSearchParams(window.location.search)
-        : new URLSearchParams();
+    if (iniciado.current) return;
     const editar = params.has("editar");
+    if (editar && loading) return; // espera a tener la consulta abierta
+    iniciado.current = true;
 
-    /**
-     * Inicio rapido desde la portada: la categoria elegida alli manda. Se
-     * lee de la URL una sola vez y se quita de la direccion, para que
-     * recargar la pagina no vuelva a reiniciar la consulta.
-     */
-    if (categoriaUrl.current === undefined) {
-      const c = params.get("categoria");
-      categoriaUrl.current = !editar && c && categoriaPorId(c) ? (c as CategoriaId) : null;
-      if (categoriaUrl.current) router.replace("/consulta", { scroll: false });
-    }
-    const forzada = categoriaUrl.current;
-
-    if (forzada && active) {
-      // Si la consulta abierta es de otra categoria, o ya esta terminada,
-      // la persona viene a empezar una nueva: se suelta la activa (queda
-      // guardada en "Mis consultas") y el efecto vuelve a correr sin ella.
+    if (editar && active?.selection.animalId) {
       const a = animalPorId(active.selection.animalId);
-      const terminada =
-        !!etapaPorId(a, active.selection.stageId) &&
-        active.selection.temp !== undefined &&
-        active.selection.humidity !== undefined;
-      if (a?.category !== forzada || terminada) {
-        setActive(null);
-        return;
-      }
-      categoriaUrl.current = null;
+      const borrador: WizardDraft = {
+        categoryId: a?.category ?? "",
+        animalId: active.selection.animalId,
+        stageId: etapaPorId(a, active.selection.stageId)?.id ?? "",
+        temp: active.selection.temp ?? null,
+        humidity: active.selection.humidity ?? null,
+        proyectoId: activeId ?? undefined,
+      };
+      saveWizardDraft(borrador);
+      setR(borrador);
+      router.replace(`/consulta?p=${pedida ?? "animal"}`, { scroll: false });
+      return;
     }
 
-    if (active && active.selection.animalId) {
-      const a = animalPorId(active.selection.animalId);
-      const e = etapaPorId(a, active.selection.stageId);
-      setCategoryId(a?.category ?? "");
-      setAnimalId(active.selection.animalId);
-      // Se usa el id actual de la etapa, aunque la consulta traiga uno viejo.
-      setStageId(e?.id ?? "");
-      setTemp(active.selection.temp ?? null);
-      setHumidity(active.selection.humidity ?? null);
-      if (editar) {
-        // Al venir a cambiar se empieza por la primera pregunta, con lo
-        // contestado ya puesto: se toca solo lo que se quiere mover.
-        guardado.current = false;
-        setPregunta("categoria");
-      } else if (
-        e &&
-        active.selection.temp !== undefined &&
-        active.selection.humidity !== undefined
-      ) {
-        setPregunta("listo");
+    const c = params.get("categoria");
+    if (c && categoriaPorId(c)) {
+      const lista = animalesDe(c as CategoriaId);
+      const borrador: WizardDraft = {
+        ...VACIO,
+        categoryId: c,
+        animalId: lista.length === 1 ? lista[0].id : "",
+      };
+      saveWizardDraft(borrador);
+      setR(borrador);
+      router.replace(`/consulta?p=${lista.length === 1 ? "etapa" : "especie"}`, { scroll: false });
+      return;
+    }
+
+    if (pedida) {
+      const borrador = loadWizardDraft() ?? VACIO;
+      setR(borrador);
+      // Si la direccion pide una pantalla a la que todavia no se llega (por
+      // ejemplo un enlace viejo), se va a la primera que falta contestar.
+      const falta = primeraSinContestar(borrador);
+      const lista = pantallasPara(borrador.categoryId ?? "");
+      if (lista.indexOf(pedida) > lista.indexOf(falta)) {
+        router.replace(`/consulta?p=${falta}`, { scroll: false });
       }
       return;
     }
-    const draft = loadWizardDraft();
-    if (forzada) {
-      const catDraft = draft
-        ? (animalPorId(draft.animalId)?.category ?? draft.categoryId ?? "")
-        : "";
-      if (catDraft !== forzada) {
-        // Empieza con la categoria elegida en la portada. El clima que ya
-        // hubiera contestado se conserva: no depende del animal.
-        const lista = animalesDe(forzada);
-        const unico = lista.length === 1 ? lista[0].id : "";
-        setCategoryId(forzada);
-        setAnimalId(unico);
-        setStageId("");
-        setTemp(draft?.temp ?? null);
-        setHumidity(draft?.humidity ?? null);
-        setPregunta(unico ? "etapa" : "animal");
-        return;
-      }
-    }
-    if (draft) {
-      const a = animalPorId(draft.animalId);
-      const e = etapaPorId(a, draft.stageId);
-      const cat = a?.category ?? draft.categoryId ?? "";
-      setCategoryId(cat);
-      setAnimalId(a ? draft.animalId : "");
-      setStageId(e?.id ?? "");
-      setTemp(draft.temp);
-      setHumidity(draft.humidity);
-      if (!cat) setPregunta("categoria");
-      else if (!a) setPregunta("animal");
-      else if (!e) setPregunta("etapa");
-      else if (draft.temp === null) setPregunta("temp");
-      else if (draft.humidity === null) setPregunta("humedad");
-      else setPregunta("listo");
-    }
+
+    clearWizardDraft();
+    setR(VACIO);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeId]);
+  }, [loading]);
 
-  useEffect(() => {
-    if (activeId) return;
-    saveWizardDraft({ categoryId, animalId, stageId, temp, humidity });
-  }, [activeId, categoryId, animalId, stageId, temp, humidity]);
-
-  const categoria = categoriaPorId(categoryId);
-  const animal = useMemo(() => animalPorId(animalId), [animalId]);
-  const stage = etapaPorId(animal, stageId);
-
-  const preguntas = preguntasPara(categoryId);
-  const indice =
-    pregunta === "listo" ? preguntas.length : preguntas.indexOf(pregunta);
-
-  const persist = (patch: Parameters<typeof updateSelection>[1]) => {
-    if (activeId) void updateSelection(activeId, patch);
+  const actualizar = (cambio: Partial<WizardDraft>) => {
+    setR((prev) => {
+      const nuevo = { ...(prev ?? VACIO), ...cambio };
+      saveWizardDraft(nuevo);
+      return nuevo;
+    });
   };
 
-  const siguiente = (desde: Pregunta, cat = categoryId) => {
-    // En cuanto la persona contesta algo, la categoria de la portada ya
-    // cumplio su papel: una consulta que se guarde despues no debe soltarse.
-    categoriaUrl.current = null;
-    const lista = preguntasPara(cat);
-    const i = lista.indexOf(desde);
-    setPregunta(i + 1 < lista.length ? lista[i + 1] : "listo");
-  };
+  const ir = (p: Pantalla) => router.push(`/consulta?p=${p}`);
 
-  const anterior = () => {
-    if (pregunta === "listo") return;
-    const i = preguntas.indexOf(pregunta);
-    if (i > 0) setPregunta(preguntas[i - 1]);
-  };
+  const categoria = categoriaPorId(r?.categoryId ?? "");
+  const animal = useMemo(() => animalPorId(r?.animalId), [r?.animalId]);
+  const etapa = etapaPorId(animal, r?.stageId);
+  const lista = pantallasPara(r?.categoryId ?? "");
+  const anterior = lista[lista.indexOf(pantalla) - 1];
 
-  /* ── respuestas ───────────────────────────────────────────────────── */
+  /* ── respuestas: cada una guarda y pasa a la siguiente ─────────────── */
 
   const elegirCategoria = (id: CategoriaId) => {
-    if (id !== categoryId) {
+    const animales = animalesDe(id);
+    const unico = animales.length === 1 ? animales[0].id : "";
+    if (id !== r?.categoryId) {
       // Otra categoria: lo elegido debajo ya no aplica.
-      const lista = animalesDe(id);
-      const unico = lista.length === 1 ? lista[0].id : "";
-      setAnimalId(unico);
-      setStageId("");
-      persist({ animalId: unico || undefined, stageId: undefined });
+      actualizar({ categoryId: id, animalId: unico, stageId: "" });
     }
-    setCategoryId(id);
-    siguiente("categoria", id);
+    ir(unico ? "etapa" : "especie");
   };
 
   const elegirAnimal = (id: string) => {
-    if (id !== animalId) {
-      setStageId("");
-      persist({ animalId: id, stageId: undefined });
-    }
-    setAnimalId(id);
-    siguiente("animal");
+    if (id !== r?.animalId) actualizar({ animalId: id, stageId: "" });
+    ir("etapa");
   };
 
   const elegirEtapa = (id: string) => {
-    setStageId(id);
-    persist({ stageId: id });
-    siguiente("etapa");
+    actualizar({ stageId: id });
+    ir("clima");
   };
-
-  const elegirTemp = (v: number) => {
-    setTemp(v);
-    persist({ temp: v });
-    siguiente("temp");
-  };
-
-  const elegirHumedad = (v: number) => {
-    setHumidity(v);
-    persist({ humidity: v });
-    // Fin de la parada 3. El resultado vive en su propia ruta.
-    siguiente("humedad");
-  };
-
-  /** "Continuar": acepta lo que ya esta marcado en la pregunta actual. */
-  const continuar = () => {
-    if (pregunta === "categoria" && categoryId) siguiente("categoria");
-    else if (pregunta === "animal" && animalId) siguiente("animal");
-    else if (pregunta === "etapa" && stage) siguiente("etapa");
-    else if (pregunta === "temp") elegirTemp(temp ?? TEMP_TIPICA);
-    else if (pregunta === "humedad") elegirHumedad(humidity ?? HUMEDAD_TIPICA);
-  };
-
-  const puedeContinuar =
-    (pregunta === "categoria" && !!categoryId) ||
-    (pregunta === "animal" && !!animalId) ||
-    (pregunta === "etapa" && !!stage) ||
-    pregunta === "temp" ||
-    pregunta === "humedad";
 
   /**
-   * Al contestar la ultima pregunta: se guarda la consulta y se pasa a la
-   * parada 4, que vive en su propia ruta.
-   *
-   * La navegacion va en `finally` a proposito. El resultado se calcula con lo
-   * que el productor acaba de responder, no con lo guardado, asi que aunque
-   * el guardado falle —sin senal, por ejemplo— igual tiene que ver su
-   * resultado.
+   * Termina: guarda la consulta y abre el resultado. La navegacion va en
+   * `finally` a proposito: el resultado se calcula con lo contestado, asi
+   * que aunque el guardado falle —sin senal, por ejemplo— igual lo ve.
    */
-  useEffect(() => {
-    if (pregunta !== "listo" || guardado.current) return;
-    if (!animal || !stage || temp === null || humidity === null) return;
-    guardado.current = true;
+  const terminar = async (temp: number, humidity: number) => {
+    if (!r || !animal || !etapa || guardando) return;
+    actualizar({ temp, humidity });
+    setGuardando(true);
     marcarPaso("listo");
-
-    const seleccion = { animalId, stageId: stage.id, temp, humidity };
-
-    void (async () => {
-      try {
-        if (activeId) {
-          await updateSelection(activeId, seleccion);
-        } else {
-          const fecha = new Date().toLocaleDateString("es-CO", {
-            day: "numeric",
-            month: "short",
-          });
-          // create deja la consulta abierta, no hace falta setActive aparte.
-          await create(`${animal.name} · ${stage.name} · ${fecha}`, seleccion);
-          clearWizardDraft();
-        }
-      } catch {
-        // El guardado se reintentara solo la proxima vez.
-        guardado.current = false;
-      } finally {
-        router.push("/resultado");
+    const seleccion = { animalId: animal.id, stageId: etapa.id, temp, humidity };
+    try {
+      if (r.proyectoId) {
+        await updateSelection(r.proyectoId, seleccion);
+      } else {
+        const fecha = new Date().toLocaleDateString("es-CO", {
+          day: "numeric",
+          month: "short",
+        });
+        // `create` deja la consulta abierta.
+        const id = await create(`${animal.name} · ${etapa.name} · ${fecha}`, seleccion);
+        // Si vuelve desde el resultado y cambia algo, se corrige ESTA
+        // consulta en vez de crear otra igual.
+        actualizar({ temp, humidity, proyectoId: id });
       }
-    })();
-  }, [
-    pregunta,
-    animal,
-    stage,
-    temp,
-    humidity,
-    activeId,
-    animalId,
-    create,
-    updateSelection,
-    router,
-  ]);
-
-  const nuevaConsulta = () => {
-    guardado.current = false;
-    setActive(null);
-    clearWizardDraft();
-    setCategoryId("");
-    setAnimalId("");
-    setStageId("");
-    setTemp(null);
-    setHumidity(null);
-    setPregunta("categoria");
+    } catch {
+      // Se guardara la proxima vez; el resultado se ve igual.
+    } finally {
+      router.push("/resultado");
+    }
   };
 
-
-  const enListo = pregunta === "listo";
+  const listo = r !== null;
 
   return (
     <>
-      <Barra modo="camino" paso={3} />
-      <main className="mx-auto flex min-h-[calc(100dvh-60px)] w-full max-w-[1240px] flex-col px-5 pt-8 lg:px-8 lg:pt-12">
+      <Barra modo="enfocado" />
+      <Pasos pasos={pasosConsulta()} actual={PANTALLAS_PASO[pantalla]} />
+      <main className="mx-auto flex min-h-[calc(100dvh-var(--alto-barra)-48px)] w-full max-w-[1240px] flex-col px-5 pt-7 lg:px-8 lg:pt-12">
         <div className="grid flex-1 content-start gap-10 pb-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-16 lg:pb-16">
           <div className="min-w-0">
-            <header>
-              <h1 className="t-h1">Haga su consulta</h1>
-              {/* La explicacion solo hace falta al empezar. En las preguntas
-                  siguientes, en celular, empujaba la pregunta fuera de la
-                  primera pantalla. */}
-              <p
-                className={cn(
-                  "t-lead mt-3",
-                  pregunta !== "categoria" && "hidden lg:block",
-                )}
-              >
-                Cuéntenos a qué animal le va a dar la harina, en qué etapa está
-                y cómo es su clima. Con eso comparamos las tres comidas en
-                estudio para su caso.
-              </p>
-            </header>
-
-            {/* En celular, lo elegido cabe en una linea: el panel lateral
-                completo empujaria la pregunta fuera de la pantalla. */}
-            <ResumenLinea
+            {/* Lo contestado, en una linea, para ubicarse. Cada parte lleva
+                a su pregunta. */}
+            <Respuestas
               categoria={categoria}
               animal={animal}
-              etapa={stage}
-              temp={temp}
-              humidity={humidity}
-              onNueva={categoryId ? nuevaConsulta : undefined}
-              className="mt-6 lg:hidden"
+              etapa={etapa}
+              pantalla={pantalla}
+              className="mb-6 lg:hidden"
             />
 
-            <section className="mt-10 lg:mt-14">
-              {enListo ? (
-                <Estado tipo="cargando" titulo="Preparando su resultado" compacto>
-                  Guardamos su consulta y abrimos la comparación.
-                </Estado>
-              ) : (
-                <div
-                  key={pregunta}
-                  className="animate-in fade-in-0 slide-in-from-bottom-2 duration-[250ms] ease-[var(--ease-natural)]"
-                >
-                  <IndicadorPregunta actual={indice + 1} total={preguntas.length} />
+            {!listo ? null : guardando ? (
+              <Estado tipo="cargando" titulo="Preparando su resultado" compacto>
+                Guardamos su consulta y abrimos la comparación.
+              </Estado>
+            ) : (
+              <div
+                key={pantalla}
+                className="animate-in fade-in-0 slide-in-from-bottom-2 duration-[250ms] ease-[var(--ease-natural)]"
+              >
+                {pantalla === "animal" && (
+                  <PreguntaCategoria value={r.categoryId ?? ""} onSelect={elegirCategoria} />
+                )}
 
-                  {pregunta === "categoria" && (
-                    <PreguntaCategoria value={categoryId} onSelect={elegirCategoria} />
-                  )}
+                {pantalla === "especie" && categoria && (
+                  <PreguntaAnimal
+                    categoria={categoria}
+                    value={r.animalId}
+                    onSelect={elegirAnimal}
+                  />
+                )}
 
-                  {pregunta === "animal" && categoria && (
-                    <PreguntaAnimal
-                      categoria={categoria}
-                      value={animalId}
-                      onSelect={elegirAnimal}
-                    />
-                  )}
+                {pantalla === "etapa" && animal && (
+                  <PreguntaEtapa animal={animal} value={etapa?.id ?? ""} onSelect={elegirEtapa} />
+                )}
 
-                  {pregunta === "etapa" && animal && (
-                    <PreguntaEtapa
-                      animal={animal}
-                      value={stage?.id ?? ""}
-                      onSelect={elegirEtapa}
-                    />
-                  )}
-
-                  {pregunta === "temp" && (
-                    <PreguntaClima
-                      title="¿Qué tan caliente es el lugar donde cría los grillos?"
-                      help="Trabajamos con condiciones objetivo entre 24 y 34 °C. Si no está seguro, deje la que viene marcada."
-                      options={TEMP_OPTIONS}
-                      unit="°C"
-                      value={temp ?? TEMP_TIPICA}
-                      onSelect={elegirTemp}
-                    />
-                  )}
-
-                  {pregunta === "humedad" && (
-                    <PreguntaClima
-                      title="¿Y la humedad del aire?"
-                      help="Buscamos entre 50 y 80 % de humedad relativa (HR). Si no está seguro, deje la que viene marcada."
-                      options={HUMIDITY_OPTIONS}
-                      unit="% HR"
-                      value={humidity ?? HUMEDAD_TIPICA}
-                      onSelect={elegirHumedad}
-                    />
-                  )}
-                </div>
-              )}
-            </section>
+                {pantalla === "clima" && (
+                  <PreguntaClima
+                    temp={r.temp}
+                    humidity={r.humidity}
+                    onTemp={(v) => actualizar({ temp: v })}
+                    onHumidity={(v) => actualizar({ humidity: v })}
+                    onTerminar={terminar}
+                  />
+                )}
+              </div>
+            )}
           </div>
 
           <aside className="hidden lg:block" aria-label="Resumen de su consulta">
@@ -471,10 +314,9 @@ export default function ConsultaPage() {
               <ResumenConsulta
                 categoria={categoria}
                 animal={animal}
-                etapa={stage}
-                temp={temp}
-                humidity={humidity}
-                onNueva={categoryId ? nuevaConsulta : undefined}
+                etapa={etapa}
+                temp={r?.temp ?? null}
+                humidity={r?.humidity ?? null}
               />
               <TresComidas compacta />
             </div>
@@ -482,45 +324,70 @@ export default function ConsultaPage() {
         </div>
 
         <BarraAcciones
-          atras={indice > 0 && !enListo ? { onClick: anterior } : { href: "/grillos" }}
-          adelante={{
-            texto: pregunta === "humedad" ? "Ver mi resultado" : "Continuar",
-            onClick: continuar,
-            deshabilitado: !puedeContinuar || enListo,
-          }}
+          atras={anterior ? { href: `/consulta?p=${anterior}` } : { href: "/", texto: "Inicio" }}
+          adelante={
+            pantalla === "clima" && !guardando
+              ? {
+                  texto: "Ver mi resultado",
+                  onClick: () => {
+                    if (r?.temp != null && r?.humidity != null) void terminar(r.temp, r.humidity);
+                  },
+                  deshabilitado: r?.temp == null || r?.humidity == null,
+                }
+              : undefined
+          }
         />
       </main>
     </>
   );
 }
 
-/* ────────────────────────────────────────────────────────────────────────── */
+/** En que paso del indicador va cada pantalla. */
+const PANTALLAS_PASO: Record<Pantalla, number> = {
+  animal: 1,
+  especie: 1,
+  etapa: 2,
+  clima: 3,
+};
 
-/**
- * "Pregunta 2 de 5" con cinco trazos finos que se llenan. Es el avance
- * DENTRO de la consulta; el avance del camino ya lo dice la cabecera. Los
- * trazos cambian con una transicion de 250 ms.
- */
-function IndicadorPregunta({ actual, total }: { actual: number; total: number }) {
+/** Lo contestado hasta aqui, en una linea; cada parte lleva a su pregunta. */
+function Respuestas({
+  categoria,
+  animal,
+  etapa,
+  pantalla,
+  className,
+}: {
+  categoria?: Categoria;
+  animal?: AnimalDestino;
+  etapa?: Etapa;
+  pantalla: Pantalla;
+  className?: string;
+}) {
+  const partes: { texto: string; p: Pantalla }[] = [];
+  if (categoria && pantalla !== "animal") partes.push({ texto: categoria.name, p: "animal" });
+  if (animal && animalesDe(animal.category).length > 1 && pantalla !== "especie" && pantalla !== "animal")
+    partes.push({ texto: animal.name, p: "especie" });
+  if (etapa && pantalla === "clima") partes.push({ texto: etapa.name, p: "etapa" });
+  if (partes.length === 0) return null;
   return (
-    <div className="flex items-center gap-4">
-      <p className="t-eyebrow text-subtle">
-        Pregunta {actual} de {total}
-      </p>
-      <span className="flex gap-1" aria-hidden>
-        {Array.from({ length: total }, (_, i) => (
-          <span
-            key={i}
-            className={cn(
-              "h-[3px] w-5 rounded-full transition-colors duration-[250ms] ease-[var(--ease-natural)]",
-              i < actual ? "bg-primary" : "bg-border-strong/70",
-            )}
-          />
-        ))}
-      </span>
-    </div>
+    <p className={cn("flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[14px] text-subtle", className)}>
+      <span className="sr-only">Lleva elegido: </span>
+      {partes.map((x, i) => (
+        <span key={x.p} className="inline-flex items-center gap-1.5">
+          {i > 0 && <span aria-hidden className="text-faint">·</span>}
+          <Link
+            href={`/consulta?p=${x.p}`}
+            className="underline decoration-border-strong underline-offset-4 transition-colors hover:text-foreground"
+          >
+            {x.texto}
+          </Link>
+        </span>
+      ))}
+    </p>
   );
 }
+
 
 function TituloPregunta({
   children,
@@ -530,11 +397,12 @@ function TituloPregunta({
   ayuda?: React.ReactNode;
 }) {
   return (
-    <div className="mt-3">
-      <h2 id="pregunta-actual" className="t-h2 text-balance">
+    <div>
+      {/* La pregunta ES el titulo de la pantalla. */}
+      <h1 id="pregunta-actual" className="t-h1 text-balance">
         {children}
-      </h2>
-      {ayuda && <div className="t-small mt-2 max-w-[60ch] text-subtle">{ayuda}</div>}
+      </h1>
+      {ayuda && <div className="t-lead mt-3 max-w-[60ch] text-subtle">{ayuda}</div>}
     </div>
   );
 }
@@ -722,10 +590,13 @@ function PreguntaEtapa({
     <div>
       <TituloPregunta
         ayuda={
-          <span className="inline-flex flex-wrap items-center">
-            Cada etapa productiva necesita una cantidad distinta de proteína.
-            <InfoTip termino="etapaProductiva" className="ml-0.5" />
-          </span>
+          <>
+            Cada etapa productiva necesita una cantidad distinta de{" "}
+            <span className="whitespace-nowrap">
+              proteína.
+              <InfoTip termino="etapaProductiva" className="ml-0.5 align-middle" />
+            </span>
+          </>
         }
       >
         ¿En qué etapa está su {animal.name.toLowerCase()}?
@@ -786,49 +657,123 @@ function PreguntaEtapa({
   );
 }
 
+/**
+ * El clima en una sola pantalla: temperatura y humedad.
+ *
+ * Nada viene marcado: antes los 28 °C aparecian elegidos sin que la persona
+ * los tocara. Quien no tiene termometro toca "No lo sé" y se usa lo tipico
+ * del Piedemonte, que se dice con todas las cifras.
+ */
 function PreguntaClima({
-  title,
-  help,
+  temp,
+  humidity,
+  onTemp,
+  onHumidity,
+  onTerminar,
+}: {
+  temp: number | null;
+  humidity: number | null;
+  onTemp: (v: number) => void;
+  onHumidity: (v: number) => void;
+  onTerminar: (temp: number, humidity: number) => void;
+}) {
+  return (
+    <div>
+      <TituloPregunta ayuda="Elija lo más parecido al lugar donde cría sus grillos. Con eso ajustamos la comparación.">
+        ¿Cómo es el clima donde cría sus grillos?
+      </TituloPregunta>
+
+      <GrupoClima
+        titulo="Temperatura"
+        ayuda="Trabajamos entre 24 y 34 °C."
+        options={TEMP_OPTIONS}
+        unit="°C"
+        value={temp}
+        onSelect={onTemp}
+        columnas="grid-cols-3 sm:grid-cols-6"
+      />
+      <GrupoClima
+        titulo="Humedad del aire"
+        ayuda="Humedad relativa (HR), entre 50 y 80 %."
+        options={HUMIDITY_OPTIONS}
+        unit="% HR"
+        value={humidity}
+        onSelect={onHumidity}
+        columnas="grid-cols-2 sm:grid-cols-4"
+      />
+
+      <button
+        type="button"
+        onClick={() => onTerminar(temp ?? TEMP_TIPICA, humidity ?? HUMEDAD_TIPICA)}
+        className="group mt-8 flex w-full items-center justify-between gap-4 rounded-lg border border-dashed border-border-strong px-5 py-4 text-left transition-colors hover:border-primary/60 hover:bg-primary-soft/40 sm:w-auto sm:min-w-[420px]"
+      >
+        <span className="flex flex-col">
+          <span className="text-[15.5px] font-semibold">
+            {temp == null && humidity == null ? "No lo sé" : "No sé el resto"}
+          </span>
+          <span className="t-small text-subtle">
+            {temp == null && humidity == null
+              ? `Usar lo típico del Piedemonte: ${TEMP_TIPICA} °C y ${HUMEDAD_TIPICA} % de humedad`
+              : temp == null
+                ? `Usar ${TEMP_TIPICA} °C, lo típico del Piedemonte`
+                : humidity == null
+                  ? `Usar ${HUMEDAD_TIPICA} % de humedad, lo típico del Piedemonte`
+                  : "Ver mi resultado con lo que eligió"}
+          </span>
+        </span>
+        <ArrowRight className="size-4 shrink-0 text-subtle transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+      </button>
+    </div>
+  );
+}
+
+function GrupoClima({
+  titulo,
+  ayuda,
   options,
   unit,
   value,
   onSelect,
+  columnas,
 }: {
-  title: string;
-  help: string;
-  options: ClimateOption[];
+  titulo: string;
+  ayuda: string;
+  options: { value: number; label: string }[];
   unit: string;
-  value: number;
+  value: number | null;
   onSelect: (v: number) => void;
+  columnas: string;
 }) {
+  const id = `clima-${titulo.replace(/\s+/g, "-").toLowerCase()}`;
   return (
-    <div>
-      <TituloPregunta ayuda={help}>{title}</TituloPregunta>
-      <ul
-        role="group"
-        aria-labelledby="pregunta-actual"
-        className={cn(
-          "mt-8 grid gap-3",
-          options.length > 4 ? "grid-cols-2 sm:grid-cols-3 xl:grid-cols-6" : "grid-cols-2 sm:grid-cols-4",
+    <section className="mt-8" aria-labelledby={id}>
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+        <h2 id={id} className="text-[16px] font-semibold">
+          {titulo}
+        </h2>
+        <p className="t-small text-subtle">{ayuda}</p>
+        {value != null && (
+          <Check className="size-4 text-primary" aria-label="Elegida" strokeWidth={2.5} />
         )}
-      >
-        {options.map((opt, i) => (
-          <Revelar as="li" key={opt.value} retraso={i * 60}>
+      </div>
+      <ul role="group" aria-labelledby={id} className={cn("mt-3 grid gap-2.5", columnas)}>
+        {options.map((opt) => (
+          <li key={opt.value}>
             <Opcion
               selected={value === opt.value}
               onClick={() => onSelect(opt.value)}
-              className="min-h-[92px] flex-col justify-end gap-1.5 px-4 pt-6 pb-4"
+              className="min-h-[84px] flex-col justify-end gap-1 px-3.5 pt-5 pb-3.5"
             >
-              <span className="t-cifra text-[2rem] text-foreground">
+              <span className="t-cifra text-[1.75rem] text-foreground">
                 {opt.value}
                 <span className="t-unidad">{unit}</span>
               </span>
               <span className="text-[13px] leading-tight text-subtle">{opt.label}</span>
             </Opcion>
-          </Revelar>
+          </li>
         ))}
       </ul>
-    </div>
+    </section>
   );
 }
 
@@ -910,46 +855,5 @@ function ResumenConsulta({
         </div>
       </dl>
     </section>
-  );
-}
-
-/** Lo elegido en una sola linea, para celular y tableta. */
-function ResumenLinea({
-  categoria,
-  animal,
-  etapa,
-  temp,
-  humidity,
-  onNueva,
-  className,
-}: {
-  categoria?: Categoria;
-  animal?: AnimalDestino;
-  etapa?: Etapa;
-  temp: number | null;
-  humidity: number | null;
-  onNueva?: () => void;
-  className?: string;
-}) {
-  const partes = filasResumen(categoria, animal, etapa, temp, humidity)
-    .map((f) => f.valor)
-    .filter(Boolean);
-  if (partes.length === 0) return null;
-  return (
-    <div className={cn("flex flex-wrap items-baseline gap-x-3 gap-y-1", className)}>
-      <p className="text-[14px] text-subtle">
-        <span className="sr-only">Lleva elegido: </span>
-        {partes.join(" · ")}
-      </p>
-      {onNueva && (
-        <button
-          type="button"
-          onClick={onNueva}
-          className="text-[13px] font-medium text-subtle underline decoration-border-strong underline-offset-4 hover:text-foreground"
-        >
-          Empezar de nuevo
-        </button>
-      )}
-    </div>
   );
 }

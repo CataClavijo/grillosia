@@ -19,6 +19,12 @@ export interface WizardDraft {
   stageId: string;
   temp: number | null;
   humidity: number | null;
+  /**
+   * La consulta guardada que se esta corrigiendo. Con el, terminar de nuevo
+   * actualiza esa consulta en vez de crear otra repetida (por ejemplo al
+   * volver desde el resultado con la flecha del navegador).
+   */
+  proyectoId?: string;
 }
 
 export function loadWizardDraft(): WizardDraft | null {

@@ -13,6 +13,10 @@ import { cn } from "@/lib/utils";
  * igual en claro y en oscuro) y cada parte lleva el numero del paso que la
  * explica (1 a 8), para que el diagrama y el carrusel de pasos se lean juntos.
  *
+ * Con `onElegir` los numeros son botones: al tocar uno se resalta su parte
+ * en el dibujo y quien lo usa (el mapa de la caja) muestra ese paso. Con
+ * teclado se recorren con Tab y se eligen con Enter o espacio.
+ *
  * Al entrar en pantalla, los trazos se dibujan (stroke-dashoffset) y los
  * numeros aparecen despues. Con "reducir movimiento" se ve completo de una
  * vez (ver .diagrama-trazo en globals.css).
@@ -30,21 +34,92 @@ export const PARTES_CAJA = [
   { n: 8, nombre: "Esquina libre para limpiar" },
 ] as const;
 
+/** Donde va el numero de cada parte. */
+const MARCAS = [
+  { n: 1, x: 24, y: 30 },
+  { n: 2, x: 656, y: 96 },
+  { n: 3, x: 64, y: 372 },
+  { n: 4, x: 70, y: 62 },
+  { n: 5, x: 397, y: 168 },
+  { n: 6, x: 389, y: 282 },
+  { n: 7, x: 400, y: 72 },
+  { n: 8, x: 300, y: 372 },
+];
+
+/**
+ * La forma que se resalta de cada parte, en las coordenadas del dibujo.
+ * Va encima del trazo, con relleno terracota tenue y filo terracota.
+ */
+const RESALTE: Record<number, React.ReactNode> = {
+  1: <rect x="24" y="30" width="420" height="360" rx="22" />,
+  2: <rect x="516" y="96" width="110" height="228" rx="6" />,
+  3: <rect x="38" y="44" width="392" height="332" rx="14" />,
+  4: (
+    <>
+      {[70, 148, 226].map((x) => (
+        <rect key={x} x={x} y="70" width="56" height="280" rx="8" />
+      ))}
+    </>
+  ),
+  5: <circle cx="355" cy="200" r="38" />,
+  6: <circle cx="355" cy="310" r="30" />,
+  7: <rect x="318" y="72" width="78" height="54" rx="8" />,
+  8: <rect x="290" y="352" width="134" height="20" rx="6" />,
+};
+
 /** Marcador numerado: circulo terracota con el numero en blanco. */
 function Marca({
   x,
   y,
   n,
   retraso,
+  activo,
+  onElegir,
 }: {
   x: number;
   y: number;
   n: number;
   retraso: number;
+  activo?: boolean;
+  onElegir?: (n: number) => void;
 }) {
+  const parte = PARTES_CAJA[n - 1]?.nombre ?? "";
   return (
-    <g className="diagrama-marca" style={{ "--d": `${retraso}ms` } as React.CSSProperties}>
-      <circle cx={x} cy={y} r={15} className="fill-primary" />
+    <g
+      className={cn(
+        "diagrama-marca",
+        onElegir &&
+          "cursor-pointer outline-none [&:focus-visible>circle:first-child]:stroke-ring [&:focus-visible>circle:first-child]:stroke-[3]",
+      )}
+      style={{ "--d": `${retraso}ms` } as React.CSSProperties}
+      {...(onElegir && {
+        role: "button",
+        tabIndex: 0,
+        "aria-label": `Paso ${n}: ${parte}`,
+        "aria-pressed": !!activo,
+        onClick: () => onElegir(n),
+        onKeyDown: (e: React.KeyboardEvent) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onElegir(n);
+          }
+        },
+      })}
+    >
+      {/* Area de toque mas grande que el circulo (44 px en celular). */}
+      {onElegir && <circle cx={x} cy={y} r={26} className="fill-transparent" />}
+      {activo && (
+        <circle cx={x} cy={y} r={22} className="fill-primary/20 motion-safe:animate-pulse" />
+      )}
+      <circle
+        cx={x}
+        cy={y}
+        r={activo ? 17 : 15}
+        className={cn(
+          "fill-primary transition-[r] duration-200",
+          onElegir && !activo && "opacity-90 hover:opacity-100",
+        )}
+      />
       <text
         x={x}
         y={y}
@@ -62,10 +137,16 @@ function Marca({
 export function DiagramaCaja({
   className,
   leyenda = true,
+  activo,
+  onElegir,
 }: {
   className?: string;
   /** La lista numerada de partes. Se omite cuando los pasos van al lado. */
   leyenda?: boolean;
+  /** Numero de la parte resaltada (1 a 8). */
+  activo?: number;
+  /** Si llega, los numeros se pueden tocar. */
+  onElegir?: (n: number) => void;
 }) {
   const id = useId().replace(/:/g, "");
   const puntos = `sustrato-${id}`;
@@ -166,15 +247,27 @@ export function DiagramaCaja({
             Tapa
           </text>
 
+          {/* ── La parte elegida, resaltada ── */}
+          {activo && RESALTE[activo] && (
+            <g
+              key={activo}
+              aria-hidden
+              className="pointer-events-none fill-primary/15 stroke-primary animate-in fade-in-0 duration-200 [&_*]:[stroke-width:2.5]"
+            >
+              {RESALTE[activo]}
+            </g>
+          )}
+
           {/* ── Numeros de los pasos ── */}
-          <Marca x={24} y={30} n={1} retraso={900} />
-          <Marca x={656} y={96} n={2} retraso={960} />
-          <Marca x={64} y={372} n={3} retraso={1020} />
-          <Marca x={70} y={62} n={4} retraso={1080} />
-          <Marca x={397} y={168} n={5} retraso={1140} />
-          <Marca x={389} y={282} n={6} retraso={1200} />
-          <Marca x={400} y={72} n={7} retraso={1260} />
-          <Marca x={300} y={372} n={8} retraso={1320} />
+          {MARCAS.map((m, i) => (
+            <Marca
+              key={m.n}
+              {...m}
+              retraso={900 + i * 60}
+              activo={activo === m.n}
+              onElegir={onElegir}
+            />
+          ))}
         </svg>
 
         {leyenda && (

@@ -41,7 +41,7 @@ export default function ProjectsPage() {
 
   const abrir = (id: string) => {
     setActive(id);
-    router.push("/consulta");
+    router.push("/resultado");
   };
 
   /**

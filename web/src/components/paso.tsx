@@ -10,10 +10,10 @@ import { cn } from "@/lib/utils";
  * Armazon de una parada del camino.
  *
  * Hace tres cosas, y las tres son la razon de que exista:
- *  1. Dice en que parada va (la cabecera en modo `camino`: "Paso 3 de 4 ·
- *     Consulta" y una barra fina). Una sola senal de progreso.
- *  2. Deja UNA sola accion hacia adelante, al final.
- *  3. Ofrece volver, que no es lo mismo que ir al inicio.
+ *  1. Deja UNA sola accion hacia adelante, al final.
+ *  2. Ofrece volver, que no es lo mismo que ir al inicio.
+ *  3. Pone la misma cabecera del sitio: la guia (caja y grillos) no lleva
+ *     indicador de pasos; ese es de la consulta.
  *
  * La barra de acciones de abajo ocupa todo el ancho con fondo solido y
  * alinea sus botones con el contenido.
@@ -45,7 +45,7 @@ export function Paso({
 
   return (
     <>
-      <Barra modo="camino" paso={n} />
+      <Barra />
       <main
         aria-label={titulo}
         className={cn(

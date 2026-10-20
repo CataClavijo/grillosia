@@ -15,14 +15,23 @@ import { cn } from "@/lib/utils";
  *
  * El contenido sigue en el DOM aunque no se vea: se puede leer con lector de
  * pantalla y encontrar con la busqueda del navegador.
+ *
+ * Con `activo` se puede mover desde afuera (por ejemplo, tocando un numero
+ * del mapa de la caja); `onActivo` avisa cuando la persona lo desliza.
  */
 export function Carrusel({
   elementos,
   etiqueta,
   claseElemento = "basis-[86%] sm:basis-[calc(50%-10px)] lg:basis-[calc(33.333%-14px)]",
   className,
+  activo,
+  onActivo,
 }: {
   elementos: React.ReactNode[];
+  /** Elemento que se quiere mostrar; al cambiar, el carrusel se mueve a el. */
+  activo?: number;
+  /** Primer elemento visible tras deslizar con el dedo o con los botones. */
+  onActivo?: (i: number) => void;
   /** Nombre del carrusel para lectores de pantalla. */
   etiqueta: string;
   claseElemento?: string;
@@ -32,15 +41,59 @@ export function Carrusel({
   const [primero, setPrimero] = useState(0);
   const [visibles, setVisibles] = useState(1);
   const total = elementos.length;
+  // Mientras el carrusel se mueve por un `activo` de afuera, no se avisa
+  // del desplazamiento: si no, al pedir el ultimo paso (que no puede quedar
+  // de primero) el aviso lo devolveria al penultimo.
+  const moviendoDesdeAfuera = useRef(false);
+  const avisar = useRef(onActivo);
+  avisar.current = onActivo;
+  const ultimoAviso = useRef(-1);
 
   const medir = useCallback(() => {
     const p = pista.current;
     if (!p || !p.children.length) return;
     const hijo = p.children[0] as HTMLElement;
     const paso = hijo.offsetWidth + parseFloat(getComputedStyle(p).columnGap || "0");
-    setPrimero(Math.round(p.scrollLeft / paso));
+    const i = Math.round(p.scrollLeft / paso);
+    setPrimero(i);
     setVisibles(Math.max(1, Math.round(p.clientWidth / paso)));
+    if (!moviendoDesdeAfuera.current && i !== ultimoAviso.current) {
+      ultimoAviso.current = i;
+      avisar.current?.(i);
+    }
   }, []);
+
+  useEffect(() => {
+    const p = pista.current;
+    if (activo === undefined || !p || !p.children[activo]) return;
+    const hijo = p.children[activo] as HTMLElement;
+    const visible =
+      hijo.offsetLeft >= p.scrollLeft - 2 &&
+      hijo.offsetLeft + hijo.offsetWidth <= p.scrollLeft + p.clientWidth + 2;
+    if (visible) return;
+    moviendoDesdeAfuera.current = true;
+    const destino = hijo.offsetLeft - (p.children[0] as HTMLElement).offsetLeft;
+    // Si el carrusel no esta a la vista, la pagina va a moverse hasta el
+    // con su propio desplazamiento suave, y dos desplazamientos suaves a la
+    // vez se cortan entre si: entonces se mueve de una vez.
+    const r = p.getBoundingClientRect();
+    const aLaVista = r.top >= 0 && r.bottom <= window.innerHeight;
+    p.scrollTo({ left: destino, behavior: aLaVista ? "smooth" : "instant" });
+    // Se vuelve a escuchar al dedo cuando el carrusel llega: con `scrollend`
+    // donde existe, y con un plazo largo donde no (un tramo de seis
+    // tarjetas en celular tarda mas de medio segundo).
+    const soltar = () => {
+      moviendoDesdeAfuera.current = false;
+      ultimoAviso.current = activo;
+      p.removeEventListener("scrollend", soltar);
+    };
+    p.addEventListener("scrollend", soltar);
+    const t = window.setTimeout(soltar, 1600);
+    return () => {
+      window.clearTimeout(t);
+      p.removeEventListener("scrollend", soltar);
+    };
+  }, [activo]);
 
   useEffect(() => {
     medir();
