@@ -177,6 +177,8 @@ fila es un lote: una comida probada en unas condiciones concretas.
 | Esquema de base de datos | [`database-schema.md`](docs/database-schema.md) | [`database-schema.pdf`](docs/database-schema.pdf) |
 | Login con Google y persistencia | [`auth-y-persistencia.md`](docs/auth-y-persistencia.md) | [`auth-y-persistencia.pdf`](docs/auth-y-persistencia.pdf) |
 | Pruebas de integración y validación | [`pruebas-integracion.md`](docs/pruebas-integracion.md) | |
+| Informe de validación | [`informe-validacion.md`](docs/informe-validacion.md) | |
+| Despliegue de la plataforma | [`despliegue.md`](docs/despliegue.md) | |
 
 Los PDF se regeneran con:
 
@@ -200,3 +202,5 @@ Además:
 |---|---|
 | **3.2** Desarrollo del modelo de inteligencia artificial | Base de datos consolidada con su diccionario, entrenamiento, validación cruzada, documento técnico con la justificación del modelo elegido y pruebas automáticas. |
 | **3.4** Pruebas y validación del sistema | API de predicción y plataforma web consumiéndola, asistente que consulta el modelo real, y las pruebas de integración, comportamiento, rendimiento y compatibilidad de [`docs/pruebas-integracion.md`](docs/pruebas-integracion.md). |
+| **3.5** Despliegue y aplicación en campo | Plataforma desplegada y en funcionamiento público, con [`docs/informe-validacion.md`](docs/informe-validacion.md): alcance y criterios de la validación, lo comprobado sobre el sistema desplegado (cadena completa, peso y velocidad en campo, navegadores antiguos, caminos de reemplazo, protección del resultado) y el protocolo con que se evalúa frente a productores. |
+| **3.6** Utilización de inteligencia artificial | Servicio de predicción integrado y consumido por la plataforma, con [`docs/despliegue.md`](docs/despliegue.md): qué corre en dónde, cómo viaja una consulta, qué pasa cuando una pieza falla y cómo se levanta todo desde cero. |

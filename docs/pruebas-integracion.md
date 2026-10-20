@@ -164,8 +164,27 @@ Fallos encontrados en uso continuo y corregidos:
   cuando el servicio de voz falló, la respuesta siguió leyéndose con la voz
   del teléfono.
 
-## 6. Pendiente
+## 6. Verificación de la integración completa
 
-- Pruebas con productores, en sus propios teléfonos.
-- Validación del modelo una vez reentrenado con los resultados del análisis
-  bromatológico.
+Comprobada contra producción el 19 de octubre de 2026, de punta a punta:
+
+| Tramo | Resultado |
+|---|---|
+| Pruebas automáticas del modelo y del servicio | 46 de 46 aprobadas |
+| Servicio en pie y declarando su estado | `/salud` y `/api/v1/modelo` responden |
+| Consulta de las tres dietas en una petición | 200, entre 0,69 s y 0,75 s |
+| Rutas públicas de la plataforma | las diez responden |
+| Casos del asistente contra la plataforma desplegada | 13 de 13 |
+
+La respuesta del servicio llega marcada con `datos_simulados` y con su
+advertencia, y la plataforma la muestra junto a los números. El módulo de
+integración entre el modelo y la plataforma —medio de verificación de esta
+actividad— queda así comprobado en el sistema desplegado y no solo en el
+entorno de desarrollo.
+
+## 7. Qué sigue a estas pruebas
+
+La validación del sistema **en uso** —la del sistema ya desplegado, frente a
+productores y con el modelo reentrenado sobre los análisis bromatológicos— se
+recoge en el [informe de validación](informe-validacion.md), con su alcance,
+sus criterios de aprobación y el protocolo con que se evalúa en campo.
