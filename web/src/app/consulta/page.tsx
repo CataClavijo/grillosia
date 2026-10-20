@@ -679,7 +679,7 @@ function PreguntaClima({
 }) {
   return (
     <div>
-      <TituloPregunta ayuda="Elija lo más parecido al lugar donde cría sus grillos. Con eso ajustamos la comparación.">
+      <TituloPregunta ayuda="Elija lo más parecido al lugar donde cría sus grillos. Es la última pregunta: después verá su resultado y podrá preguntarle al asistente sobre él.">
         ¿Cómo es el clima donde cría sus grillos?
       </TituloPregunta>
 

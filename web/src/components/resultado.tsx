@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import {
+  ArrowRight,
   Clock,
   Compass,
   Droplets,
   FlaskConical,
+  MessageCircle,
   RotateCcw,
   SlidersHorizontal,
   Sparkles,
@@ -60,12 +62,20 @@ const DIBUJO: Record<string, string> = {
   D3: "/acuarelas/ing-salvado.webp",
 };
 
-/** Preguntas que abren el asistente ya escritas. */
-const PREGUNTAS = [
-  "¿Qué significa la conversión alimenticia?",
-  "¿Cómo mezclo la harina con otros ingredientes?",
-  "¿Qué pasa si la humedad sube?",
-];
+/**
+ * Preguntas que abren el asistente ya escritas, con el animal, la etapa y el
+ * clima de ESTA consulta: asi se entiende que el asistente sabe de que se
+ * esta hablando.
+ */
+function preguntasDe(animal: AnimalDestino, etapa: Etapa, humidity: number): string[] {
+  const quien = `mi ${animal.name.toLowerCase()} en ${etapa.name.toLowerCase()}`;
+  return [
+    `¿Cuál de las tres comidas le conviene más a ${quien}?`,
+    "¿Cómo mezclo la harina de grillo con otros ingredientes?",
+    `¿Qué pasa si la humedad sube de ${humidity} %?`,
+    "¿Qué significa la conversión alimenticia?",
+  ];
+}
 
 /** Cuanto se aleja una proteina del rango que el animal necesita. */
 function distancia(proteina: number, min: number, max: number): number {
@@ -161,7 +171,13 @@ export function Resultado({
             comidas en estudio, con sus condiciones de cría.
           </p>
         </div>
-        <div className="flex shrink-0 flex-wrap gap-x-2 gap-y-1">
+        <div className="flex shrink-0 flex-wrap gap-x-2 gap-y-2">
+          {/* Lo que se puede hacer despues de ver el resultado: preguntar
+              sobre el. Va primero y en terracota para que no pase de largo. */}
+          <Button size="sm" onClick={() => abrirAsistente()}>
+            <MessageCircle />
+            Preguntar sobre este resultado
+          </Button>
           <Button variant="outline" size="sm" onClick={onCambiar}>
             <SlidersHorizontal />
             Cambiar respuestas
@@ -369,24 +385,46 @@ export function Resultado({
         <TresComidas />
       </Revelar>
 
-      {/* ── 6. Preguntas sugeridas ─────────────────────────────────── */}
-      {/* Discretas a proposito: el asistente ya tiene su boton en la barra de
-          abajo. Aqui solo se ofrecen preguntas atadas a este resultado, que
-          abren el panel con la pregunta ya escrita. */}
-      <Revelar as="section" className="flex flex-col gap-4">
-        <p className="t-eyebrow flex items-center gap-2 text-subtle">
-          <Sparkles className="size-3.5 text-primary" aria-hidden />
-          Pregúntele a GrillosIA sobre este resultado
-        </p>
-        <ul className="flex flex-col gap-x-8 gap-y-2 sm:flex-row sm:flex-wrap">
-          {PREGUNTAS.map((q) => (
+      {/* ── 6. Preguntar sobre esta consulta ─────────────────────────── */}
+      {/* El asistente ya conoce el animal, la etapa y el clima de esta
+          consulta: se dice con todas las letras, porque si no nadie sabe que
+          puede seguir preguntando. Cada pregunta abre el panel ya escrita. */}
+      <Revelar
+        as="section"
+        aria-labelledby="preguntar-resultado"
+        className="grid gap-8 rounded-lg bg-surface-2 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:gap-12"
+      >
+        <div className="flex flex-col items-start gap-4">
+          <p className="t-eyebrow flex items-center gap-2 text-subtle">
+            <Sparkles className="size-3.5 text-primary" aria-hidden />
+            Asistente GrillosIA
+          </p>
+          <h2 id="preguntar-resultado" className="t-h2 text-balance">
+            ¿Le quedó una duda? Pregunte sobre esta consulta
+          </h2>
+          <p className="t-body text-subtle">
+            El asistente ya sabe que usted consultó por{" "}
+            <strong className="font-semibold text-foreground">
+              {animal.name.toLowerCase()} en {etapa.name.toLowerCase()}
+            </strong>
+            , con {temp} °C y {humidity} % de humedad. Puede escribirle o
+            hablarle, y le responde con los datos de este resultado.
+          </p>
+          <Button onClick={() => abrirAsistente()} className="mt-1">
+            <MessageCircle />
+            Escribir mi pregunta
+          </Button>
+        </div>
+        <ul className="flex flex-col divide-y divide-border self-center border-y border-border">
+          {preguntasDe(animal, etapa, humidity).map((q) => (
             <li key={q}>
               <button
                 type="button"
                 onClick={() => abrirAsistente({ pregunta: q })}
-                className="min-h-10 text-left text-[15px] text-foreground/85 underline decoration-border-strong underline-offset-[5px] transition-colors duration-150 hover:text-foreground hover:decoration-primary"
+                className="group flex min-h-14 w-full items-center justify-between gap-4 py-3 text-left text-[15.5px] text-foreground/90 transition-colors duration-150 hover:text-foreground"
               >
-                {q}
+                <span>{q}</span>
+                <ArrowRight className="size-4 shrink-0 text-faint transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-primary" />
               </button>
             </li>
           ))}

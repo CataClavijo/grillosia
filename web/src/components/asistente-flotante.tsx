@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,7 +14,9 @@ import {
 } from "@/components/ui/sheet";
 import { Conversacion } from "@/components/conversacion";
 import { ManosLibres } from "@/components/manos-libres";
+import { animalPorId, etapaPorId } from "@/lib/animals";
 import { EVENTO_ABRIR_ASISTENTE, type OpcionesAsistente } from "@/lib/asistente";
+import { useProjects } from "@/lib/projects-store";
 import { useConversacion } from "@/lib/use-conversacion";
 import { useDictado, useLectura } from "@/lib/voz";
 import { cn } from "@/lib/utils";
@@ -193,6 +195,16 @@ function PanelAsistente({
 }) {
   const conv = useConversacion();
   const hayMensajes = conv.messages.length > 0;
+  // La consulta de la que se esta hablando, dicha arriba: asi se sabe que
+  // las respuestas son sobre ESE animal y ese clima.
+  const { active } = useProjects();
+  const consulta = useMemo(() => {
+    const sel = active?.selection;
+    const animal = animalPorId(sel?.animalId);
+    const etapa = etapaPorId(animal, sel?.stageId);
+    if (!animal || !etapa || sel?.temp == null || sel?.humidity == null) return null;
+    return `${animal.name} · ${etapa.name}, ${sel.temp} °C y ${sel.humidity} % HR`;
+  }, [active]);
   // Voz: el dictado envia en cuanto la persona termina de hablar.
   const { estado: lectura, leyendo, leer, callar } = useLectura();
   const dictado = useDictado((texto) => void conv.preguntar(texto));
@@ -211,8 +223,10 @@ function PanelAsistente({
               aria-hidden
               className="h-auto w-8 shrink-0"
             />
+            {/* "Asistente" solo: el logo al lado ya dice GrillosIA, y el
+                nombre completo se cortaba junto a los botones. */}
             <SheetTitle className="t-h2 truncate !text-[1.5rem] leading-none text-foreground">
-              Asistente GrillosIA
+              Asistente
             </SheetTitle>
           </div>
           <div className="-mr-2 flex shrink-0 items-center">
@@ -260,8 +274,18 @@ function PanelAsistente({
           </div>
         </div>
         <SheetDescription className="t-small mt-2 text-subtle">
-          El asistente científico del proyecto. Responde con los datos de
-          GrillosIA y le dice de dónde sale cada cifra.
+          {consulta ? (
+            <>
+              Responde sobre su consulta:{" "}
+              <span className="font-medium text-foreground">{consulta}</span>.
+              Le dice de dónde sale cada cifra.
+            </>
+          ) : (
+            <>
+              El asistente científico del proyecto. Responde con los datos de
+              GrillosIA y le dice de dónde sale cada cifra.
+            </>
+          )}
         </SheetDescription>
       </header>
 
