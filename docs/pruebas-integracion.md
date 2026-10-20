@@ -184,7 +184,7 @@ entorno de desarrollo.
 
 ## 7. Qué sigue a estas pruebas
 
-La validación del sistema **en uso** —con productores, en sus propios
-teléfonos, y con el modelo reentrenado sobre los análisis bromatológicos— se
+La validación del sistema **en uso** —la del sistema ya desplegado, frente a
+productores y con el modelo reentrenado sobre los análisis bromatológicos— se
 recoge en el [informe de validación](informe-validacion.md), con su alcance,
-sus criterios de aprobación y el protocolo de la ronda de campo.
+sus criterios de aprobación y el protocolo con que se evalúa en campo.

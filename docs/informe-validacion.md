@@ -4,12 +4,17 @@ Actividad 3.5 · Despliegue y aplicación en campo (OE3)
 
 Versión 1 · 19 de octubre de 2026
 
-Este informe recoge la validación del sistema **desplegado**, es decir, no la
-del código en el portátil de quien lo escribió sino la de la plataforma tal
-como la va a encontrar un productor: en su teléfono, con su plan de datos y
-con su navegador. Define además el alcance de la validación, el criterio con
-que se da por aprobado cada punto y el protocolo de la ronda con productores
-que sigue a esta.
+**La plataforma está desplegada.** Es pública, alcanzable desde cualquier
+teléfono y respaldada por un servicio de predicción en funcionamiento. Este
+informe recoge la validación de ese sistema desplegado: no la del código en el
+portátil de quien lo escribió, sino la de la plataforma tal como la va a
+encontrar un productor, en su teléfono, con su plan de datos y con su
+navegador.
+
+Con el despliegue en pie, lo que sigue en esta actividad es evaluarlo. El
+informe define el alcance de esa evaluación, el criterio con que se da por
+aprobado cada punto, lo que ya queda comprobado y el protocolo con que se
+evaluará el sistema frente a productores.
 
 Se distingue a propósito de
 [`pruebas-integracion.md`](pruebas-integracion.md), que valida que el sistema
@@ -25,8 +30,8 @@ Se distingue a propósito de
 | V4 | Funciona en los teléfonos que hay, no en los que debería haber | carga en navegadores anteriores a 2023 | aprobado |
 | V5 | Ninguna falla externa deja al productor sin respuesta | cada servicio externo tiene un camino de reemplazo comprobado | aprobado |
 | V6 | Ningún número provisional puede pasar por definitivo | con el modelo en datos simulados, el sistema no sugiere dieta | aprobado |
-| V7 | Un productor entiende y completa la consulta sin ayuda | ronda con productores, sección 5 | en preparación |
-| V8 | Lo que el modelo predice se parece a lo que ocurre | reentrenamiento con los análisis bromatológicos | sujeto al laboratorio |
+| V7 | Un productor entiende y completa la consulta sin ayuda | evaluación frente a productores, sección 5 | protocolo definido |
+| V8 | Lo que el modelo predice se parece a lo que ocurre | reentrenamiento con los análisis bromatológicos | procedimiento listo |
 
 ## 2. Validación de la cadena completa (V1, V2)
 
@@ -117,9 +122,12 @@ Conviene decir qué significa esto: la validación confirma que el sistema **no
 afirma lo que no puede sostener**. No confirma que las dietas se ordenen como
 hoy aparecen.
 
-## 5. Ronda de validación con productores (V7)
+## 5. Protocolo para la evaluación frente a productores (V7)
 
-Protocolo de la siguiente ronda de la actividad.
+El despliegue está hecho; el paso siguiente de la actividad es evaluarlo con
+quienes lo van a usar. Este es el protocolo con que se hará, definido de
+antemano para que lo que se observe sea comparable entre productores y no
+dependa de quién acompañe la sesión.
 
 **Quiénes.** Productores de piscicultura del Piedemonte Llanero, en sus
 propios teléfonos y con su propia conexión. No en un computador prestado ni
@@ -144,21 +152,21 @@ código la cumpla.
 que ninguno salga creyendo que los números de hoy son definitivos.
 
 **Instrumento de registro.** Una ficha por productor con las tres tareas, el
-tiempo, las dudas observadas y la frase textual del cierre. Las fichas y su
-resumen se incorporan a la versión 2 de este informe.
+tiempo, las dudas observadas y la frase textual del cierre. Las fichas
+diligenciadas y su lectura conjunta constituyen la evidencia de este criterio.
 
 ## 6. Validación del modelo con datos reales (V8)
 
-Está sujeta a la entrega de los análisis bromatológicos de los lotes
-cosechados, que determinan las dos variables objetivo (proteína y lípidos en
-harina).
+Las dos variables objetivo del modelo —proteína y lípidos en harina— se
+determinan por análisis bromatológico al cierre del ciclo productivo de cada
+lote. La validación de este criterio se ejecuta sobre esos resultados.
 
 La maquinaria para absorberlos ya está lista y probada. El procedimiento de
 actualización en un solo paso valida la plantilla, consolida la base de datos,
 regenera el anexo y entrena un modelo candidato; el modelo en producción solo
 se reemplaza tras revisar las métricas del candidato, con `--publicar`. No
-hace falta ningún cambio de arquitectura: el día que lleguen los análisis, la
-validación del modelo es ejecutar ese procedimiento y comparar.
+hace falta ningún cambio de arquitectura: con los análisis disponibles, la
+validación del modelo consiste en ejecutar ese procedimiento y comparar.
 
 ```bash
 python backend/scripts/actualizar.py --plantilla <plantilla.xlsx>
