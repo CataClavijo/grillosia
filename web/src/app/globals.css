@@ -281,6 +281,10 @@
     line-height: 1.65;
     -webkit-tap-highlight-color: transparent;
     font-feature-settings: "ss01", "cv11";
+    /* Las bandas y barras de borde a borde se salen del contenido a
+       proposito; `clip` (no `hidden`) corta ese sobrante sin crear un
+       contenedor de desplazamiento, asi que `sticky` sigue funcionando. */
+    overflow-x: clip;
   }
   ::selection {
     background: var(--primary-soft);

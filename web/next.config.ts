@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
   // equipos de la misma red (por ejemplo un celular) usando la IP del
   // computador en vez de localhost.
   allowedDevOrigins: ["192.168.*.*", "10.*.*.*"],
+  // El boton redondo "N" de Next en desarrollo tapaba el "Atras" de la
+  // barra de abajo en las vistas previas por la red.
+  devIndicators: false,
   async redirects() {
     return [
       { source: "/como-armar", destination: "/caja", permanent: true },

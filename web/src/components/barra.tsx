@@ -7,8 +7,7 @@ import { ArrowRight } from "lucide-react";
 
 import { Logo } from "@/components/logo";
 import { SiteNav } from "@/components/site-nav";
-import { Progreso } from "@/components/ds/progreso";
-import { TOTAL_PARADAS } from "@/lib/camino";
+import { Pasos } from "@/components/ds/pasos";
 import { cn } from "@/lib/utils";
 
 /**
@@ -24,9 +23,9 @@ import { cn } from "@/lib/utils";
  * "Inicio" no va (el logo lleva al inicio) y "Vea su resultado" tampoco:
  * el resultado se alcanza haciendo o abriendo una consulta.
  *
- * En el camino guiado (modo `camino`) la cabecera no cambia de forma: solo
- * aparece la barra fina de progreso abajo, y en las paradas 3 y 4 el boton
- * da paso a "Paso 3 de 4 · Consulta", porque la persona ya esta en ella.
+ * En el camino guiado (modo `camino`) la cabecera no cambia de forma: debajo
+ * aparece el indicador de pasos (ver `Pasos`), y en las paradas 3 y 4 se
+ * quita el boton de la consulta, porque la persona ya esta en ella.
  *
  * El cambio de tema (claro/oscuro) esta en el menu y en el pie.
  */
@@ -35,14 +34,6 @@ const APRENDER = [
   { href: "/grillos", titulo: "Conozca sus grillos" },
 ];
 const PROYECTO = { href: "/proyecto", titulo: "Sobre GrillosIA" };
-
-/** Nombre corto de cada parada para la cabecera del camino. */
-const CORTO: Record<number, string> = {
-  1: "Caja",
-  2: "Grillos",
-  3: "Consulta",
-  4: "Resultado",
-};
 
 export function Barra({
   modo = "sitio",
@@ -66,9 +57,6 @@ export function Barra({
 
   const enCamino = modo === "camino" && !!paso;
   const enConsulta = enCamino && paso! >= 3;
-  const etiqueta = enCamino
-    ? `Paso ${paso} de ${TOTAL_PARADAS} · ${CORTO[paso!] ?? ""}`
-    : "";
 
   const enlace = (href: string, titulo: string) => {
     const activa = pathname === href;
@@ -77,27 +65,26 @@ export function Barra({
         href={href}
         aria-current={activa ? "page" : undefined}
         className={cn(
-          "relative flex h-9 items-center whitespace-nowrap rounded-md px-3 text-[14.5px] font-medium transition-colors duration-150",
-          activa ? "text-foreground" : "text-subtle hover:text-foreground",
+          // La pestana activa es una pastilla de fondo suave, no una raya:
+          // la raya quedaba flotando a media altura de la cabecera.
+          "flex h-9 items-center whitespace-nowrap rounded-md px-3 text-[14.5px] font-medium transition-colors duration-150",
+          activa
+            ? "bg-foreground/[0.07] text-foreground dark:bg-foreground/[0.1]"
+            : "text-subtle hover:bg-foreground/[0.04] hover:text-foreground",
         )}
       >
         {titulo}
-        {activa && (
-          <span
-            aria-hidden
-            className="absolute inset-x-3 -bottom-px h-[2px] rounded-full bg-primary"
-          />
-        )}
       </Link>
     );
   };
 
   return (
+    <>
     <header
       className={cn(
-        "sticky top-0 z-40 w-full bg-background/90 backdrop-blur-md",
-        !enCamino && "border-b transition-[border-color] duration-[var(--dur-media)]",
-        !enCamino && (bajado ? "border-border" : "border-transparent"),
+        "sticky top-0 z-40 w-full border-b bg-background/90 backdrop-blur-md transition-[border-color] duration-[var(--dur-media)]",
+        // En el camino la linea va siempre: separa la cabecera de los pasos.
+        bajado || enCamino ? "border-border" : "border-transparent",
         className,
       )}
     >
@@ -115,13 +102,13 @@ export function Barra({
         {/* Lo que se aprende: a la izquierda, junto a la marca. */}
         <nav className="hidden lg:block" aria-label="Guía y proyecto">
           <ul className="flex items-center">
-            <li className="t-eyebrow mr-1 text-faint" aria-hidden>
+            <li className="t-eyebrow mr-2 text-faint" aria-hidden>
               Guía
             </li>
             {APRENDER.map((a) => (
               <li key={a.href}>{enlace(a.href, a.titulo)}</li>
             ))}
-            <li aria-hidden className="mx-2 h-4 w-px bg-border-strong" />
+            <li aria-hidden className="mx-3 h-4 w-px bg-border-strong" />
             <li>{enlace(PROYECTO.href, PROYECTO.titulo)}</li>
           </ul>
         </nav>
@@ -131,20 +118,15 @@ export function Barra({
           <Link
             href="/consultas"
             className={cn(
-              "hidden h-10 items-center rounded-md px-3 text-[14.5px] font-medium transition-colors lg:inline-flex",
+              "hidden h-9 items-center rounded-md px-3 text-[14.5px] font-medium transition-colors lg:inline-flex",
               pathname === "/consultas"
-                ? "text-foreground"
-                : "text-subtle hover:text-foreground",
+                ? "bg-foreground/[0.07] text-foreground dark:bg-foreground/[0.1]"
+                : "text-subtle hover:bg-foreground/[0.04] hover:text-foreground",
             )}
           >
             Mis consultas
           </Link>
-          {enConsulta ? (
-            <p className="t-eyebrow whitespace-nowrap text-subtle">
-              Paso {paso} de {TOTAL_PARADAS}
-              <span className="hidden sm:inline"> · {CORTO[paso!] ?? ""}</span>
-            </p>
-          ) : (
+          {!enConsulta && (
             <Link
               href="/consulta"
               className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3.5 text-[14px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover lg:h-10 lg:px-4 lg:text-[14.5px]"
@@ -159,7 +141,8 @@ export function Barra({
           </div>
         </div>
       </div>
-      {enCamino && <Progreso valor={paso!} total={TOTAL_PARADAS} etiqueta={etiqueta} />}
     </header>
+    {enCamino && <Pasos actual={paso!} />}
+    </>
   );
 }

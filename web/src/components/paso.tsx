@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils";
  *  2. Deja UNA sola accion hacia adelante, al final.
  *  3. Ofrece volver, que no es lo mismo que ir al inicio.
  *
- * La barra de acciones de abajo no atraviesa la pantalla con una linea: se
- * apoya en un fundido del fondo y alinea sus botones con el contenido.
+ * La barra de acciones de abajo ocupa todo el ancho con fondo solido y
+ * alinea sus botones con el contenido.
  *
  * Exporta `BarraAcciones` para las paradas que manejan su propio avance (la
  * consulta, que va pregunta por pregunta).
@@ -94,7 +94,11 @@ export function BarraAcciones({
     <div
       className={
         fija
-          ? "sticky bottom-0 z-20 -mx-5 mt-auto bg-gradient-to-t from-background from-70% to-transparent px-5 pt-6 pb-[calc(env(safe-area-inset-bottom)+14px)] lg:-mx-8 lg:px-8"
+          ? // Fondo solido de borde a borde (la misma sombra de 100vmax que
+            // usan las bandas oscuras), con una linea fina arriba. Con un
+            // fundido y el ancho del contenido se veia como un parche claro
+            // al pasar sobre las bandas oscuras.
+            "sticky bottom-0 z-20 mt-auto bg-background pt-3 pb-[calc(env(safe-area-inset-bottom)+12px)] shadow-[0_0_0_100vmax_var(--background)] [clip-path:inset(0_-100vmax)] before:absolute before:inset-x-[calc(50%-50vw)] before:top-0 before:h-px before:bg-border"
           : "mt-auto pt-2 pb-[calc(env(safe-area-inset-bottom)+24px)]"
       }
     >
