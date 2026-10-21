@@ -136,14 +136,6 @@ export const FIGURAS: DefinicionFigura[] = [
       "Cuando pregunten por las antenas, o cuando una foto real ayude más que el dibujo comparativo para reconocer un grillo.",
   },
   {
-    id: "donde-buscar",
-    src: "/acuarelas/donde-buscar.webp",
-    titulo: "Dónde buscarlos: hojarasca, leña y piedra",
-    alt: "Borde de una finca del Piedemonte Llanero: hojarasca de hojas anchas, guaduas y troncos podridos sobre tierra rojiza, con las lomas de la cordillera al fondo.",
-    cuando:
-      "Cuando pregunten dónde conseguir grillos, dónde buscarlos, cómo atraparlos o a qué hora salen.",
-  },
-  {
     id: "trampa-vaso",
     src: "/acuarelas/trampa-vaso.webp",
     titulo: "Trampa de vaso enterrado",

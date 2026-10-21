@@ -16,8 +16,6 @@ import { InfoTip } from "@/components/info-tip";
 import {
   CRECIMIENTO,
   CRECIMIENTO_NOTA,
-  GRILLO_O_SALTAMONTES,
-  GRILLO_O_SALTAMONTES_CLAVE,
   IMPORTANCIA,
   MACHO_HEMBRA,
 } from "@/lib/content/catalog";
@@ -30,7 +28,6 @@ import { cn } from "@/lib/utils";
  * justo encima. Las pestanas quedan para lo que se consulta despues, y cada
  * una tiene una forma propia segun lo que explica:
  *
- *  - Grillo o saltamontes: comparacion rasgo por rasgo, lado a lado.
  *  - Macho y hembra: lo mismo, con la lamina que muestra el ovipositor.
  *  - Crecimiento: una linea de tiempo que se dibuja al entrar.
  *  - Importancia: la cifra de la meta.
@@ -40,27 +37,6 @@ export function GrillosPestanas() {
     <Pestanas
       etiqueta="Temas sobre los grillos"
       pestanas={[
-        {
-          id: "saltamontes",
-          titulo: "Grillo o saltamontes",
-          contenido: (
-            <Comparacion
-              titulo="¿Grillo o saltamontes?"
-              entrada={GRILLO_O_SALTAMONTES_CLAVE}
-              columnas={["Grillo", "Saltamontes"]}
-              filas={GRILLO_O_SALTAMONTES.map((f) => ({
-                rasgo: f.rasgo,
-                a: f.grillo,
-                b: f.saltamontes,
-              }))}
-              lamina={{
-                src: "/acuarelas/identificar.webp",
-                alt: "Un grillo, de antenas largas, arriba, y un saltamontes, de antenas cortas, abajo.",
-                pie: "Arriba, un grillo; abajo, un saltamontes.",
-              }}
-            />
-          ),
-        },
         {
           id: "macho-hembra",
           titulo: "Macho y hembra",

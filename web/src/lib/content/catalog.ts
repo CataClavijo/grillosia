@@ -311,24 +311,24 @@ export const AL_RECOGERLOS: string[] = [
  * buscar, separado en lo que sí puede llevar a la colonia y lo que no.
  *
  * Contenido de Catalina Clavijo-Agudelo (octubre de 2026). Los nombres en
- * latín van entre asteriscos para la cursiva. Las "señas" son rasgos de forma
- * que distinguen cada grupo a simple vista.
+ * latín van entre asteriscos para la cursiva.
  *
- * Fotos reales para que se reconozcan de verdad: la del grillo es de un
- * ejemplar del proyecto; las demás son de Wikimedia Commons con licencia
- * libre y su crédito, y se rotulan como imágenes de referencia.
+ * Las fotos son reales y van recortadas sin su fondo, todas sobre el mismo
+ * papel, como una lámina de guía de campo: la del grillo es de un ejemplar
+ * del proyecto; las demás, de Wikimedia Commons con licencia libre (el
+ * crédito va debajo de la lámina, y dice que se recortaron).
  */
 export interface FotoInsecto {
   src: string;
   alt: string;
-  /** Especie o grupo que se ve en la foto. */
-  rotulo: string;
-  autor: string;
-  /** Licencia y origen; vacío para las fotos propias del proyecto. */
+}
+
+export interface CreditoFoto {
+  quien: string;
+  /** Lo que se ve en la foto. */
+  que: string;
   licencia?: string;
   url?: string;
-  /** Encuadre dentro del recorte (CSS object-position). */
-  encuadre?: string;
 }
 
 export interface InsectoCria {
@@ -337,8 +337,8 @@ export interface InsectoCria {
   nombre: string;
   /** Familia o grupo, en latín. */
   grupo?: string;
+  /** Una sola frase: como se reconoce, o por que no sirve. */
   texto: string;
-  sena: string;
   fotos: FotoInsecto[];
 }
 
@@ -348,52 +348,37 @@ export const CUALES_SIRVEN: InsectoCria[] = [
     sirve: true,
     nombre: "Grillos",
     grupo: "Familia Gryllidae",
-    texto:
-      "Antenas muy largas, cuerpo robusto y patas traseras fuertes. Las especies que más se crían en el mundo, como *Acheta domesticus* y *Gryllodes sigillatus*, pertenecen a esta familia.",
-    sena: "Antenas más largas que el cuerpo y dos colitas al final del abdomen.",
+    texto: "Antenas más largas que el cuerpo, cuerpo robusto y dos colitas al final del abdomen.",
     fotos: [
       {
-        src: "/grillos/grillo-2.webp",
-        alt: "Grillo del proyecto, café oscuro, visto de lado sobre fondo blanco, con las antenas largas.",
-        rotulo: "Ejemplar del proyecto",
-        autor: "Sebastián Berrío",
+        src: "/fotos/insectos/recorte-grillo.webp",
+        alt: "Grillo del proyecto, café oscuro casi negro, visto de lado, con antenas largas.",
       },
     ],
   },
   {
     id: "saltamontes",
     sirve: true,
-    nombre: "Saltamontes de colores discretos",
+    nombre: "Saltamontes discretos",
     grupo: "Familia Acrididae",
     texto: "Antenas cortas y colores discretos, verdes o cafés.",
-    sena: "Antenas cortas y gruesas; salta lejos en vez de caminar.",
     fotos: [
       {
-        src: "/fotos/insectos/saltamontes-discreto.webp",
-        alt: "Saltamontes café claro, de antenas cortas, posado sobre un tallo verde.",
-        rotulo: "*Abracris flavolineata*",
-        autor: "ElchinoBBA",
-        licencia: "CC BY-SA 4.0",
-        url: "https://commons.wikimedia.org/wiki/File:Abracris_flavolineata.jpg",
-        encuadre: "50% 60%",
+        src: "/fotos/insectos/recorte-discreto.webp",
+        alt: "Saltamontes café claro de antenas cortas, visto de lado.",
       },
     ],
   },
   {
     id: "llamativos",
     sirve: false,
-    nombre: "Saltamontes de colores llamativos",
+    nombre: "Saltamontes llamativos",
     texto:
       "Rojos, azules, amarillos o fucsias intensos: en la naturaleza estos colores suelen advertir que el insecto es tóxico.",
-    sena: "Colores vivos y contrastados que se ven de lejos.",
     fotos: [
       {
-        src: "/fotos/insectos/saltamontes-llamativo.webp",
-        alt: "Saltamontes verde brillante con manchas amarillas intensas, sobre una hoja.",
-        rotulo: "*Chromacris icterus*",
-        autor: "Graham Wise",
-        licencia: "CC BY-SA 4.0",
-        url: "https://commons.wikimedia.org/wiki/File:Chromacris_icterus.jpg",
+        src: "/fotos/insectos/recorte-llamativo.webp",
+        alt: "Saltamontes verde brillante con manchas amarillas intensas.",
       },
     ],
   },
@@ -403,25 +388,58 @@ export const CUALES_SIRVEN: InsectoCria[] = [
     nombre: "Esperanzas y grillos de cueva",
     grupo: "Tettigoniidae y Rhaphidophoridae",
     texto:
-      "No corresponden a las especies de cría del proyecto; no se recolectan para la colonia.",
-    sena: "La esperanza es verde como una hoja y sus alas cierran como un techo; el grillo de cueva es jorobado y no tiene alas.",
+      "No son las especies de cría del proyecto. La esperanza parece una hoja verde; el grillo de cueva es jorobado y sin alas.",
     fotos: [
       {
-        src: "/fotos/insectos/esperanza.webp",
-        alt: "Esperanza verde, con las alas en forma de hoja, sobre una hoja.",
-        rotulo: "Esperanza (Phaneropterinae)",
-        autor: "Pavel Kirillov",
-        licencia: "CC BY-SA 2.0",
-        url: "https://commons.wikimedia.org/wiki/File:Phaneropterinae_sp._(9617937202).jpg",
+        src: "/fotos/insectos/recorte-esperanza.webp",
+        alt: "Esperanza verde, con las alas en forma de hoja.",
       },
       {
-        src: "/fotos/insectos/grillo-cueva.webp",
-        alt: "Grillo de cueva café claro, jorobado y sin alas, con patas y antenas muy largas.",
-        rotulo: "Grillo de cueva (*Ceuthophilus*)",
-        autor: "Thegreenj",
-        licencia: "CC BY-SA 3.0",
-        url: "https://commons.wikimedia.org/wiki/File:Ceuthophiluscricket.jpg",
+        src: "/fotos/insectos/recorte-cueva.webp",
+        alt: "Grillo de cueva café claro, jorobado y sin alas, de patas muy largas.",
       },
     ],
   },
 ];
+
+/** Nota bajo la lámina, para no cargar la tarjeta del grillo. */
+export const CUALES_SIRVEN_NOTA =
+  "Las especies de grillo que más se crían en el mundo, *Acheta domesticus* y *Gryllodes sigillatus*, son de la familia Gryllidae.";
+
+export const CUALES_SIRVEN_CREDITOS: CreditoFoto[] = [
+  { quien: "Sebastián Berrío", que: "Grillo, ejemplar del proyecto" },
+  {
+    quien: "ElchinoBBA",
+    que: "*Abracris flavolineata*",
+    licencia: "CC BY-SA 4.0",
+    url: "https://commons.wikimedia.org/wiki/File:Abracris_flavolineata.jpg",
+  },
+  {
+    quien: "Graham Wise",
+    que: "*Chromacris icterus*",
+    licencia: "CC BY-SA 4.0",
+    url: "https://commons.wikimedia.org/wiki/File:Chromacris_icterus.jpg",
+  },
+  {
+    quien: "Pavel Kirillov",
+    que: "Esperanza (Phaneropterinae)",
+    licencia: "CC BY-SA 2.0",
+    url: "https://commons.wikimedia.org/wiki/File:Phaneropterinae_sp._(9617937202).jpg",
+  },
+  {
+    quien: "Thegreenj",
+    que: "Grillo de cueva (*Ceuthophilus*)",
+    licencia: "CC BY-SA 3.0",
+    url: "https://commons.wikimedia.org/wiki/File:Ceuthophiluscricket.jpg",
+  },
+];
+
+/** Foto real del Piedemonte para "¿Dónde encontrarlos?". */
+export const FOTO_PIEDEMONTE = {
+  src: "/fotos/granada-piedemonte.webp",
+  alt: "Vista desde una loma en Granada, Meta: potreros y árboles que bajan a la llanura, con la cordillera tenue al fondo.",
+  pie: "Granada, Meta",
+  quien: "Amujohca",
+  licencia: "CC BY-SA 4.0",
+  url: "https://commons.wikimedia.org/wiki/File:Granada_Colombia_postal.jpg",
+};
