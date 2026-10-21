@@ -2,17 +2,21 @@ import Image from "next/image";
 import { Check, X } from "lucide-react";
 
 import { EncabezadoSeccion } from "@/components/ds/encabezado-seccion";
-import { CUALES_SIRVEN, type InsectoCria } from "@/lib/content/catalog";
+import { CUALES_SIRVEN, type FotoInsecto, type InsectoCria } from "@/lib/content/catalog";
 import { conCursivas } from "@/lib/cursivas";
 import { cn } from "@/lib/utils";
 
 /**
  * ¿Cuáles sirven para la cría?
  *
- * Dos grupos, uno al lado del otro en pantalla grande y uno debajo del otro
- * en el celular: lo que se puede llevar a la colonia (oliva, con chulo) y lo
- * que no (rojo, con equis). El color nunca va solo: cada grupo lleva tambien
- * su palabra y su icono, para quien no distingue bien los colores.
+ * Dos grupos, uno debajo del otro: lo que se puede llevar a la colonia
+ * (oliva, con chulo) y lo que no (rojo, con equis). El color nunca va solo:
+ * cada grupo lleva tambien su palabra y su icono, para quien no distingue
+ * bien los colores.
+ *
+ * Cada tarjeta abre con la foto grande: es lo que el productor va a comparar
+ * con lo que tiene en la mano. Con un dibujo chico al lado del texto no
+ * alcanzaba a reconocerse nada.
  */
 export function CualesSirven() {
   const si = CUALES_SIRVEN.filter((x) => x.sirve);
@@ -24,7 +28,7 @@ export function CualesSirven() {
         titulo={<span id="cuales-sirven">¿Cuáles sirven para la cría?</span>}
         entrada="Al salir a buscar va a encontrar varios insectos parecidos. Estos se pueden llevar a la colonia y estos no."
       />
-      <div className="mt-10 grid gap-12 lg:grid-cols-2 lg:gap-10">
+      <div className="mt-10 flex flex-col gap-14">
         <Grupo sirve items={si} />
         <Grupo sirve={false} items={no} />
       </div>
@@ -45,28 +49,25 @@ function Grupo({ sirve, items }: { sirve: boolean; items: InsectoCria[] }) {
         <Icono className="size-4" strokeWidth={2.5} aria-hidden />
         {sirve ? "Sí sirven" : "No sirven"}
       </p>
-      <ul className="mt-5 flex flex-col gap-4">
+      <ul className="mt-5 grid gap-5 md:grid-cols-2 lg:gap-8">
         {items.map((x) => (
           <li
             key={x.id}
-            // En el celular el dibujo va arriba y a todo el ancho: al lado del
-            // texto quedaba diminuto y el texto en una columna angosta.
-            className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5 sm:grid sm:grid-cols-[160px_1fr] sm:gap-6"
+            className={cn(
+              "flex flex-col overflow-hidden rounded-lg border bg-surface",
+              sirve ? "border-vegetal/30" : "border-destructive/25",
+            )}
           >
-            <div className="relative h-32 w-full sm:h-28 sm:self-center">
-              <Image
-                src={x.imagen}
-                alt={x.alt}
-                fill
-                sizes="(max-width: 640px) 90vw, 160px"
-                className="lamina object-contain"
-              />
+            <div className={cn("grid gap-px bg-border", x.fotos.length > 1 && "grid-cols-2")}>
+              {x.fotos.map((f) => (
+                <Foto key={f.src} foto={f} doble={x.fotos.length > 1} />
+              ))}
             </div>
-            <div className="min-w-0">
-              <h3 className="font-display text-[1.45rem] font-semibold leading-tight">{x.nombre}</h3>
+            <div className="flex flex-1 flex-col p-5 lg:p-6">
+              <h3 className="font-display text-[1.6rem] font-semibold leading-tight">{x.nombre}</h3>
               {x.grupo && <p className="t-eyebrow mt-1 text-subtle">{x.grupo}</p>}
-              <p className="t-small mt-2 text-foreground/85">{conCursivas(x.texto)}</p>
-              <p className="t-small mt-2 text-subtle">
+              <p className="t-body mt-3 text-foreground/85">{conCursivas(x.texto)}</p>
+              <p className="t-small mt-3 text-subtle">
                 <span className="font-semibold text-foreground">Cómo reconocerlo: </span>
                 {x.sena}
               </p>
@@ -75,5 +76,42 @@ function Grupo({ sirve, items }: { sirve: boolean; items: InsectoCria[] }) {
         ))}
       </ul>
     </div>
+  );
+}
+
+function Foto({ foto, doble }: { foto: FotoInsecto; doble: boolean }) {
+  return (
+    <figure className="flex flex-col bg-surface">
+      <div className={cn("relative w-full bg-white", doble ? "aspect-[4/5] sm:aspect-[4/3]" : "aspect-[4/3]")}>
+        <Image
+          src={foto.src}
+          alt={foto.alt}
+          fill
+          sizes={doble ? "(max-width: 768px) 50vw, 300px" : "(max-width: 768px) 100vw, 600px"}
+          className="object-cover"
+          style={foto.encuadre ? { objectPosition: foto.encuadre } : undefined}
+        />
+      </div>
+      {/* Credito obligatorio por la licencia de las fotos de Commons. */}
+      <figcaption className="px-5 pt-3 text-[12px] leading-snug text-subtle lg:px-6">
+        <span className="font-medium text-foreground/80">{conCursivas(foto.rotulo)}</span>
+        {". "}
+        {foto.url ? (
+          <>
+            Imagen de referencia.{" "}
+            <a
+              href={foto.url}
+              target="_blank"
+              rel="noreferrer"
+              className="underline decoration-border-strong underline-offset-2 hover:text-foreground"
+            >
+              Foto: {foto.autor}, {foto.licencia}, Wikimedia Commons
+            </a>
+          </>
+        ) : (
+          <>Foto: {foto.autor}</>
+        )}
+      </figcaption>
+    </figure>
   );
 }

@@ -5,12 +5,8 @@ import Image from "next/image";
 import {
   Bug,
   Egg,
-  Hand,
-  Leaf,
-  Package,
   RefreshCw,
   Sprout,
-  Sunset,
   type LucideIcon,
 } from "lucide-react";
 
@@ -18,7 +14,6 @@ import { Estado } from "@/components/ds/estado";
 import { Pestanas } from "@/components/ds/pestanas";
 import { InfoTip } from "@/components/info-tip";
 import {
-  COMO_CAPTURAR,
   CRECIMIENTO,
   CRECIMIENTO_NOTA,
   GRILLO_O_SALTAMONTES,
@@ -38,7 +33,7 @@ import { cn } from "@/lib/utils";
  *  - Grillo o saltamontes: comparacion rasgo por rasgo, lado a lado.
  *  - Macho y hembra: lo mismo, con la lamina que muestra el ovipositor.
  *  - Crecimiento: una linea de tiempo que se dibuja al entrar.
- *  - Importancia y captura: la cifra de la meta y los pasos para buscarlos.
+ *  - Importancia: la cifra de la meta.
  */
 export function GrillosPestanas() {
   return (
@@ -90,8 +85,8 @@ export function GrillosPestanas() {
         },
         {
           id: "importancia",
-          titulo: "Importancia y captura",
-          contenido: <ImportanciaCaptura />,
+          titulo: "Importancia",
+          contenido: <Importancia />,
         },
       ]}
     />
@@ -288,17 +283,14 @@ function Crecimiento() {
   );
 }
 
-const ICONO_CAPTURA: LucideIcon[] = [Sunset, Leaf, Package, Hand];
-
 /**
- * Por que importan (con la meta interna como cifra, dicha como meta y no
- * como resultado) y como buscarlos, en cuatro pasos con icono.
+ * Por que importan, con la meta interna como cifra, dicha como meta y no
+ * como resultado. Donde y como encontrarlos tiene ahora su propia seccion,
+ * a la vista (ver `donde-encontrarlos.tsx`).
  */
-function ImportanciaCaptura() {
-  const { ref, visible } = useVisible<HTMLDivElement>();
+function Importancia() {
   const razones = IMPORTANCIA.slice(0, -1);
   return (
-    <div ref={ref} className="flex flex-col gap-16">
       <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
         <div className="lg:col-span-7">
           <h3 className="t-h2">¿Por qué son importantes?</h3>
@@ -326,44 +318,5 @@ function ImportanciaCaptura() {
           </p>
         </div>
       </div>
-
-      <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
-        <div className="lg:col-span-4">
-          <h3 className="t-h2">Dónde buscarlos</h3>
-          <div className="relative mt-6 aspect-[960/544] w-full overflow-hidden rounded-lg">
-            <Image
-              src="/acuarelas/donde-buscar.webp"
-              alt="Borde de una finca del Piedemonte Llanero: hojarasca de hojas anchas, guaduas y troncos podridos sobre tierra rojiza, con las lomas de la cordillera al fondo."
-              fill
-              sizes="(max-width: 1024px) 100vw, 400px"
-              className="object-cover"
-            />
-          </div>
-        </div>
-        <ol className="grid content-start gap-6 sm:grid-cols-2 lg:col-span-8 lg:gap-x-10">
-          {COMO_CAPTURAR.map((t, i) => {
-            const Icono = ICONO_CAPTURA[i] ?? Leaf;
-            return (
-              <li
-                key={t}
-                className={cn(
-                  "grid grid-cols-[40px_1fr] gap-4 transition-[opacity,transform] duration-500 ease-[var(--ease-natural)]",
-                  visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0",
-                )}
-                style={{ transitionDelay: `${i * 90}ms` }}
-              >
-                <span className="flex size-10 items-center justify-center rounded-full bg-primary-soft text-primary">
-                  <Icono className="size-[18px]" strokeWidth={1.75} aria-hidden />
-                </span>
-                <span>
-                  <span className="t-eyebrow text-faint">0{i + 1}</span>
-                  <span className="t-body mt-1 block text-foreground/85">{t}</span>
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-      </div>
-    </div>
   );
 }

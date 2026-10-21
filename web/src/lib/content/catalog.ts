@@ -263,11 +263,46 @@ export const IMPORTANCIA = [
   "La meta interna del proyecto es una harina con 60 a 70 % de proteína en base seca. Todavía no es un dato conseguido: se confirma con el análisis de laboratorio de cada prueba.",
 ];
 
-/** Recomendaciones generales de captura. */
-export const COMO_CAPTURAR: string[] = [
-  "Búsquelos al atardecer o de noche, guiándose por el canto.",
-  "Revise entre la hojarasca húmeda, bajo piedras y en la base de los pastos.",
-  "Use un frasco con tapa perforada y un poco de pasto adentro.",
+/**
+ * Donde y como encontrarlos: lo que hizo el proyecto en campo.
+ *
+ * Contenido de Catalina Clavijo-Agudelo (octubre de 2026). Antes la pagina
+ * daba consejos genericos de captura (atardecer, hojarasca, trampas); los
+ * ensayos mostraron que las trampas y la busqueda a mano casi no dan grillos
+ * vivos para la cria, asi que ahora se dice lo que si funciono.
+ */
+export interface SitioMuestreo {
+  codigo: string;
+  /** Foto real del sitio; mientras no llegue, la tarjeta muestra solo el codigo. */
+  foto?: string;
+}
+
+export const MUNICIPIOS_MUESTREO: { nombre: string; sitios: SitioMuestreo[] }[] = [
+  { nombre: "Granada", sitios: [{ codigo: "G1" }, { codigo: "G2" }, { codigo: "G3" }] },
+  { nombre: "Cubarral", sitios: [{ codigo: "C1" }, { codigo: "C2" }, { codigo: "C3" }] },
+];
+
+export const METODOS_RECOLECCION = {
+  tradicionales: {
+    titulo: "Métodos tradicionales",
+    veredicto: "No funcionaron para iniciar la cría",
+    metodos: ["Trampas de caída", "Trampas de luz", "Búsqueda manual"],
+    texto:
+      "Baja efectividad para obtener grillos vivos para la cría; sirven sobre todo para el muestreo molecular.",
+  },
+  ajustado: {
+    titulo: "Método ajustado",
+    veredicto: "Sí funcionó para iniciar la cría",
+    metodo: "Excavación superficial",
+    profundidad: "Máximo 30 cm",
+    texto:
+      "La excavación superficial permitió recolectar machos y hembras vivos de Gryllidae para iniciar la cría experimental.",
+  },
+};
+
+/** Lo que se hace con ellos una vez recogidos. */
+export const AL_RECOGERLOS: string[] = [
+  "Llévelos en un frasco con tapa perforada y un poco de pasto adentro.",
   "Manipúlelos con suavidad: las patas traseras se desprenden con facilidad.",
 ];
 
@@ -275,9 +310,27 @@ export const COMO_CAPTURAR: string[] = [
  * ¿Cuáles sirven para la cría? Lo que el productor encuentra al salir a
  * buscar, separado en lo que sí puede llevar a la colonia y lo que no.
  *
- * Contenido de Catalina Clavijo-Agudelo (octubre de 2026). Las "señas" son
- * rasgos de forma que distinguen cada grupo a simple vista.
+ * Contenido de Catalina Clavijo-Agudelo (octubre de 2026). Los nombres en
+ * latín van entre asteriscos para la cursiva. Las "señas" son rasgos de forma
+ * que distinguen cada grupo a simple vista.
+ *
+ * Fotos reales para que se reconozcan de verdad: la del grillo es de un
+ * ejemplar del proyecto; las demás son de Wikimedia Commons con licencia
+ * libre y su crédito, y se rotulan como imágenes de referencia.
  */
+export interface FotoInsecto {
+  src: string;
+  alt: string;
+  /** Especie o grupo que se ve en la foto. */
+  rotulo: string;
+  autor: string;
+  /** Licencia y origen; vacío para las fotos propias del proyecto. */
+  licencia?: string;
+  url?: string;
+  /** Encuadre dentro del recorte (CSS object-position). */
+  encuadre?: string;
+}
+
 export interface InsectoCria {
   id: string;
   sirve: boolean;
@@ -286,8 +339,7 @@ export interface InsectoCria {
   grupo?: string;
   texto: string;
   sena: string;
-  imagen: string;
-  alt: string;
+  fotos: FotoInsecto[];
 }
 
 export const CUALES_SIRVEN: InsectoCria[] = [
@@ -299,8 +351,14 @@ export const CUALES_SIRVEN: InsectoCria[] = [
     texto:
       "Antenas muy largas, cuerpo robusto y patas traseras fuertes. Las especies que más se crían en el mundo, como *Acheta domesticus* y *Gryllodes sigillatus*, pertenecen a esta familia.",
     sena: "Antenas más largas que el cuerpo y dos colitas al final del abdomen.",
-    imagen: "/acuarelas/grillo.webp",
-    alt: "Grillo café visto de lado, con antenas muy largas.",
+    fotos: [
+      {
+        src: "/grillos/grillo-2.webp",
+        alt: "Grillo del proyecto, café oscuro, visto de lado sobre fondo blanco, con las antenas largas.",
+        rotulo: "Ejemplar del proyecto",
+        autor: "Sebastián Berrío",
+      },
+    ],
   },
   {
     id: "saltamontes",
@@ -309,8 +367,17 @@ export const CUALES_SIRVEN: InsectoCria[] = [
     grupo: "Familia Acrididae",
     texto: "Antenas cortas y colores discretos, verdes o cafés.",
     sena: "Antenas cortas y gruesas; salta lejos en vez de caminar.",
-    imagen: "/acuarelas/saltamontes.webp",
-    alt: "Saltamontes verde y café visto de lado, con antenas cortas y patas traseras largas.",
+    fotos: [
+      {
+        src: "/fotos/insectos/saltamontes-discreto.webp",
+        alt: "Saltamontes café claro, de antenas cortas, posado sobre un tallo verde.",
+        rotulo: "*Abracris flavolineata*",
+        autor: "ElchinoBBA",
+        licencia: "CC BY-SA 4.0",
+        url: "https://commons.wikimedia.org/wiki/File:Abracris_flavolineata.jpg",
+        encuadre: "50% 60%",
+      },
+    ],
   },
   {
     id: "llamativos",
@@ -319,8 +386,16 @@ export const CUALES_SIRVEN: InsectoCria[] = [
     texto:
       "Rojos, azules, amarillos o fucsias intensos: en la naturaleza estos colores suelen advertir que el insecto es tóxico.",
     sena: "Colores vivos y contrastados que se ven de lejos.",
-    imagen: "/acuarelas/saltamontes-llamativo.webp",
-    alt: "Saltamontes de cuerpo rojo intenso con franjas azules y amarillas.",
+    fotos: [
+      {
+        src: "/fotos/insectos/saltamontes-llamativo.webp",
+        alt: "Saltamontes verde brillante con manchas amarillas intensas, sobre una hoja.",
+        rotulo: "*Chromacris icterus*",
+        autor: "Graham Wise",
+        licencia: "CC BY-SA 4.0",
+        url: "https://commons.wikimedia.org/wiki/File:Chromacris_icterus.jpg",
+      },
+    ],
   },
   {
     id: "esperanzas",
@@ -330,7 +405,23 @@ export const CUALES_SIRVEN: InsectoCria[] = [
     texto:
       "No corresponden a las especies de cría del proyecto; no se recolectan para la colonia.",
     sena: "La esperanza es verde como una hoja y sus alas cierran como un techo; el grillo de cueva es jorobado y no tiene alas.",
-    imagen: "/acuarelas/esperanza-y-grillo-cueva.webp",
-    alt: "A la izquierda, una esperanza verde con alas en forma de hoja; a la derecha, un grillo de cueva café, jorobado y sin alas, de patas muy largas.",
+    fotos: [
+      {
+        src: "/fotos/insectos/esperanza.webp",
+        alt: "Esperanza verde, con las alas en forma de hoja, sobre una hoja.",
+        rotulo: "Esperanza (Phaneropterinae)",
+        autor: "Pavel Kirillov",
+        licencia: "CC BY-SA 2.0",
+        url: "https://commons.wikimedia.org/wiki/File:Phaneropterinae_sp._(9617937202).jpg",
+      },
+      {
+        src: "/fotos/insectos/grillo-cueva.webp",
+        alt: "Grillo de cueva café claro, jorobado y sin alas, con patas y antenas muy largas.",
+        rotulo: "Grillo de cueva (*Ceuthophilus*)",
+        autor: "Thegreenj",
+        licencia: "CC BY-SA 3.0",
+        url: "https://commons.wikimedia.org/wiki/File:Ceuthophiluscricket.jpg",
+      },
+    ],
   },
 ];

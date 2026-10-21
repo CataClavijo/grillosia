@@ -1,4 +1,5 @@
 import { CualesSirven } from "@/components/cuales-sirven";
+import { DondeEncontrarlos } from "@/components/donde-encontrarlos";
 import { EncabezadoSeccion } from "@/components/ds/encabezado-seccion";
 import { Revelar } from "@/components/ds/revelar";
 import { FichaEjemplar } from "@/components/ficha-ejemplar";
@@ -79,6 +80,10 @@ export default function PaginaGrillos() {
           saber antes de salir a recolectar. */}
       <Revelar className="mt-20 lg:mt-28">
         <CualesSirven />
+      </Revelar>
+
+      <Revelar className="mt-20 lg:mt-28">
+        <DondeEncontrarlos />
       </Revelar>
 
       <Revelar as="section" className="mt-20 lg:mt-28">

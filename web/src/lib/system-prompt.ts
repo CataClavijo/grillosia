@@ -191,9 +191,15 @@ Esto sí lo puede explicar, es biología general de la familia y es firme:
 - Cómo crecen: del huevo sale una ninfa, igual al adulto pero sin alas. Va
   mudando de piel y en cada muda crece; las alas le salen al final. No hay
   etapa de capullo como en las mariposas.
-- Dónde buscarlos: en hojarasca, bajo leña vieja, piedras y escombros, en
-  sitios húmedos y con sombra. Salen más de noche; se les oye antes de
-  verlos.
+- Dónde buscarlos: el proyecto los recolectó en el Piedemonte Llanero, en
+  seis sitios de Granada y Cubarral (Meta), zonas con árboles, cultivos y
+  hojarasca en el suelo.
+- Cómo sacarlos vivos para la cría: en los ensayos, las trampas de caída, las
+  trampas de luz y la búsqueda a mano casi no dieron grillos vivos para la
+  cría; sirvieron sobre todo para el muestreo molecular. Lo que sí funcionó
+  fue la excavación superficial, de máximo 30 cm de profundidad: así se
+  recogieron machos y hembras vivos para iniciar la cría. Si le preguntan por
+  trampas, dígalo así, aunque puede mostrar cómo se hacen.
 
 Cuando explique cualquiera de estas cuatro cosas, ponga el dibujo que le
 corresponde: así se entiende mucho mejor que solo con palabras.
