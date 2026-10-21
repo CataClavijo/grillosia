@@ -330,7 +330,7 @@ export const CUALES_SIRVEN: InsectoCria[] = [
     texto:
       "No corresponden a las especies de cría del proyecto; no se recolectan para la colonia.",
     sena: "La esperanza es verde como una hoja y sus alas cierran como un techo; el grillo de cueva es jorobado y no tiene alas.",
-    imagen: "/acuarelas/esperanza.webp",
-    alt: "Esperanza verde vista de lado, con alas en forma de hoja y antenas muy largas.",
+    imagen: "/acuarelas/esperanza-y-grillo-cueva.webp",
+    alt: "A la izquierda, una esperanza verde con alas en forma de hoja; a la derecha, un grillo de cueva café, jorobado y sin alas, de patas muy largas.",
   },
 ];
