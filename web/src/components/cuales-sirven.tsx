@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 /**
  * ¿Cuáles sirven para la cría?
  *
- * Una lámina de guía de campo: los cuatro grupos en una fila (dos por fila
+ * Una lámina de guía de campo: los cinco grupos en una fila (dos por fila
  * en el celular), cada insecto recortado sobre el mismo papel y del mismo
  * tamaño, con su veredicto encima. Una frase por tarjeta: lo que hay que
  * mirar. Con fotos grandes en su ambiente y dos parrafos por tarjeta la
@@ -30,7 +30,7 @@ export function CualesSirven() {
         entrada="Al salir a buscar va a encontrar varios insectos parecidos. Estos se pueden llevar a la colonia y estos no."
       />
 
-      <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4 lg:gap-x-6">
+      <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-5 lg:gap-x-5">
         {CUALES_SIRVEN.map((x) => {
           const Icono = x.sirve ? Check : X;
           return (
@@ -43,7 +43,7 @@ export function CualesSirven() {
                 ))}
                 <span
                   className={cn(
-                    "absolute top-2.5 left-2.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12.5px] font-semibold text-white",
+                    "absolute top-2.5 left-2.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12.5px] font-semibold text-background",
                     x.sirve ? "bg-vegetal" : "bg-destructive",
                   )}
                 >

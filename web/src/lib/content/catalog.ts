@@ -271,16 +271,6 @@ export const IMPORTANCIA = [
  * ensayos mostraron que las trampas y la busqueda a mano casi no dan grillos
  * vivos para la cria, asi que ahora se dice lo que si funciono.
  */
-export interface SitioMuestreo {
-  codigo: string;
-  /** Foto real del sitio; mientras no llegue, la tarjeta muestra solo el codigo. */
-  foto?: string;
-}
-
-export const MUNICIPIOS_MUESTREO: { nombre: string; sitios: SitioMuestreo[] }[] = [
-  { nombre: "Granada", sitios: [{ codigo: "G1" }, { codigo: "G2" }, { codigo: "G3" }] },
-  { nombre: "Cubarral", sitios: [{ codigo: "C1" }, { codigo: "C2" }, { codigo: "C3" }] },
-];
 
 export const METODOS_RECOLECCION = {
   tradicionales: {
@@ -385,15 +375,23 @@ export const CUALES_SIRVEN: InsectoCria[] = [
   {
     id: "esperanzas",
     sirve: false,
-    nombre: "Esperanzas y grillos de cueva",
-    grupo: "Tettigoniidae y Rhaphidophoridae",
-    texto:
-      "No son las especies de cría del proyecto. La esperanza parece una hoja verde; el grillo de cueva es jorobado y sin alas.",
+    nombre: "Esperanzas",
+    grupo: "Familia Tettigoniidae",
+    texto: "Parecen una hoja verde, con las alas cerradas como un techo. No son de las especies de cría del proyecto.",
     fotos: [
       {
         src: "/fotos/insectos/recorte-esperanza.webp",
         alt: "Esperanza verde, con las alas en forma de hoja.",
       },
+    ],
+  },
+  {
+    id: "grillos-cueva",
+    sirve: false,
+    nombre: "Grillos de cueva",
+    grupo: "Familia Rhaphidophoridae",
+    texto: "Jorobados, sin alas y de patas muy largas. No son de las especies de cría del proyecto.",
+    fotos: [
       {
         src: "/fotos/insectos/recorte-cueva.webp",
         alt: "Grillo de cueva café claro, jorobado y sin alas, de patas muy largas.",
@@ -434,12 +432,25 @@ export const CUALES_SIRVEN_CREDITOS: CreditoFoto[] = [
   },
 ];
 
-/** Foto real del Piedemonte para "¿Dónde encontrarlos?". */
-export const FOTO_PIEDEMONTE = {
-  src: "/fotos/granada-piedemonte.webp",
-  alt: "Vista desde una loma en Granada, Meta: potreros y árboles que bajan a la llanura, con la cordillera tenue al fondo.",
-  pie: "Granada, Meta",
-  quien: "Amujohca",
-  licencia: "CC BY-SA 4.0",
-  url: "https://commons.wikimedia.org/wiki/File:Granada_Colombia_postal.jpg",
-};
+/**
+ * Fotos de los sitios de muestreo del proyecto (Catalina Clavijo-Agudelo,
+ * octubre de 2026). Se rotulan por municipio y por lo que se ve: el codigo
+ * del sitio (G1, C3...) no le dice nada al productor.
+ */
+export const FOTOS_SITIOS: { src: string; alt: string; pie: string }[] = [
+  {
+    src: "/fotos/sitios/granada-bosque.webp",
+    alt: "Sotobosque en Granada, Meta: heliconias de flor roja, árboles delgados y palmas, con hojarasca en el suelo.",
+    pie: "Granada: bosque con heliconias",
+  },
+  {
+    src: "/fotos/sitios/cubarral-cacao.webp",
+    alt: "Cultivo de cacao en Cubarral, Meta, con mazorcas en los troncos y el suelo cubierto de hojas secas.",
+    pie: "Cubarral: cacaotal con hojarasca",
+  },
+  {
+    src: "/fotos/sitios/cubarral-platano.webp",
+    alt: "Matas de plátano en Cubarral, Meta, con hojas secas amontonadas en el suelo y helechos.",
+    pie: "Cubarral: platanera con hojas secas",
+  },
+];

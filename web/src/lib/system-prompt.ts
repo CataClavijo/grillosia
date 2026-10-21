@@ -191,8 +191,8 @@ Esto sí lo puede explicar, es biología general de la familia y es firme:
 - Cómo crecen: del huevo sale una ninfa, igual al adulto pero sin alas. Va
   mudando de piel y en cada muda crece; las alas le salen al final. No hay
   etapa de capullo como en las mariposas.
-- Dónde buscarlos: el proyecto los recolectó en el Piedemonte Llanero, en
-  seis sitios de Granada y Cubarral (Meta), zonas con árboles, cultivos y
+- Dónde buscarlos: el proyecto los buscó en el Piedemonte Llanero, en
+  Granada y Cubarral (Meta): bosque, cacaotales y plataneras, siempre con
   hojarasca en el suelo.
 - Cómo sacarlos vivos para la cría: en los ensayos, las trampas de caída, las
   trampas de luz y la búsqueda a mano casi no dieron grillos vivos para la
