@@ -377,11 +377,11 @@ export const CUALES_SIRVEN: InsectoCria[] = [
     sirve: false,
     nombre: "Esperanzas",
     grupo: "Familia Tettigoniidae",
-    texto: "Parecen una hoja verde, con las alas cerradas como un techo. No son de las especies de cría del proyecto.",
+    texto: "Verdes, de alas largas cerradas como un techo y antenas más largas que el cuerpo. No son de las especies de cría del proyecto.",
     fotos: [
       {
         src: "/fotos/insectos/recorte-esperanza.webp",
-        alt: "Esperanza verde, con las alas en forma de hoja.",
+        alt: "Esperanza verde de alas largas, con una antena muy larga hacia adelante.",
       },
     ],
   },
@@ -419,10 +419,10 @@ export const CUALES_SIRVEN_CREDITOS: CreditoFoto[] = [
     url: "https://commons.wikimedia.org/wiki/File:Chromacris_icterus.jpg",
   },
   {
-    quien: "Pavel Kirillov",
-    que: "Esperanza (Phaneropterinae)",
-    licencia: "CC BY-SA 2.0",
-    url: "https://commons.wikimedia.org/wiki/File:Phaneropterinae_sp._(9617937202).jpg",
+    quien: "Marián Hubinský",
+    que: "Esperanza (*Tettigonia viridissima*)",
+    licencia: "CC BY-SA 4.0",
+    url: "https://commons.wikimedia.org/wiki/File:Tettigonia_viridissima_-_on_white_paper_with_some_leaves.jpg",
   },
   {
     quien: "Thegreenj",

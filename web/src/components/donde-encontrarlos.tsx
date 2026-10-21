@@ -60,17 +60,27 @@ export function DondeEncontrarlos() {
           <h4 className="mt-3 text-[17px] font-semibold">
             {ajustado.metodo}, {ajustado.profundidad.toLowerCase()} de profundidad
           </h4>
-          {/* El dibujo trae su propio fondo claro: va en un papel del mismo
-              color para que no se vea el borde, tambien en modo oscuro. */}
-          <div className="mt-4 overflow-hidden rounded-md bg-[#f6f9f6]">
+          {/* Acuarela del corte del suelo. La marca de profundidad va en texto
+              encima del dibujo y no dentro de la imagen: asi se lee nitida en
+              cualquier pantalla. Va de la superficie (40 % del alto del
+              dibujo) al fondo del hueco (60 %). */}
+          <div className="relative mt-5 pl-[4.25rem] sm:pl-[5.5rem]">
             <Image
-              src="/ilustraciones/excavacion-superficial.webp"
-              alt="Corte del suelo: un grillo en su hueco a poca profundidad y una pala de jardín que excava de lado. Una marca indica máximo 30 cm."
-              width={735}
-              height={215}
-              sizes="(max-width: 1024px) 100vw, 640px"
-              className="h-auto w-full"
+              src="/acuarelas/excavacion.webp"
+              alt="Corte del suelo: bajo el pasto y la hojarasca, un grillo en un hueco poco profundo; una pala de jardín sostenida con guante abre la tierra de lado."
+              width={1200}
+              height={551}
+              sizes="(max-width: 1024px) 90vw, 600px"
+              className="lamina h-auto w-full"
             />
+            <div aria-hidden className="absolute top-[40%] left-0 flex h-[20%] items-center gap-2">
+              <span className="text-right font-display text-[15px] font-semibold leading-[1.05] sm:text-[18px]">
+                Máx.
+                <br />
+                30 cm
+              </span>
+              <span className="h-full w-2 border-y-[1.5px] border-l-[1.5px] border-foreground/70" />
+            </div>
           </div>
           <p className="t-small mt-4 text-foreground/85">{ajustado.texto}</p>
         </article>

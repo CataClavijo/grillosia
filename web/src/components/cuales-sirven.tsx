@@ -37,7 +37,7 @@ export function CualesSirven() {
             <li key={x.id} className="flex flex-col">
               <div className="relative flex aspect-[4/3] items-center justify-center gap-2 rounded-lg bg-surface-2 px-3">
                 {x.fotos.map((f) => (
-                  <div key={f.src} className="relative h-[62%] flex-1">
+                  <div key={f.src} className="relative h-[72%] flex-1">
                     <Image src={f.src} alt={f.alt} fill sizes="(max-width: 1024px) 45vw, 280px" className="object-contain" />
                   </div>
                 ))}
