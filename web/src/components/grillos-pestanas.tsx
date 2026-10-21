@@ -330,13 +330,13 @@ function ImportanciaCaptura() {
       <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
         <div className="lg:col-span-4">
           <h3 className="t-h2">Dónde buscarlos</h3>
-          <div className="relative mt-6 h-44 w-full max-w-[360px]">
+          <div className="relative mt-6 aspect-[960/544] w-full overflow-hidden rounded-lg">
             <Image
               src="/acuarelas/donde-buscar.webp"
-              alt="Hojarasca, leña vieja y piedras, donde se esconden los grillos."
+              alt="Borde de una finca del Piedemonte Llanero: hojarasca de hojas anchas, guaduas y troncos podridos sobre tierra rojiza, con las lomas de la cordillera al fondo."
               fill
-              sizes="360px"
-              className="lamina object-contain object-left"
+              sizes="(max-width: 1024px) 100vw, 400px"
+              className="object-cover"
             />
           </div>
         </div>

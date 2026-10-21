@@ -127,14 +127,16 @@ export function AsistenteFlotante() {
           aria-hidden={!visible}
           tabIndex={visible ? 0 : -1}
           className={cn(
-            "fixed right-4 bottom-4 z-30 inline-flex h-12 items-center gap-2 rounded-full border border-border-strong bg-surface/95 px-4 text-[14.5px] font-semibold text-foreground backdrop-blur-md transition-[background-color,border-color,opacity,transform] duration-[var(--dur-lenta)] ease-[var(--ease-natural)] hover:border-foreground/30 hover:bg-surface active:translate-y-px lg:right-6 lg:bottom-6 lg:h-11",
+            // En el celular es solo el icono, redondo: con el texto tapaba
+            // el final de los parrafos en casi todas las pantallas.
+            "fixed right-4 bottom-4 z-30 inline-flex size-12 items-center justify-center gap-2 rounded-full border border-border-strong bg-surface/95 text-[14.5px] font-semibold sm:w-auto sm:px-4 text-foreground backdrop-blur-md transition-[background-color,border-color,opacity,transform] duration-[var(--dur-lenta)] ease-[var(--ease-natural)] hover:border-foreground/30 hover:bg-surface active:translate-y-px lg:right-6 lg:bottom-6 lg:h-11",
             visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0",
             "shadow-[0_1px_2px_rgb(31_27_22/0.06),0_4px_16px_-6px_rgb(31_27_22/0.12)]",
             abierto && "pointer-events-none opacity-0",
           )}
         >
-          <Sparkles className="size-[18px] text-primary" aria-hidden />
-          Pregunte a GrillosIA
+          <Sparkles className="size-5 text-primary sm:size-[18px]" aria-hidden />
+          <span className="hidden sm:inline">Pregunte a GrillosIA</span>
         </button>
       )}
 

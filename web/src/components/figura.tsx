@@ -139,7 +139,7 @@ export const FIGURAS: DefinicionFigura[] = [
     id: "donde-buscar",
     src: "/acuarelas/donde-buscar.webp",
     titulo: "Dónde buscarlos: hojarasca, leña y piedra",
-    alt: "Un rincón de patio con hojarasca acumulada, leña vieja apilada y un muro bajo de piedra, alumbrado por una linterna.",
+    alt: "Borde de una finca del Piedemonte Llanero: hojarasca de hojas anchas, guaduas y troncos podridos sobre tierra rojiza, con las lomas de la cordillera al fondo.",
     cuando:
       "Cuando pregunten dónde conseguir grillos, dónde buscarlos, cómo atraparlos o a qué hora salen.",
   },

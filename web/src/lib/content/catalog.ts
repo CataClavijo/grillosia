@@ -270,3 +270,67 @@ export const COMO_CAPTURAR: string[] = [
   "Use un frasco con tapa perforada y un poco de pasto adentro.",
   "Manipúlelos con suavidad: las patas traseras se desprenden con facilidad.",
 ];
+
+/**
+ * ¿Cuáles sirven para la cría? Lo que el productor encuentra al salir a
+ * buscar, separado en lo que sí puede llevar a la colonia y lo que no.
+ *
+ * Contenido de Catalina Clavijo-Agudelo (octubre de 2026). Las "señas" son
+ * rasgos de forma que distinguen cada grupo a simple vista.
+ */
+export interface InsectoCria {
+  id: string;
+  sirve: boolean;
+  nombre: string;
+  /** Familia o grupo, en latín. */
+  grupo?: string;
+  texto: string;
+  sena: string;
+  imagen: string;
+  alt: string;
+}
+
+export const CUALES_SIRVEN: InsectoCria[] = [
+  {
+    id: "grillos",
+    sirve: true,
+    nombre: "Grillos",
+    grupo: "Familia Gryllidae",
+    texto:
+      "Antenas muy largas, cuerpo robusto y patas traseras fuertes. Las especies que más se crían en el mundo, como *Acheta domesticus* y *Gryllodes sigillatus*, pertenecen a esta familia.",
+    sena: "Antenas más largas que el cuerpo y dos colitas al final del abdomen.",
+    imagen: "/acuarelas/grillo.webp",
+    alt: "Grillo café visto de lado, con antenas muy largas.",
+  },
+  {
+    id: "saltamontes",
+    sirve: true,
+    nombre: "Saltamontes de colores discretos",
+    grupo: "Familia Acrididae",
+    texto: "Antenas cortas y colores discretos, verdes o cafés.",
+    sena: "Antenas cortas y gruesas; salta lejos en vez de caminar.",
+    imagen: "/acuarelas/saltamontes.webp",
+    alt: "Saltamontes verde y café visto de lado, con antenas cortas y patas traseras largas.",
+  },
+  {
+    id: "llamativos",
+    sirve: false,
+    nombre: "Saltamontes de colores llamativos",
+    texto:
+      "Rojos, azules, amarillos o fucsias intensos: en la naturaleza estos colores suelen advertir que el insecto es tóxico.",
+    sena: "Colores vivos y contrastados que se ven de lejos.",
+    imagen: "/acuarelas/saltamontes-llamativo.webp",
+    alt: "Saltamontes de cuerpo rojo intenso con franjas azules y amarillas.",
+  },
+  {
+    id: "esperanzas",
+    sirve: false,
+    nombre: "Esperanzas y grillos de cueva",
+    grupo: "Tettigoniidae y Rhaphidophoridae",
+    texto:
+      "No corresponden a las especies de cría del proyecto; no se recolectan para la colonia.",
+    sena: "La esperanza es verde como una hoja y sus alas cierran como un techo; el grillo de cueva es jorobado y no tiene alas.",
+    imagen: "/acuarelas/esperanza.webp",
+    alt: "Esperanza verde vista de lado, con alas en forma de hoja y antenas muy largas.",
+  },
+];

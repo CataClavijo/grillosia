@@ -3,7 +3,7 @@
  * (investigadores, evaluadores Minciencias, docentes).
  */
 
-import { REFERENCIAS } from "@/lib/content/referencias";
+import { REFERENCIAS, citaPlana } from "@/lib/content/referencias";
 
 export interface MethodologySection {
   id: string;
@@ -91,7 +91,7 @@ export const REFERENCES: Reference[] = [
   // registro que usa "¿De donde sale este valor?", para que nunca se citen
   // dos listas distintas.
   ...Object.values(REFERENCIAS).map((r) => ({
-    citation: r.url ? `${r.cita} ${r.url}` : r.cita,
+    citation: citaPlana(r),
     note: `Fuente de la proteína que necesita el animal destino. ${r.ubicacion ?? ""}`.trim(),
   })),
 ];

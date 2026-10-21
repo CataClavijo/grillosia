@@ -198,7 +198,11 @@ export default function Inicio() {
                       <div className="flex flex-1 flex-col px-5 pt-5 pb-5 lg:px-6 lg:pb-6">
                         <h3 className="font-display text-[2.25rem] font-semibold leading-none lg:text-[2.5rem]">{c.name}</h3>
                         <p className="t-body mt-2 text-subtle">
-                          {animales.map((a) => a.name).join(" · ")}
+                          {/* Con un solo animal (cerdos) repetir su nombre no dice
+                              nada: se nombran sus etapas. */}
+                          {animales.length > 1
+                            ? animales.map((a) => a.name).join(" · ")
+                            : animales[0]?.stages.map((e) => e.name).join(" · ")}
                         </p>
                         <div className="mt-5 flex-1">
                           {rango ? (

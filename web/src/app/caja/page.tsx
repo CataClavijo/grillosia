@@ -11,7 +11,6 @@ import {
   Layers,
   Lightbulb,
   NotebookPen,
-  Ribbon,
   Scissors,
   Thermometer,
   Wind,
@@ -19,6 +18,7 @@ import {
 } from "lucide-react";
 
 import { EncabezadoSeccion } from "@/components/ds/encabezado-seccion";
+import { IconoCinta } from "@/components/icono-cinta";
 import { Revelar } from "@/components/ds/revelar";
 import { MapaPasosCaja } from "@/components/mapa-pasos-caja";
 import { Paso } from "@/components/paso";
@@ -41,7 +41,7 @@ export const metadata = {
     "Guía paso a paso para armar una caja de cría de grillos con materiales sencillos.",
 };
 
-const ICONO_MATERIAL: Record<IconoMaterial, LucideIcon> = {
+const ICONO_MATERIAL: Record<IconoMaterial, LucideIcon | typeof IconoCinta> = {
   caja: Box,
   malla: Grid3x3,
   sustrato: Layers,
@@ -49,7 +49,7 @@ const ICONO_MATERIAL: Record<IconoMaterial, LucideIcon> = {
   termohigrometro: Thermometer,
   bebedero: GlassWater,
   manzana: Apple,
-  cinta: Ribbon,
+  cinta: IconoCinta,
   tijeras: Scissors,
 };
 

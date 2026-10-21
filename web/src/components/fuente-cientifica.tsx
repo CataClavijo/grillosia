@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { referencia } from "@/lib/content/referencias";
+import { conCursivas } from "@/lib/cursivas";
 import { cn } from "@/lib/utils";
 
 /**
@@ -68,7 +69,7 @@ export function FuenteCientifica({
               <li key={r.id} className="grid grid-cols-[24px_1fr] gap-x-2 text-[15px] leading-relaxed">
                 <span className="t-eyebrow pt-[5px] text-faint">{i + 1}</span>
                 <div>
-                  <p>{r.cita}</p>
+                  <p className="[overflow-wrap:anywhere]">{conCursivas(r.cita)}</p>
                   {r.ubicacion && (
                     <p className="mt-1 text-[13.5px] text-subtle">{r.ubicacion}</p>
                   )}

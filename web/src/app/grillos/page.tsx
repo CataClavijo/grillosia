@@ -1,3 +1,4 @@
+import { CualesSirven } from "@/components/cuales-sirven";
 import { EncabezadoSeccion } from "@/components/ds/encabezado-seccion";
 import { Revelar } from "@/components/ds/revelar";
 import { FichaEjemplar } from "@/components/ficha-ejemplar";
@@ -72,6 +73,12 @@ export default function PaginaGrillos() {
           foto={FOTO_REFERENCIA_LATERAL}
           rasgos={COMO_RECONOCER}
         />
+      </Revelar>
+
+      {/* A la vista y no en una pestana: es lo que el productor necesita
+          saber antes de salir a recolectar. */}
+      <Revelar className="mt-20 lg:mt-28">
+        <CualesSirven />
       </Revelar>
 
       <Revelar as="section" className="mt-20 lg:mt-28">

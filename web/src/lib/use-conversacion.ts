@@ -107,10 +107,8 @@ async function preguntarAlAsistente(
 function fuenteCorta(refs: string[] | undefined): string | undefined {
   if (!refs?.length) return undefined;
   const cortas = refs.flatMap((id) => {
-    const cita = referencia(id)?.cita;
-    if (!cita) return [];
-    const conAno = cita.match(/^(.*?\(\d{4}\))/);
-    return [conAno ? conAno[1] : cita.split(". ")[0]];
+    const r = referencia(id);
+    return r ? [r.corta] : [];
   });
   return cortas.length ? cortas.join("; ") : undefined;
 }

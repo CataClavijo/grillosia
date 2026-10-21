@@ -91,7 +91,9 @@ export function PortadaHero() {
             </div>
 
             <nav aria-label="Empezar por categoría" className="mt-8 flex flex-wrap items-baseline gap-x-5 gap-y-2 border-t border-white/15 pt-5">
-              <span className="t-eyebrow text-white/55">O vaya directo a</span>
+              {/* En el celular el rotulo va en su propia linea: al lado de los
+                  tres nombres dejaba "Cerdos" solo en la segunda. */}
+              <span className="t-eyebrow w-full text-white/55 sm:w-auto">O vaya directo a</span>
               {CATEGORIAS.map((c, i) => (
                 <Link
                   key={c.id}

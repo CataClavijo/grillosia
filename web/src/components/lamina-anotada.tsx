@@ -82,6 +82,8 @@ export function LaminaAnotada({
             src={foto.src}
             alt={foto.alt}
             fill
+            // Es lo mas grande de la pagina en el celular: se carga de una.
+            loading="eager"
             sizes="(max-width: 1024px) 92vw, 760px"
             className="object-contain"
           />
@@ -212,10 +214,10 @@ export function LaminaAnotada({
                 onBlur={() => setActivo(null)}
                 onClick={() => setActivo(on ? null : r.id)}
                 className={cn(
-                  "grid w-full grid-cols-[32px_1fr] gap-3 rounded-lg border-l-2 py-3 pr-3 pl-3 text-left transition-[background-color,border-color] duration-200",
-                  on
-                    ? "border-primary bg-primary-soft"
-                    : "border-transparent hover:bg-surface-2",
+                  // Solo el fondo marca el rasgo elegido: una raya a la izquierda
+                  // sobre esquinas redondeadas se veia torcida.
+                  "grid w-full grid-cols-[32px_1fr] gap-3 rounded-lg p-3 text-left transition-colors duration-200",
+                  on ? "bg-primary-soft" : "hover:bg-surface-2",
                 )}
               >
                 <span

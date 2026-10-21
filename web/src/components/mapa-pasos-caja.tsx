@@ -96,8 +96,10 @@ function TarjetaPaso({
       onFocus={onEnfocar}
       onClick={onEnfocar}
       className={cn(
-        "flex h-full flex-col rounded-lg bg-surface p-6 transition-shadow duration-200",
-        activa ? "ring-[1.5px] ring-primary" : "ring-1 ring-border",
+        // Borde real y no `ring`: el anillo se dibuja por fuera y el carrusel,
+        // que recorta lo que se sale, lo cortaba arriba y abajo.
+        "flex h-full flex-col rounded-lg border bg-surface p-6 transition-colors duration-200",
+        activa ? "border-primary/70 bg-primary-soft/30" : "border-border",
       )}
     >
       {/* El numero del paso manda (cifra grande, igual al del mapa); el
