@@ -67,12 +67,16 @@ export function Carrusel({
     const p = pista.current;
     if (activo === undefined || !p || !p.children[activo]) return;
     const hijo = p.children[activo] as HTMLElement;
+    // Posicion de la tarjeta DENTRO de la fila. `offsetLeft` se mide desde el
+    // contenedor posicionado mas cercano, no desde la fila: en escritorio la
+    // fila arranca a media pagina y, comparada con `scrollLeft`, una tarjeta
+    // anterior parecia ya visible y el carrusel no volvia a ella.
+    const destino = hijo.offsetLeft - (p.children[0] as HTMLElement).offsetLeft;
     const visible =
-      hijo.offsetLeft >= p.scrollLeft - 2 &&
-      hijo.offsetLeft + hijo.offsetWidth <= p.scrollLeft + p.clientWidth + 2;
+      destino >= p.scrollLeft - 2 &&
+      destino + hijo.offsetWidth <= p.scrollLeft + p.clientWidth + 2;
     if (visible) return;
     moviendoDesdeAfuera.current = true;
-    const destino = hijo.offsetLeft - (p.children[0] as HTMLElement).offsetLeft;
     // Si el carrusel no esta a la vista, la pagina va a moverse hasta el
     // con su propio desplazamiento suave, y dos desplazamientos suaves a la
     // vez se cortan entre si: entonces se mueve de una vez.

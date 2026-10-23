@@ -162,11 +162,14 @@ export function DiagramaCaja({
       <figure>
         <svg
           viewBox="0 0 680 420"
-          role="img"
-          aria-labelledby={`${id}-t ${id}-d`}
+          // Nombre por aria-label y no con <title>: el navegador muestra el
+          // <title> como globo al pasar el raton y tapaba los numeros. Es un
+          // grupo y no una imagen porque los numeros se pueden tocar.
+          role="group"
+          aria-label="Diagrama de la caja de cría vista desde arriba"
+          aria-describedby={`${id}-d`}
           className="h-auto w-full text-foreground/75"
         >
-          <title id={`${id}-t`}>Diagrama de la caja de cría vista desde arriba</title>
           <desc id={`${id}-d`}>
             A la izquierda, la caja abierta con tres hileras de hueveras paradas,
             el sustrato en el fondo, un plato de alimento, una tapita con algodón
