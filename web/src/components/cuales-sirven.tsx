@@ -35,23 +35,25 @@ export function CualesSirven() {
           const Icono = x.sirve ? Check : X;
           return (
             <li key={x.id} className="flex flex-col">
-              <div className="relative flex aspect-[4/3] items-center justify-center gap-2 rounded-lg bg-surface-2 px-3">
+              {/* Sin recuadro: el insecto queda suelto sobre la pagina, como en
+                  una lamina, y el veredicto va debajo, lejos del dibujo. */}
+              <div className="flex aspect-[4/3] items-center justify-center gap-2 px-1 pt-6 pb-2">
                 {x.fotos.map((f) => (
-                  <div key={f.src} className="relative h-[72%] flex-1">
+                  <div key={f.src} className="relative h-full flex-1">
                     <Image src={f.src} alt={f.alt} fill sizes="(max-width: 1024px) 45vw, 280px" className="object-contain" />
                   </div>
                 ))}
-                <span
-                  className={cn(
-                    "absolute top-2.5 left-2.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12.5px] font-semibold text-background",
-                    x.sirve ? "bg-vegetal" : "bg-destructive",
-                  )}
-                >
-                  <Icono className="size-3.5" strokeWidth={3} aria-hidden />
-                  {x.sirve ? "Sirve" : "No sirve"}
-                </span>
               </div>
-              <h3 className="mt-3 font-display text-[1.3rem] font-semibold leading-tight">{x.nombre}</h3>
+              <span
+                className={cn(
+                  "mt-3 inline-flex w-fit items-center gap-1 rounded-full px-2.5 py-0.5 text-[12.5px] font-semibold",
+                  x.sirve ? "bg-vegetal text-background" : "bg-destructive text-background",
+                )}
+              >
+                <Icono className="size-3.5" strokeWidth={3} aria-hidden />
+                {x.sirve ? "Sirve" : "No sirve"}
+              </span>
+              <h3 className="mt-2.5 font-display text-[1.3rem] font-semibold leading-tight">{x.nombre}</h3>
               {x.grupo && <p className="t-eyebrow mt-0.5 text-subtle">{x.grupo}</p>}
               <p className="t-small mt-1.5 text-foreground/80">{x.texto}</p>
             </li>
