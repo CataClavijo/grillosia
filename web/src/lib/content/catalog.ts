@@ -231,24 +231,42 @@ export const MACHO_HEMBRA: { rasgo: string; hembra: string; macho: string }[] = 
 ];
 
 /** Etapas del crecimiento, en orden. */
-export const CRECIMIENTO: { etapa: string; texto: string }[] = [
+export interface EtapaCrecimiento {
+  etapa: string;
+  texto: string;
+  /** Dibujo de la etapa (sale de la lámina del ciclo, separada). */
+  imagen: string;
+  alt: string;
+  /** Ancho relativo del dibujo: el huevo es diminuto al lado del adulto. */
+  escala: number;
+}
+
+export const CRECIMIENTO: EtapaCrecimiento[] = [
   {
     etapa: "Huevo",
     texto: "La hembra lo pone en la tierra con su ovipositor.",
+    imagen: "/acuarelas/ciclo-huevo.webp",
+    alt: "Huevo de grillo, alargado y de color crema.",
+    escala: 0.28,
   },
   {
     etapa: "Ninfa",
     texto: "Del huevo sale un grillo pequeño, parecido al adulto pero sin alas.",
-  },
-  {
-    etapa: "Mudas",
-    texto: "Cambia de piel varias veces, y en cada muda crece.",
+    imagen: "/acuarelas/ciclo-ninfa.webp",
+    alt: "Ninfa de grillo, pequeña y sin alas, con antenas largas.",
+    escala: 0.62,
   },
   {
     etapa: "Adulto",
-    texto: "Las alas aparecen al final.",
+    texto: "Ya tiene las alas completas: aparecen en la última muda.",
+    imagen: "/acuarelas/ciclo-adulto.webp",
+    alt: "Grillo adulto, más grande y con las alas sobre el lomo.",
+    escala: 1,
   },
 ];
+
+/** Lo que pasa entre la ninfa y el adulto: va sobre la flecha que las une. */
+export const CRECIMIENTO_MUDAS = "Cambia de piel varias veces; en cada muda crece.";
 
 export const CRECIMIENTO_NOTA =
   "No pasa por una etapa de capullo, como sí ocurre con las mariposas.";

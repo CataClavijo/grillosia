@@ -1,20 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import {
-  Bug,
-  Egg,
-  RefreshCw,
-  Sprout,
-  type LucideIcon,
-} from "lucide-react";
 
 import { Estado } from "@/components/ds/estado";
 import { Pestanas } from "@/components/ds/pestanas";
 import { InfoTip } from "@/components/info-tip";
 import {
   CRECIMIENTO,
+  CRECIMIENTO_MUDAS,
   CRECIMIENTO_NOTA,
   IMPORTANCIA,
   MACHO_HEMBRA,
@@ -175,75 +169,66 @@ function Comparacion({
   );
 }
 
-const ICONO_ETAPA: LucideIcon[] = [Egg, Sprout, RefreshCw, Bug];
-
 /**
- * Linea de tiempo del crecimiento: horizontal en pantallas anchas y vertical
- * en celular. La linea se dibuja de izquierda a derecha al entrar y cada
- * etapa aparece a su paso.
- *
- * No lleva duraciones: todavia no estan medidas en los ensayos.
+ * Como crecen: huevo, ninfa y adulto en fila, cada uno con su dibujo y a su
+ * tamano relativo (el huevo es diminuto), sobre una misma linea de suelo.
+ * Las mudas no son una etapa sino lo que pasa entre la ninfa y el adulto,
+ * asi que van escritas sobre la flecha que las une. En el celular la
+ * secuencia baja en columna.
  */
 function Crecimiento() {
   const { ref, visible } = useVisible<HTMLDivElement>();
   return (
     <div ref={ref}>
-      <div className="grid items-end gap-8 lg:grid-cols-12 lg:gap-14">
-        <div className="lg:col-span-7">
-          <h3 className="t-h2">Cómo crecen</h3>
-          <p className="t-lead mt-3">{CRECIMIENTO_NOTA}</p>
-        </div>
-        <figure className="lg:col-span-5">
-          <div className="relative mx-auto h-32 w-full max-w-[420px] sm:h-40">
-            <Image
-              src="/acuarelas/ciclo.webp"
-              alt="El ciclo de vida del grillo: huevo, ninfa sin alas y adulto con alas."
-              fill
-              sizes="(max-width: 1024px) 90vw, 420px"
-              className="lamina object-contain"
-            />
-          </div>
-        </figure>
-      </div>
+      <h3 className="t-h2">Cómo crecen</h3>
+      <p className="t-lead mt-3 max-w-[640px]">{CRECIMIENTO_NOTA}</p>
 
-      <ol className="relative mt-12 grid gap-8 md:grid-cols-4 md:gap-6">
-        {/* La linea que une las etapas: se dibuja al entrar. */}
-        <span
-          aria-hidden
-          className="absolute top-5 left-5 hidden h-px bg-border-strong md:block"
-          style={{ right: "calc(25% - 20px)" }}
-        >
-          <span
-            className="block h-full origin-left bg-primary transition-transform duration-[1400ms] ease-[var(--ease-natural)]"
-            style={{ transform: visible ? "scaleX(1)" : "scaleX(0)" }}
-          />
-        </span>
-        <span
-          aria-hidden
-          className="absolute top-5 bottom-5 left-5 w-px bg-border-strong md:hidden"
-        />
-        {CRECIMIENTO.map((e, i) => {
-          const Icono = ICONO_ETAPA[i] ?? Bug;
-          return (
+      <ol className="mt-12 grid gap-4 md:grid-cols-[1fr_auto_1.3fr_auto_1.6fr] md:items-start md:gap-4 lg:gap-6">
+        {CRECIMIENTO.map((e, i) => (
+          <Fragment key={e.etapa}>
+            {i > 0 && (
+              // Las flechas van a la altura de la base de los dibujos (h-40),
+              // todas a la misma altura; en el celular, bajo la columna de
+              // los dibujos.
+              <li
+                aria-hidden
+                className="grid grid-cols-[112px_1fr] items-center gap-5 md:flex md:w-32 md:flex-col md:gap-2 md:pt-[8.6rem]"
+              >
+                <span className="flex justify-center">
+                  <Flecha />
+                </span>
+                {i === 2 && (
+                  <span className="t-small text-subtle md:text-center">{CRECIMIENTO_MUDAS}</span>
+                )}
+              </li>
+            )}
             <li
-              key={e.etapa}
               className={cn(
-                "relative grid grid-cols-[40px_1fr] gap-4 transition-[opacity,transform] duration-500 ease-[var(--ease-natural)] md:grid-cols-1 md:gap-3",
+                "grid grid-cols-[112px_1fr] items-center gap-5 transition-[opacity,transform] duration-500 ease-[var(--ease-natural)] md:grid-cols-1 md:items-stretch md:gap-4",
                 visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0",
               )}
               style={{ transitionDelay: `${150 + i * 260}ms` }}
             >
-              <span className="relative z-10 flex size-10 items-center justify-center rounded-full border border-primary bg-background text-primary">
-                <Icono className="size-[18px]" strokeWidth={1.75} aria-hidden />
-              </span>
-              <span className="md:pt-1">
+              {/* Todos los dibujos apoyados en la misma base. */}
+              <div className="flex h-24 items-end justify-center md:h-40 md:justify-start">
+                <Image
+                  src={e.imagen}
+                  alt={e.alt}
+                  width={600}
+                  height={310}
+                  sizes="(max-width: 768px) 112px, 320px"
+                  className="h-auto max-h-full object-contain"
+                  style={{ width: `${e.escala * 100}%` }}
+                />
+              </div>
+              <div className="md:border-t md:border-border md:pt-4">
                 <span className="t-eyebrow block text-faint">0{i + 1}</span>
                 <span className="t-h3 mt-1 block">{e.etapa}</span>
                 <span className="t-small mt-1 block text-subtle">{e.texto}</span>
-              </span>
+              </div>
             </li>
-          );
-        })}
+          </Fragment>
+        ))}
       </ol>
 
       <Estado
@@ -256,6 +241,23 @@ function Crecimiento() {
         ensayos de cría.
       </Estado>
     </div>
+  );
+}
+
+/** Flecha fina: horizontal en pantalla grande, hacia abajo en el celular. */
+function Flecha() {
+  return (
+    <svg
+      viewBox="0 0 48 12"
+      className="h-3 w-12 shrink-0 rotate-90 text-primary md:rotate-0"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M1 6h45M40 1l6 5-6 5" />
+    </svg>
   );
 }
 
