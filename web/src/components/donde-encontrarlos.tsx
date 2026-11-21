@@ -50,7 +50,7 @@ export function DondeEncontrarlos() {
       </ul>
       <p className="mt-2 text-[12px] text-subtle">Fotos de los sitios de muestreo del proyecto.</p>
 
-      <h3 className="mt-14 font-display text-[1.75rem] font-semibold leading-tight">Cómo sacarlos vivos</h3>
+      <h3 className="mt-10 font-display text-[1.75rem] sm:mt-14 font-semibold leading-tight">Cómo sacarlos vivos</h3>
       <div className="mt-5 grid gap-5 lg:grid-cols-12 lg:gap-8">
         <article className="rounded-lg border border-vegetal/35 bg-surface p-5 lg:col-span-7 lg:p-6">
           <p className="inline-flex items-center gap-2 rounded-full bg-vegetal px-3 py-1 text-[13px] font-semibold text-background">

@@ -62,7 +62,7 @@ export default function PaginaGrillos() {
 
       <Revelar
         as="section"
-        className="-mx-5 mt-14 bg-surface-2 px-5 py-12 sm:mx-0 sm:rounded-2xl sm:px-8 lg:mt-20 lg:px-12 lg:py-16"
+        className="-mx-5 mt-10 bg-surface-2 px-5 py-10 sm:mx-0 sm:mt-14 sm:py-12 sm:rounded-2xl sm:px-8 lg:mt-20 lg:px-12 lg:py-16"
       >
         <EncabezadoSeccion
           rotulo="Guía de campo"
@@ -78,15 +78,15 @@ export default function PaginaGrillos() {
 
       {/* A la vista y no en una pestana: es lo que el productor necesita
           saber antes de salir a recolectar. */}
-      <Revelar className="mt-20 lg:mt-28">
+      <Revelar className="mt-14 sm:mt-20 lg:mt-28">
         <CualesSirven />
       </Revelar>
 
-      <Revelar className="mt-20 lg:mt-28">
+      <Revelar className="mt-14 sm:mt-20 lg:mt-28">
         <DondeEncontrarlos />
       </Revelar>
 
-      <Revelar as="section" className="mt-20 lg:mt-28">
+      <Revelar as="section" className="mt-14 sm:mt-20 lg:mt-28">
         <GrillosPestanas />
       </Revelar>
     </Paso>

@@ -614,13 +614,15 @@ img.lamina[src*="acuarelas"] {
    (Plus Jakarta Sans), con parrafos de 65 caracteres como maximo.
 
    Escala (px): 12 · 13 · 14 · 16 · 17 · 18 · 20 · 24 · 30 · 38 · 48 · 64.
+   En el celular los titulares y la entrada bajan un punto: a 390 px de
+   ancho se comian media pantalla.
    ══════════════════════════════════════════════════════════════════════════ */
 @layer components {
   .t-display {
     font-family: var(--font-display);
     font-weight: 700;
     text-transform: uppercase;
-    font-size: clamp(2.5rem, 1.55rem + 3.4vw, 4.25rem);
+    font-size: clamp(2.25rem, 1.45rem + 3.5vw, 4.25rem);
     line-height: 0.96;
     letter-spacing: -0.005em;
   }
@@ -628,14 +630,14 @@ img.lamina[src*="acuarelas"] {
     font-family: var(--font-display);
     font-weight: 700;
     text-transform: uppercase;
-    font-size: clamp(2.5rem, 1.8rem + 2.4vw, 3.75rem);
+    font-size: clamp(2.25rem, 1.7rem + 2.5vw, 3.75rem);
     line-height: 1;
     letter-spacing: 0;
   }
   .t-h2 {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: clamp(1.9rem, 1.5rem + 1.4vw, 2.75rem);
+    font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.75rem);
     line-height: 1.05;
     letter-spacing: 0;
   }
@@ -653,7 +655,7 @@ img.lamina[src*="acuarelas"] {
     line-height: 1.4;
   }
   .t-lead {
-    font-size: clamp(1.125rem, 1.05rem + 0.3vw, 1.25rem);
+    font-size: clamp(1.0625rem, 0.95rem + 0.45vw, 1.25rem);
     line-height: 1.55;
     color: var(--text-secondary);
     max-width: 60ch;

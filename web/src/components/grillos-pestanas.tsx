@@ -183,7 +183,7 @@ function Crecimiento() {
       <h3 className="t-h2">Cómo crecen</h3>
       <p className="t-lead mt-3 max-w-[640px]">{CRECIMIENTO_NOTA}</p>
 
-      <ol className="mt-12 grid gap-4 md:grid-cols-[1fr_auto_1.3fr_auto_1.6fr] md:items-start md:gap-4 lg:gap-6">
+      <ol className="mt-8 grid gap-4 sm:mt-12 md:grid-cols-[1fr_auto_1.3fr_auto_1.6fr] md:items-start md:gap-4 lg:gap-6">
         {CRECIMIENTO.map((e, i) => (
           <Fragment key={e.etapa}>
             {i > 0 && (

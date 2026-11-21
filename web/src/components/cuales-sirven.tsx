@@ -30,7 +30,7 @@ export function CualesSirven() {
         entrada="Al salir a buscar va a encontrar varios insectos parecidos. Estos se pueden llevar a la colonia y estos no."
       />
 
-      <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-5 lg:gap-x-5">
+      <ul className="mt-7 grid grid-cols-2 gap-x-4 gap-y-7 sm:mt-10 sm:gap-y-8 md:grid-cols-3 lg:grid-cols-5 lg:gap-x-5">
         {CUALES_SIRVEN.map((x) => {
           const Icono = x.sirve ? Check : X;
           return (

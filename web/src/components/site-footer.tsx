@@ -30,8 +30,8 @@ export function SiteFooter() {
 
   return (
     <footer className="mt-auto bg-surface-2">
-      <div className="mx-auto grid w-full max-w-[1240px] gap-12 px-5 pt-14 pb-10 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-16 lg:px-8 lg:pt-16">
-        <div className="flex flex-col gap-5">
+      <div className="mx-auto grid w-full max-w-[1240px] grid-cols-2 gap-x-6 gap-y-9 px-5 pt-10 pb-8 sm:gap-12 sm:pt-14 sm:pb-10 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-16 lg:px-8 lg:pt-16">
+        <div className="col-span-2 flex flex-col gap-4 sm:gap-5 lg:col-span-1">
           <Link href="/" aria-label="GrillosIA, ir al inicio" className="w-fit">
             <Logo variante="completo" />
           </Link>
@@ -44,7 +44,7 @@ export function SiteFooter() {
 
         <nav aria-label="El recorrido">
           <p className="t-eyebrow text-faint">El recorrido</p>
-          <ul className="mt-4 flex flex-col gap-1">
+          <ul className="mt-3 flex flex-col sm:mt-4 sm:gap-1">
             {CAMINO.map((p) => (
               <li key={p.n}>
                 <Link href={p.href} className={claseEnlace}>
@@ -57,7 +57,7 @@ export function SiteFooter() {
 
         <nav aria-label="Más">
           <p className="t-eyebrow text-faint">Más</p>
-          <ul className="mt-4 flex flex-col gap-1">
+          <ul className="mt-3 flex flex-col sm:mt-4 sm:gap-1">
             {BIBLIOTECA.map((b) => (
               <li key={b.href}>
                 <Link href={b.href} className={claseEnlace}>

@@ -104,7 +104,7 @@ export default function PaginaProyecto() {
       <Barra />
       <main>
         {/* ── 1. Entrada, con la ficha en una franja ───────────────── */}
-        <section className="pt-14 pb-16 lg:pt-24 lg:pb-24">
+        <section className="pt-10 pb-12 sm:pt-14 sm:pb-16 lg:pt-24 lg:pb-24">
           <Contenedor>
             <Revelar>
               <p className="t-eyebrow text-subtle">Sobre GrillosIA</p>
@@ -112,7 +112,7 @@ export default function PaginaProyecto() {
                 Un proyecto de investigación del Piedemonte Llanero
               </h1>
             </Revelar>
-            <Revelar retraso={80} className="mt-8 grid gap-6 lg:grid-cols-12 lg:gap-12">
+            <Revelar retraso={80} className="mt-6 grid gap-4 sm:mt-8 sm:gap-6 lg:grid-cols-12 lg:gap-12">
               <p className="t-lead lg:col-span-7">
                 GrillosIA surge de una investigación sobre la cría de grillos y
                 la optimización de su dieta con inteligencia artificial. La
@@ -126,11 +126,11 @@ export default function PaginaProyecto() {
               </p>
             </Revelar>
             <Revelar retraso={140}>
-              <dl className="mt-12 grid gap-x-8 gap-y-6 rounded-lg bg-surface-2 p-6 sm:grid-cols-2 lg:mt-16 lg:grid-cols-5 lg:p-8">
+              <dl className="mt-8 grid grid-cols-2 gap-x-5 gap-y-5 rounded-lg bg-surface-2 p-5 sm:mt-12 sm:gap-x-8 sm:gap-y-6 sm:p-6 lg:mt-16 lg:grid-cols-5 lg:p-8">
                 {FICHA.map(({ rotulo, valor }) => (
                   <div key={rotulo} className="flex flex-col gap-1.5">
                     <dt className="t-eyebrow text-faint">{rotulo}</dt>
-                    <dd className="t-h4">{valor}</dd>
+                    <dd className="text-[15px] font-semibold leading-snug sm:text-[17px]">{valor}</dd>
                   </div>
                 ))}
               </dl>
@@ -139,22 +139,24 @@ export default function PaginaProyecto() {
         </section>
 
         {/* ── 2. Objetivo: una frase centrada y cuatro metas ───────── */}
-        <section className="pb-16 lg:pb-28">
+        <section className="pb-12 sm:pb-16 lg:pb-28">
           <Contenedor>
-            <Revelar className="mx-auto flex max-w-[880px] flex-col items-center text-center">
+            <Revelar className="mx-auto flex max-w-[880px] flex-col sm:items-center sm:text-center">
               <p className="t-eyebrow text-subtle">Objetivo</p>
-              <p className="t-h2 mt-4 text-balance lg:text-[2.75rem] lg:leading-[1.08]">
+              <p className="mt-3 font-display text-[1.6rem] leading-[1.15] font-semibold text-balance sm:mt-4 sm:text-[2.25rem] lg:text-[2.75rem] lg:leading-[1.08]">
                 Saber qué comida y qué condiciones de cría dan una harina con la
                 proteína que necesita cada animal, y ponerlo al alcance del
                 productor.
               </p>
             </Revelar>
-            <ol className="mt-14 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4">
+            <ol className="mt-9 grid gap-x-10 gap-y-6 sm:mt-14 sm:grid-cols-2 sm:gap-y-10 lg:mt-20 lg:grid-cols-4">
               {OBJETIVOS.map((o, i) => (
-                <Revelar as="li" key={o.n} retraso={i * 60}>
-                  <span className="t-cifra text-[2.5rem] text-primary">{o.n}</span>
-                  <h3 className="t-h3 mt-3">{o.titulo}</h3>
-                  <p className="t-small mt-2 text-subtle">{o.cuerpo}</p>
+                <Revelar as="li" key={o.n} retraso={i * 60} className="grid grid-cols-[44px_1fr] sm:block">
+                  <span className="t-cifra text-[1.6rem] leading-none text-primary sm:text-[2.5rem]">{o.n}</span>
+                  <div>
+                    <h3 className="t-h3 sm:mt-3">{o.titulo}</h3>
+                    <p className="t-small mt-1 text-subtle sm:mt-2">{o.cuerpo}</p>
+                  </div>
                 </Revelar>
               ))}
             </ol>
@@ -162,8 +164,8 @@ export default function PaginaProyecto() {
         </section>
 
         {/* ── 3. Equipo e institucion ──────────────────────────────── */}
-        <section className="pb-16 lg:pb-28">
-          <Contenedor className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+        <section className="pb-12 sm:pb-16 lg:pb-28">
+          <Contenedor className="grid gap-7 sm:gap-10 lg:grid-cols-12 lg:gap-12">
             <Revelar className="lg:col-span-5">
               <EncabezadoSeccion
                 rotulo="Equipo"
@@ -171,23 +173,23 @@ export default function PaginaProyecto() {
                 entrada="Un equipo pequeño de la Universidad de los Llanos: una investigadora a cargo de la ciencia y una desarrolladora a cargo de la plataforma."
               />
             </Revelar>
-            <ul className="grid gap-5 sm:grid-cols-2 lg:col-span-7">
+            <ul className="grid gap-3 sm:grid-cols-2 sm:gap-5 lg:col-span-7">
               {EQUIPO.map((p, i) => (
                 <Revelar
                   as="li"
                   key={p.nombre}
                   retraso={i * 80}
-                  className="flex flex-col rounded-lg bg-surface p-6 ring-1 ring-border lg:p-7"
+                  className="grid grid-cols-[44px_1fr] gap-x-4 rounded-lg bg-surface p-5 ring-1 ring-border sm:flex sm:flex-col sm:p-6 lg:p-7"
                 >
                   <span
                     aria-hidden
-                    className="flex size-14 items-center justify-center rounded-full bg-primary-soft font-display text-[1.4rem] font-semibold text-primary"
+                    className="row-span-3 flex size-11 items-center justify-center rounded-full bg-primary-soft font-display text-[1.15rem] font-semibold text-primary sm:size-14 sm:text-[1.4rem]"
                   >
                     {p.iniciales}
                   </span>
-                  <p className="t-eyebrow mt-6 text-faint">{p.papel}</p>
-                  <p className="t-h3 mt-2">{p.nombre}</p>
-                  <p className="t-small mt-2 text-subtle">{p.detalle}</p>
+                  <p className="t-eyebrow text-faint sm:mt-6">{p.papel}</p>
+                  <p className="t-h3 mt-1 sm:mt-2">{p.nombre}</p>
+                  <p className="t-small mt-1 text-subtle sm:mt-2">{p.detalle}</p>
                 </Revelar>
               ))}
             </ul>
@@ -195,7 +197,7 @@ export default function PaginaProyecto() {
         </section>
 
         {/* ── 4. Territorio: banda con el mapa ─────────────────────── */}
-        <section className="bg-surface-2 py-16 lg:py-24">
+        <section className="bg-surface-2 py-12 sm:py-16 lg:py-24">
           <Contenedor>
             <Revelar>
               <EncabezadoSeccion
@@ -204,14 +206,14 @@ export default function PaginaProyecto() {
                 entrada="Las actividades del proyecto se desarrollan en estos dos municipios del Piedemonte Llanero, donde la cordillera baja a la llanura."
               />
             </Revelar>
-            <Revelar retraso={80} className="mt-10 lg:mt-12">
+            <Revelar retraso={80} className="mt-8 sm:mt-10 lg:mt-12">
               <MapaTerritorio />
             </Revelar>
           </Contenedor>
         </section>
 
         {/* ── 5. Metodologia: un proceso de cinco estaciones ───────── */}
-        <section className="py-16 lg:py-28">
+        <section className="py-12 sm:py-16 lg:py-28">
           <Contenedor>
             <Revelar>
               <EncabezadoSeccion
@@ -220,7 +222,7 @@ export default function PaginaProyecto() {
                 entrada="Del lote de cría al celular del productor."
               />
             </Revelar>
-            <ol className="relative mt-12 grid gap-8 lg:mt-16 lg:grid-cols-5 lg:gap-6">
+            <ol className="relative mt-8 grid gap-6 sm:mt-12 sm:gap-8 lg:mt-16 lg:grid-cols-5 lg:gap-6">
               {/* La linea que une las estaciones: vertical en celular,
                   horizontal en escritorio. */}
               <span
@@ -251,7 +253,7 @@ export default function PaginaProyecto() {
             </ol>
 
             {/* Las tres comidas: la formula real, con su composicion. */}
-            <div className="mt-20 grid gap-10 lg:mt-28 lg:grid-cols-12 lg:gap-12">
+            <div className="mt-14 grid gap-7 sm:mt-20 sm:gap-10 lg:mt-28 lg:grid-cols-12 lg:gap-12">
               <Revelar className="lg:col-span-4">
                 <h3 className="t-h2">Las tres comidas en estudio</h3>
                 <p className="t-small mt-3 max-w-[40ch] text-subtle">
@@ -259,7 +261,7 @@ export default function PaginaProyecto() {
                   {DIET_BASE.mainPct}{" "}% principal.
                 </p>
               </Revelar>
-              <ul className="grid gap-8 sm:grid-cols-3 lg:col-span-8">
+              <ul className="grid gap-7 sm:grid-cols-3 sm:gap-8 lg:col-span-8">
                 {DIETS.map((d, i) => {
                   const partes = [
                     { nombre: d.main, pct: DIET_BASE.mainPct },
@@ -267,8 +269,10 @@ export default function PaginaProyecto() {
                   ];
                   return (
                     <Revelar as="li" key={d.id} retraso={i * 80}>
-                      <span className="t-cifra text-[2.5rem] leading-none text-primary">{d.id}</span>
-                      <p className="mt-2 font-display text-[1.6rem] font-semibold leading-tight">{d.main}</p>
+                      <p className="flex items-baseline gap-3 sm:block">
+                        <span className="t-cifra text-[1.9rem] leading-none text-primary sm:block sm:text-[2.5rem]">{d.id}</span>
+                        <span className="font-display text-[1.45rem] font-semibold leading-tight sm:mt-2 sm:block sm:text-[1.6rem]">{d.main}</span>
+                      </p>
                       <div
                         className="mt-4 flex h-3 w-full gap-[3px] overflow-hidden rounded-full"
                         role="img"
@@ -306,7 +310,7 @@ export default function PaginaProyecto() {
             </div>
 
             {/* Detalle tecnico plegado: para quien lo quiera leer. */}
-            <details className="group mt-16 max-w-[820px]">
+            <details className="group mt-12 max-w-[820px] sm:mt-16">
               <summary className="inline-flex min-h-11 list-none items-center gap-2 rounded-md text-[15px] font-semibold text-foreground/85 transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden">
                 Ver la metodología técnica en detalle
                 <ChevronDown
@@ -335,7 +339,7 @@ export default function PaginaProyecto() {
         </section>
 
         {/* ── 6. Respaldo cientifico ───────────────────────────────── */}
-        <section className="pb-16 lg:pb-28">
+        <section className="pb-12 sm:pb-16 lg:pb-28">
           <Contenedor className="grid gap-10 lg:grid-cols-12 lg:gap-12">
             <Revelar className="lg:col-span-5">
               <EncabezadoSeccion
@@ -344,16 +348,16 @@ export default function PaginaProyecto() {
                 entrada="Cada número de la plataforma dice su origen. No mezclamos lo medido con lo calculado, y cuando un dato todavía no existe, lo decimos en vez de rellenarlo."
               />
             </Revelar>
-            <ul className="grid gap-4 sm:grid-cols-2 lg:col-span-7">
+            <ul className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:col-span-7">
               {(Object.keys(ORIGENES) as Origen[]).map((o, i) => (
                 <Revelar
                   as="li"
                   key={o}
                   retraso={i * 50}
-                  className="rounded-lg bg-surface-2 p-5"
+                  className="rounded-lg bg-surface-2 p-4 sm:p-5"
                 >
                   <OrigenDato origen={o} />
-                  <p className="t-small mt-3 text-subtle">{ORIGENES[o].explicacion}</p>
+                  <p className="t-small mt-2 text-subtle sm:mt-3">{ORIGENES[o].explicacion}</p>
                 </Revelar>
               ))}
             </ul>
@@ -361,7 +365,7 @@ export default function PaginaProyecto() {
         </section>
 
         {/* ── 7. Contacto, centrado ────────────────────────────────── */}
-        <section className="bg-surface-2 py-16 lg:py-24">
+        <section className="bg-surface-2 py-12 sm:py-16 lg:py-24">
           <Contenedor>
             <Revelar className="mx-auto flex max-w-[600px] flex-col items-center text-center">
               <EncabezadoSeccion
@@ -371,14 +375,14 @@ export default function PaginaProyecto() {
                 entrada="Si quiere que alguien del equipo le escriba, o si está criando grillos y quiere contarnos cómo le va."
               />
             </Revelar>
-            <Revelar retraso={80} className="mx-auto mt-10 max-w-[560px] text-left">
+            <Revelar retraso={80} className="mx-auto mt-8 max-w-[560px] text-left sm:mt-10">
               <InterestForm />
             </Revelar>
           </Contenedor>
         </section>
 
         {/* ── Créditos y enlaces ───────────────────────────────────── */}
-        <section className="py-14 lg:py-16">
+        <section className="py-10 sm:py-14 lg:py-16">
           <Contenedor className="grid gap-8 sm:grid-cols-2 lg:gap-12">
             <div>
               <h2 className="t-eyebrow text-faint">Créditos</h2>

@@ -97,8 +97,8 @@ export default function PaginaCaja() {
         {/* ── 1. Entrada ─────────────────────────────────────────────── */}
         {/* Texto e imagen a partes iguales y centrados entre si: la caja
             acompana al titulo, no lo aplasta. */}
-        <section className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-12">
-          <div className="flex flex-col gap-10 lg:col-span-6">
+        <section className="grid gap-8 sm:gap-10 lg:grid-cols-12 lg:items-center lg:gap-12">
+          <div className="flex flex-col gap-7 sm:gap-10 lg:col-span-6">
             <EncabezadoSeccion
               as="h1"
               tamano="h1"
@@ -110,14 +110,14 @@ export default function PaginaCaja() {
               <dl className="grid grid-cols-2 gap-6 border-l-2 border-primary pl-5">
                 <div>
                   <dt className="t-small text-subtle">Pasos</dt>
-                  <dd className="t-cifra mt-1 text-[2.75rem]">{dos(ENCLOSURE_STEPS.length)}</dd>
+                  <dd className="t-cifra mt-1 text-[2.25rem] sm:text-[2.75rem]">{dos(ENCLOSURE_STEPS.length)}</dd>
                 </div>
                 <div>
                   <dt className="t-small text-subtle">Materiales</dt>
-                  <dd className="t-cifra mt-1 text-[2.75rem]">{dos(MATERIALS.length)}</dd>
+                  <dd className="t-cifra mt-1 text-[2.25rem] sm:text-[2.75rem]">{dos(MATERIALS.length)}</dd>
                 </div>
               </dl>
-              <p className="t-caption mt-5 max-w-[46ch]">{ENCLOSURE_DISCLAIMER}</p>
+              <p className="t-caption mt-4 max-w-[46ch] sm:mt-5">{ENCLOSURE_DISCLAIMER}</p>
             </div>
           </div>
           <figure className="mx-auto w-full max-w-[560px] lg:col-span-6 lg:max-w-none">
@@ -138,9 +138,9 @@ export default function PaginaCaja() {
         </section>
 
         {/* ── 2. Materiales: banda a todo el ancho ───────────────────── */}
-        <Banda fondo="suave" className="mt-20 py-14 lg:mt-28 lg:py-20">
+        <Banda fondo="suave" className="mt-14 py-10 sm:mt-20 sm:py-14 lg:mt-28 lg:py-20">
           <Revelar>
-            <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-12">
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-12 lg:items-end lg:gap-12">
               <EncabezadoSeccion
                 className="lg:col-span-7"
                 rotulo="Antes de empezar"
@@ -149,12 +149,12 @@ export default function PaginaCaja() {
               />
               <p className="t-small text-subtle lg:col-span-5 lg:pb-1">{COST_NOTE}</p>
             </div>
-            <ul className="mt-10 grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3">
+            <ul className="mt-7 grid gap-x-10 gap-y-5 sm:mt-10 sm:grid-cols-2 sm:gap-y-7 lg:mt-12 lg:grid-cols-3">
               {MATERIALS.map((m, i) => {
                 const Icono = ICONO_MATERIAL[m.id];
                 return (
                   <Revelar as="li" key={m.id} retraso={(i % 3) * 60} className="flex items-start gap-4">
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-background text-primary">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-background text-primary sm:size-10">
                       <Icono className="size-5" strokeWidth={1.5} aria-hidden />
                     </span>
                     <span className="pt-0.5">
@@ -169,7 +169,7 @@ export default function PaginaCaja() {
         </Banda>
 
         {/* ── 3. Mapa de la caja + pasos ─────────────────────────────── */}
-        <section className="mt-20 lg:mt-28">
+        <section className="mt-14 sm:mt-20 lg:mt-28">
           <Revelar>
             <EncabezadoSeccion
               rotulo="Paso a paso"
@@ -181,13 +181,13 @@ export default function PaginaCaja() {
         </section>
 
         {/* ── 4. Condiciones objetivo: banda invertida y centrada ────── */}
-        <Banda fondo="invertida" className="mt-20 py-16 lg:mt-28 lg:py-20">
+        <Banda fondo="invertida" className="mt-14 py-11 sm:mt-20 sm:py-16 lg:mt-28 lg:py-20">
           <Revelar className="flex flex-col items-center text-center">
             <p className="t-eyebrow text-background/65 dark:text-subtle">Condiciones objetivo</p>
             <h2 className="t-h2 mt-3 max-w-[22ch] text-balance">
               El clima que buscamos dentro de la caja
             </h2>
-            <dl className="mt-10 grid w-full max-w-[640px] grid-cols-2 gap-6 sm:gap-10">
+            <dl className="mt-7 grid w-full max-w-[640px] grid-cols-2 gap-6 sm:mt-10 sm:gap-10">
               <Rango
                 etiqueta="Temperatura"
                 min={RANGOS_OBJETIVO.temperatura.min}
@@ -201,7 +201,7 @@ export default function PaginaCaja() {
                 unidad={RANGOS_OBJETIVO.humedad.unidad}
               />
             </dl>
-            <p className="t-small mt-8 max-w-[52ch] text-background/70 dark:text-subtle">
+            <p className="t-small mt-6 max-w-[52ch] sm:mt-8 text-background/70 dark:text-subtle">
               Son los rangos con los que el proyecto está aprendiendo, no
               valores ya medidos. Revíselos con el termómetro-higrómetro.
             </p>
@@ -209,28 +209,32 @@ export default function PaginaCaja() {
         </Banda>
 
         {/* ── 5. Cuidados de todos los días ──────────────────────────── */}
-        <section className="mt-20 lg:mt-28">
+        <section className="mt-14 sm:mt-20 lg:mt-28">
           <Revelar>
             <EncabezadoSeccion rotulo="Todos los días" titulo="Cómo mantenerla" />
           </Revelar>
-          <ul className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="mt-7 grid gap-x-10 gap-y-5 sm:mt-10 sm:grid-cols-2 sm:gap-y-8 lg:grid-cols-4">
             {CUIDADOS.map(({ Icono, titulo, texto }, i) => (
-              <Revelar as="li" key={titulo} retraso={i * 60}>
-                <Icono className="size-6 text-primary" strokeWidth={1.5} aria-hidden />
-                <h3 className="t-h3 mt-4">{titulo}</h3>
-                <p className="t-small mt-1.5 text-subtle">{texto}</p>
+              <Revelar as="li" key={titulo} retraso={i * 60} className="grid grid-cols-[36px_1fr] sm:block">
+                <Icono className="mt-0.5 size-6 text-primary" strokeWidth={1.5} aria-hidden />
+                <div>
+                  <h3 className="t-h3 sm:mt-4">{titulo}</h3>
+                  <p className="t-small mt-1 text-subtle sm:mt-1.5">{texto}</p>
+                </div>
               </Revelar>
             ))}
-            <Revelar as="li" retraso={180} className="rounded-lg bg-primary-soft p-5 sm:col-span-2 lg:col-span-1">
-              <Lightbulb className="size-6 text-primary" strokeWidth={1.5} aria-hidden />
-              <h3 className="t-h3 mt-4">Importante</h3>
-              <p className="t-small mt-1.5 text-foreground/80">{NOTA_IMPORTANTE}</p>
+            <Revelar as="li" retraso={180} className="grid grid-cols-[36px_1fr] rounded-lg bg-primary-soft p-4 sm:col-span-2 sm:block sm:p-5 lg:col-span-1">
+              <Lightbulb className="mt-0.5 size-6 text-primary" strokeWidth={1.5} aria-hidden />
+              <div>
+                <h3 className="t-h3 sm:mt-4">Importante</h3>
+                <p className="t-small mt-1 text-foreground/80 sm:mt-1.5">{NOTA_IMPORTANTE}</p>
+              </div>
             </Revelar>
           </ul>
         </section>
 
         {/* ── Cierre ─────────────────────────────────────────────────── */}
-        <Revelar as="section" className="mt-20 flex flex-col items-center text-center lg:mt-24">
+        <Revelar as="section" className="mt-14 flex flex-col items-center text-center sm:mt-20 lg:mt-24">
           <p className="t-h3">¿Ya tiene su caja lista?</p>
           <p className="t-small mt-1.5 max-w-[48ch] text-subtle">
             Siga con sus grillos, o si ya los conoce, vaya directo a la consulta.

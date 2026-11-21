@@ -85,6 +85,9 @@ function ajustar(caja: Caja, aspecto: number): Caja {
 
 const suave = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
+const FUENTES_MAPA =
+  "Límites, cabeceras, alturas, áreas y fechas de creación: DANE, Marco Geoestadístico Nacional 2025 (CC BY 4.0), formas simplificadas. Relieve: Terrain Tiles de AWS Open Data (SRTM). Ríos: © colaboradores de OpenStreetMap (ODbL). Distancias en línea recta, calculadas entre cabeceras.";
+
 export function MapaTerritorio({ className }: { className?: string }) {
   const caja = useRef<HTMLDivElement>(null);
   const [ancho, setAncho] = useState(560);
@@ -473,7 +476,7 @@ export function MapaTerritorio({ className }: { className?: string }) {
       {/* Panel: las dos fichas, la leyenda y las fuentes. */}
       <div className="flex flex-col gap-5 lg:col-span-5">
       {/* Fichas de los dos municipios: tambien por teclado y en celular. */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
         {(Object.keys(FICHAS) as Muni[]).map((k) => {
           const f = FICHAS[k];
           const sel = activo === k;
@@ -488,7 +491,7 @@ export function MapaTerritorio({ className }: { className?: string }) {
               }}
               onPointerEnter={() => setActivo(k)}
               className={cn(
-                "rounded-lg p-4 text-left transition-[background-color,box-shadow] duration-200",
+                "rounded-lg p-3.5 text-left transition-[background-color,box-shadow] duration-200 sm:p-4",
                 sel
                   ? "bg-surface ring-1 ring-primary/50"
                   : "bg-surface-2/60 ring-1 ring-border hover:bg-surface",
@@ -496,20 +499,21 @@ export function MapaTerritorio({ className }: { className?: string }) {
             >
               <span className="flex items-center gap-2">
                 <span aria-hidden className="size-2.5 rounded-full bg-primary" />
-                <span className="font-display text-[1.4rem] font-semibold leading-none">{f.nombre}</span>
-                <span className="t-caption">· Meta</span>
+                <span className="font-display text-[1.3rem] font-semibold leading-none sm:text-[1.4rem]">{f.nombre}</span>
+                <span className="t-caption hidden sm:inline">· Meta</span>
               </span>
-              <dl className="mt-3 grid grid-cols-[max-content_1fr] gap-x-5 gap-y-1.5 text-[14.5px]">
-                <dt className="text-subtle">Altura de la cabecera</dt>
+              <dl className="mt-3 grid gap-x-5 gap-y-0.5 text-[13.5px] sm:grid-cols-[max-content_1fr] sm:gap-y-1.5 sm:text-[14.5px]">
+                <dt className="mt-1.5 text-[12px] text-subtle sm:mt-0 sm:text-[14.5px]">Altura de la cabecera</dt>
                 <dd className="tabular-nums">{f.altura}&nbsp;m s.&nbsp;n.&nbsp;m.</dd>
-                <dt className="text-subtle">Área del municipio</dt>
+                <dt className="mt-1.5 text-[12px] text-subtle sm:mt-0 sm:text-[14.5px]">Área del municipio</dt>
                 <dd className="tabular-nums">{f.area}&nbsp;km²</dd>
-                <dt className="text-subtle">Creación</dt>
-                <dd>{f.creacion}</dd>
-                <dt className="text-subtle">A Villavicencio</dt>
+                <dt className="hidden text-subtle sm:block">Creación</dt>
+                <dd className="hidden sm:block">{f.creacion}</dd>
+                <dt className="mt-1.5 text-[12px] text-subtle sm:mt-0 sm:text-[14.5px]">A Villavicencio</dt>
                 <dd className="tabular-nums">
                   {f.km}&nbsp;km{" "}
-                  <span className="text-subtle">en línea recta (calculado)</span>
+                  <span className="text-subtle sm:hidden">en línea recta</span>
+                  <span className="hidden text-subtle sm:inline">en línea recta (calculado)</span>
                 </dd>
               </dl>
             </button>
@@ -518,7 +522,7 @@ export function MapaTerritorio({ className }: { className?: string }) {
       </div>
 
       {/* Leyenda */}
-      <ul className="flex flex-wrap gap-x-5 gap-y-2 text-[13px] text-subtle">
+      <ul className="hidden flex-wrap gap-x-5 gap-y-2 text-[13px] text-subtle sm:flex">
         <li className="flex items-center gap-2">
           <span aria-hidden className="size-3 rounded-[2px] bg-primary" />
           Municipios del proyecto
@@ -545,11 +549,15 @@ export function MapaTerritorio({ className }: { className?: string }) {
       </ul>
 
       <figcaption className="t-caption max-w-[80ch]">
-        Límites, cabeceras, alturas, áreas y fechas de creación: DANE, Marco
-        Geoestadístico Nacional 2025 (CC BY 4.0), formas simplificadas.
-        Relieve: Terrain Tiles de AWS Open Data (SRTM). Ríos: © colaboradores
-        de OpenStreetMap (ODbL). Distancias en línea recta, calculadas entre
-        cabeceras.
+        {/* En el celular las fuentes quedan plegadas: son para quien las
+            busque, no para leerlas de paso. */}
+        <details className="group sm:hidden">
+          <summary className="cursor-pointer list-none underline decoration-dotted underline-offset-4">
+            Fuentes del mapa
+          </summary>
+          <p className="mt-2">{FUENTES_MAPA}</p>
+        </details>
+        <p className="hidden sm:block">{FUENTES_MAPA}</p>
       </figcaption>
       </div>
     </figure>

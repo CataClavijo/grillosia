@@ -55,10 +55,12 @@ import { cn } from "@/lib/utils";
  * ave es alta; con la misma caja, el ave se veia mas pequena. Este relleno
  * iguala el tamano aparente sin deformar nada.
  */
+// Margen de cada dibujo dentro de su caja (desde tableta: en el celular la
+// caja es chica y el dibujo la llena).
 const AJUSTE_ANIMAL: Record<CategoriaId, string> = {
-  peces: "px-8 pb-6",
-  aves: "px-12 pb-4",
-  cerdos: "px-7 pb-5",
+  peces: "sm:px-8 sm:pb-6",
+  aves: "sm:px-12 sm:pb-4",
+  cerdos: "sm:px-7 sm:pb-5",
 };
 
 function Contenedor({
@@ -108,8 +110,8 @@ export default function Inicio() {
 
       <main>
         {/* ── 2. La consulta, en tres pasos ───────────────────────── */}
-        <section id="como-funciona" className="scroll-mt-20 py-16 lg:py-24">
-          <Contenedor className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+        <section id="como-funciona" className="scroll-mt-20 py-12 sm:py-16 lg:py-24">
+          <Contenedor className="grid gap-9 sm:gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
             <Revelar className="lg:sticky lg:top-28 lg:self-start">
               <EncabezadoSeccion
                 rotulo="La consulta"
@@ -124,19 +126,19 @@ export default function Inicio() {
                   as="li"
                   key={p.titulo}
                   retraso={i * 80}
-                  className="relative grid grid-cols-[56px_1fr] gap-x-5 pb-10 last:pb-0 sm:grid-cols-[72px_1fr]"
+                  className="relative grid grid-cols-[48px_1fr] gap-x-4 pb-7 last:pb-0 sm:grid-cols-[72px_1fr] sm:gap-x-5 sm:pb-10"
                 >
                   {/* Linea que une los pasos: dice que es un recorrido. */}
                   {i < CONSULTA_PASOS.length - 1 && (
                     <span
                       aria-hidden
-                      className="absolute top-14 bottom-2 left-[27px] w-px bg-border-strong sm:top-16 sm:left-[35px]"
+                      className="absolute top-12 bottom-2 left-[23px] w-px bg-border-strong sm:top-16 sm:left-[35px]"
                     />
                   )}
-                  <span className="t-cifra flex size-14 items-center justify-center rounded-full bg-primary-soft text-[1.6rem] text-primary sm:size-[72px] sm:text-[2rem]">
+                  <span className="t-cifra flex size-12 items-center justify-center rounded-full bg-primary-soft text-[1.4rem] text-primary sm:size-[72px] sm:text-[2rem]">
                     {i + 1}
                   </span>
-                  <div className="pt-2.5 sm:pt-4">
+                  <div className="pt-2 sm:pt-4">
                     <h3 className="t-h3">{p.titulo}</h3>
                     <p className="t-body mt-1.5 text-subtle">{p.cuerpo}</p>
                   </div>
@@ -147,7 +149,7 @@ export default function Inicio() {
         </section>
 
         {/* ── 3. Para qué animales: cada tarjeta abre la consulta ─── */}
-        <section className="pb-16 lg:pb-24">
+        <section className="pb-12 sm:pb-16 lg:pb-24">
           <Contenedor>
             <Revelar className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <EncabezadoSeccion rotulo="Para qué animales" titulo="Peces, aves y cerdos">
@@ -164,7 +166,7 @@ export default function Inicio() {
                 </div>
               )}
             </Revelar>
-            <ul className="mt-10 grid gap-5 sm:grid-cols-3 lg:mt-12 lg:gap-6">
+            <ul className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-3 sm:gap-5 lg:mt-12 lg:gap-6">
               {CATEGORIAS.map((c, i) => {
                 const animales = animalesDe(c.id);
                 const rangos = animales.map(rangoAnimal).filter((r) => r !== null);
@@ -179,11 +181,11 @@ export default function Inicio() {
                   <Revelar as="li" key={c.id} retraso={i * 70}>
                     <Link
                       href={`/consulta?categoria=${c.id}`}
-                      className="elevar group flex h-full flex-col rounded-lg bg-surface-2 transition-colors duration-200 hover:bg-accent"
+                      className="elevar group flex h-full items-center rounded-lg bg-surface-2 transition-colors duration-200 hover:bg-accent sm:flex-col sm:items-stretch"
                     >
                       {/* Misma caja, misma altura y misma linea de apoyo para
                           los tres: el dibujo se ajusta dentro, apoyado abajo. */}
-                      <div className={cn("h-32 px-6 pt-6 lg:h-40", AJUSTE_ANIMAL[c.id])}>
+                      <div className={cn("h-24 w-28 shrink-0 px-3 py-4 sm:h-32 sm:w-auto sm:px-6 sm:pt-6 lg:h-40", AJUSTE_ANIMAL[c.id])}>
                         <div className="relative h-full w-full">
                           <Image
                             src={c.image}
@@ -191,27 +193,29 @@ export default function Inicio() {
                             fill
                             sizes="(min-width: 640px) 360px, 90vw"
                             aria-hidden
-                            className="lamina object-contain object-bottom"
+                            className="lamina object-contain sm:object-bottom"
                           />
                         </div>
                       </div>
-                      <div className="flex flex-1 flex-col px-5 pt-5 pb-5 lg:px-6 lg:pb-6">
-                        <h3 className="font-display text-[2.25rem] font-semibold leading-none lg:text-[2.5rem]">{c.name}</h3>
-                        <p className="t-body mt-2 text-subtle">
+                      <div className="flex min-w-0 flex-1 flex-col py-4 pr-4 sm:px-5 sm:pt-5 sm:pb-5 lg:px-6 lg:pb-6">
+                        <h3 className="font-display text-[1.75rem] font-semibold leading-none sm:text-[2.25rem] lg:text-[2.5rem]">{c.name}</h3>
+                        <p className="mt-1.5 text-[14px] leading-snug text-subtle sm:mt-2 sm:text-[16px] sm:leading-relaxed">
                           {/* Con un solo animal (cerdos) repetir su nombre no dice
                               nada: se nombran sus etapas. */}
                           {animales.length > 1
                             ? animales.map((a) => a.name).join(" · ")
                             : animales[0]?.stages.map((e) => e.name).join(" · ")}
                         </p>
-                        <div className="mt-5 flex-1">
+                        <div className="mt-2 flex-1 sm:mt-5">
                           {rango ? (
                             <p className="flex flex-col gap-1">
-                              <span className="t-caption">
+                              <span className="t-caption hidden sm:block">
                                 Proteína en el alimento, según especie y etapa
                               </span>
-                              <span className="t-cifra text-[2.25rem]">
+                              <span className="t-cifra text-[1.5rem] sm:text-[2.25rem]">
+                                <span className="sr-only sm:hidden">Proteína en el alimento: </span>
                                 {formatoProteina(rango)}
+                                <span className="ml-1.5 align-middle text-[13px] font-normal tracking-normal text-subtle sm:hidden">de proteína</span>
                               </span>
                             </p>
                           ) : (
@@ -221,11 +225,13 @@ export default function Inicio() {
                             />
                           )}
                         </div>
-                        <span className="mt-6 inline-flex items-center gap-1.5 text-[15px] font-semibold text-primary">
+                        <span className="mt-6 hidden items-center gap-1.5 text-[15px] font-semibold text-primary sm:inline-flex">
                           Consultar para {c.name.toLowerCase()}
                           <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
                         </span>
                       </div>
+                      {/* En el celular toda la fila es el enlace: basta la flecha. */}
+                      <ArrowRight aria-hidden className="mr-4 size-5 shrink-0 text-primary sm:hidden" />
                     </Link>
                   </Revelar>
                 );
@@ -235,8 +241,8 @@ export default function Inicio() {
         </section>
 
         {/* ── 4. Las tres comidas ──────────────────────────────────── */}
-        <section className="pb-16 lg:pb-24">
-          <Contenedor className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+        <section className="pb-12 sm:pb-16 lg:pb-24">
+          <Contenedor className="grid gap-8 sm:gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
             <Revelar>
               <EncabezadoSeccion
                 rotulo="Lo que se compara"
@@ -244,7 +250,7 @@ export default function Inicio() {
                 entrada={`Las tres llevan la misma base: ${base}. Solo cambia el ingrediente principal, que es el ${DIET_BASE.mainPct} %.`}
               />
             </Revelar>
-            <ul className="flex flex-col gap-9 lg:pt-3">
+            <ul className="flex flex-col gap-7 sm:gap-9 lg:pt-3">
               {DIETS.map((d, i) => (
                 <Revelar as="li" key={d.id} retraso={i * 90} className="grid grid-cols-[4.25rem_1fr] gap-x-5 sm:grid-cols-[5rem_1fr]">
                   <span className="t-cifra text-[2.5rem] leading-none text-primary sm:text-[3rem]">
@@ -271,28 +277,28 @@ export default function Inicio() {
         </section>
 
         {/* ── 5. El proyecto, en una banda ─────────────────────────── */}
-        <section className="bg-[#17110c] py-16 text-white lg:py-20 dark:bg-surface">
+        <section className="bg-[#17110c] py-12 text-white sm:py-16 lg:py-20 dark:bg-surface">
           <Contenedor>
             <Revelar>
-              <dl className="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4">
+              <dl className="grid grid-cols-2 gap-x-6 gap-y-7 sm:gap-x-8 sm:gap-y-10 lg:grid-cols-4">
                 {CIFRAS.map((c) => (
                   <div key={c.rotulo} className="flex flex-col gap-2">
                     <dt className="t-small order-2 max-w-[24ch] text-white/65">{c.rotulo}</dt>
-                    <dd className="t-cifra order-1 text-[3.25rem] text-[#efb28e] lg:text-[4.25rem]">
+                    <dd className="t-cifra order-1 text-[2.6rem] text-[#efb28e] sm:text-[3.25rem] lg:text-[4.25rem]">
                       {c.valor}
                     </dd>
                   </div>
                 ))}
               </dl>
             </Revelar>
-            <div className="mt-14 grid gap-8 border-t border-white/15 pt-10 lg:mt-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+            <div className="mt-10 grid gap-6 border-t border-white/15 pt-8 sm:mt-14 sm:gap-8 sm:pt-10 lg:mt-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
               <Revelar>
                 <p className="t-eyebrow text-white/60">Por qué existe</p>
                 <h2 className="t-h2 mt-3 text-balance">
                   Proteína para el campo, producida en la región
                 </h2>
               </Revelar>
-              <ol className="grid gap-6 sm:grid-cols-3 sm:gap-8">
+              <ol className="grid gap-4 sm:grid-cols-3 sm:gap-8">
                 {POR_QUE.map((t, i) => (
                   <Revelar as="li" key={i} retraso={i * 70} className="flex flex-col gap-2">
                     <span className="t-eyebrow text-[#efb28e]">0{i + 1}</span>
@@ -305,9 +311,9 @@ export default function Inicio() {
         </section>
 
         {/* ── 6. Los grillos y la guía de cría (apoyo) ─────────────── */}
-        <section className="py-16 lg:py-24">
+        <section className="py-12 sm:py-16 lg:py-24">
           <Contenedor className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-            <Revelar className="order-2 lg:order-1">
+            <Revelar className="order-2 hidden sm:block lg:order-1">
               {/* Foto profesional de referencia (otra especie de la misma
                   familia): las fotos del proyecto tienen poca resolucion. El
                   pie lo dice, con autor y licencia. */}
@@ -343,7 +349,7 @@ export default function Inicio() {
                 entrada="Su identificación está en curso. Por eso los mostramos solo hasta el nivel confirmado."
               />
               {/* Ficha taxonomica resumida: lo confirmado y lo pendiente. */}
-              <dl className="mt-7 grid max-w-[420px] grid-cols-[88px_1fr] items-baseline gap-y-3 text-[15px]">
+              <dl className="mt-6 grid max-w-[420px] grid-cols-[88px_1fr] items-baseline gap-y-3 text-[15px]">
                 <dt className="text-subtle">Familia</dt>
                 <dd className="font-semibold">Gryllidae</dd>
                 <dt className="text-subtle">Género</dt>
@@ -356,7 +362,7 @@ export default function Inicio() {
                 </dd>
               </dl>
               {/* La guia de cria: apoyo, no protagonista. */}
-              <ul className="mt-9 grid gap-3 sm:grid-cols-2">
+              <ul className="mt-7 grid gap-3 sm:mt-9 sm:grid-cols-2">
                 {[
                   { href: "/caja", titulo: "Arme su caja", texto: PASOS_PORTADA[1], Icono: Box },
                   { href: "/grillos", titulo: "Conozca sus grillos", texto: PASOS_PORTADA[2], Icono: Bug },
@@ -383,7 +389,7 @@ export default function Inicio() {
         </section>
 
         {/* ── 7. Territorio ─────────────────────────────────────────── */}
-        <section className="bg-surface-2 py-16 lg:py-24">
+        <section className="bg-surface-2 py-12 sm:py-16 lg:py-24">
           {/* El texto arriba, a todo el ancho; debajo el mapa (grande) con
               sus fichas al lado. Antes el texto flotaba abajo a la izquierda
               y el mapa quedaba chico con un hueco encima. */}
@@ -402,14 +408,14 @@ export default function Inicio() {
                 <ArrowRight className="size-4" />
               </Link>
             </Revelar>
-            <Revelar retraso={80} className="mt-10 lg:mt-12">
+            <Revelar retraso={80} className="mt-8 sm:mt-10 lg:mt-12">
               <MapaTerritorio />
             </Revelar>
           </Contenedor>
         </section>
 
         {/* ── 8. Cierre: lo que hace GrillosIA y la consulta ───────── */}
-        <section className="py-20 lg:py-28">
+        <section className="py-14 sm:py-20 lg:py-28">
           <Contenedor>
             <Revelar className="mx-auto flex max-w-[760px] flex-col items-center text-center">
               <p className="t-eyebrow text-subtle">Cómo responde</p>
@@ -421,9 +427,9 @@ export default function Inicio() {
                 se lo decimos: preferimos un espacio pendiente a un número
                 inventado.
               </p>
-              <BotonConsulta className="mt-9" />
+              <BotonConsulta className="mt-7 sm:mt-9" />
             </Revelar>
-            <ol className="mx-auto mt-16 grid max-w-[1000px] gap-8 text-left sm:grid-cols-3 lg:mt-20 lg:gap-12">
+            <ol className="mx-auto mt-16 hidden max-w-[1000px] gap-8 text-left sm:grid sm:grid-cols-3 lg:mt-20 lg:gap-12">
               {COMO_RESPONDE.map((c, i) => (
                 <Revelar as="li" key={c.titulo} retraso={i * 70}>
                   <span className="t-eyebrow text-primary">0{i + 1}</span>
