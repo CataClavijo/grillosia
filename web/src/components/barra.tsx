@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowRight, X } from "lucide-react";
 
+import { CuentaCabecera } from "@/components/cuenta-cabecera";
 import { Logo } from "@/components/logo";
 import { SiteNav } from "@/components/site-nav";
 import { CAMINO } from "@/lib/camino";
@@ -129,6 +130,9 @@ export function Barra({
           >
             Mis consultas
           </Link>
+          <div className="hidden lg:block">
+            <CuentaCabecera />
+          </div>
           {pathname !== "/consulta" && (
             <Link
               href="/consulta"
