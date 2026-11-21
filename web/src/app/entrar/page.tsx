@@ -9,6 +9,7 @@ import { signIn } from "next-auth/react";
 import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { LogoGoogle } from "@/components/logo-google";
 import { EncabezadoSeccion } from "@/components/ds/encabezado-seccion";
 import { Estado } from "@/components/ds/estado";
 import { AUTH_ENABLED } from "@/lib/auth-flag";
@@ -83,15 +84,19 @@ function Entrada() {
       )}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        {/* Boton claro con la G de Google, como lo reconoce la gente en
+            otras aplicaciones; en oscuro va sobre la superficie elevada. */}
         <Button
           size="lg"
+          variant="outline"
           disabled={enviando}
           onClick={() => {
             setEnviando(true);
             void signIn("google", { callbackUrl: "/consultas" });
           }}
+          className="gap-3 border-border-strong bg-white px-5 text-[#1f1f1f] hover:bg-[#f7f7f7] dark:bg-surface-2 dark:text-foreground dark:hover:bg-surface"
         >
-          {enviando && <Loader2 className="animate-spin" />}
+          {enviando ? <Loader2 className="size-5 animate-spin" /> : <LogoGoogle className="size-5" />}
           {enviando ? "Abriendo Google…" : "Entrar con Google"}
         </Button>
         <Button asChild variant="ghost" size="lg">

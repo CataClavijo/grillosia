@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { LogIn, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 
+import { LogoGoogle } from "@/components/logo-google";
 import { useGrillosiaSession } from "@/components/session-gate";
 import { AUTH_ENABLED } from "@/lib/auth-flag";
 
@@ -25,7 +26,7 @@ export function SessionBlock({ onNavigate }: { onNavigate?: () => void }) {
         onClick={onNavigate}
         className="flex min-h-14 items-center gap-3 rounded-xl px-4 text-[16px] font-semibold text-primary transition-colors hover:bg-muted"
       >
-        <LogIn className="size-4" strokeWidth={2} />
+        <LogoGoogle className="size-[18px]" />
         Entrar con Google
       </Link>
     );
