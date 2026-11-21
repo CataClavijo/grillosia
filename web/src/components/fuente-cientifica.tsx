@@ -50,7 +50,9 @@ export function FuenteCientifica({
           {texto}
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-[560px] gap-5 rounded-lg p-6 sm:p-7">
+      {/* `sm:max-w-*` y no `max-w-*`: la base del dialogo trae sm:max-w-sm
+          (384 px) y le ganaba. */}
+      <DialogContent className="max-h-[88dvh] gap-5 overflow-y-auto rounded-lg p-6 sm:max-w-[620px] sm:p-8">
         <DialogHeader className="gap-2 text-left">
           <p className="t-eyebrow text-subtle">Respaldo del dato</p>
           <DialogTitle className="t-h2 !text-[1.75rem]">Fuente científica</DialogTitle>

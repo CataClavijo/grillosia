@@ -18,7 +18,6 @@ import {
   PERMISOS_RESUMEN,
   PERMISOS_TITULO,
 } from "@/lib/content/permisos";
-import { cn } from "@/lib/utils";
 
 const CLAVE_CERRADO = "grillia-aviso-permisos-cerrado";
 
@@ -110,52 +109,61 @@ function Detalle({ children }: { children: React.ReactNode }) {
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[88dvh] max-w-[600px] gap-6 overflow-y-auto rounded-lg p-6 sm:p-7">
+      {/* `sm:max-w-*`: la base del dialogo trae sm:max-w-sm (384 px) y le
+          ganaba a un `max-w-*` simple; por eso salia tan angosto. */}
+      <DialogContent className="max-h-[90dvh] gap-7 overflow-y-auto rounded-lg p-6 sm:max-w-[860px] sm:p-9">
         <DialogHeader className="gap-2 text-left">
           <p className="t-eyebrow text-subtle">Antes de criar a escala</p>
-          <DialogTitle className="t-h2 !text-[1.75rem]">{PERMISOS_TITULO}</DialogTitle>
-          <DialogDescription className="text-[15px] leading-relaxed text-subtle">
+          <DialogTitle className="t-h2 !text-[1.9rem] !leading-[1.05] sm:!text-[2.4rem]">{PERMISOS_TITULO}</DialogTitle>
+          <DialogDescription className="max-w-[62ch] !text-[16px] leading-relaxed text-subtle sm:!text-[17px]">
             {PERMISOS_RESUMEN}
           </DialogDescription>
         </DialogHeader>
 
-        <ol className="flex flex-col gap-4">
-          {PERMISOS_PASOS.map((p, i) => (
-            <li key={p.titulo} className="grid grid-cols-[28px_1fr] gap-x-3">
-              <span className="flex size-7 items-center justify-center rounded-full bg-primary-soft font-mono text-[12px] font-semibold text-primary">
-                {i + 1}
-              </span>
-              <span>
-                <span className="t-h4 block">{p.titulo}</span>
-                <span className="t-small mt-0.5 block text-subtle">{p.texto}</span>
-              </span>
-            </li>
-          ))}
-        </ol>
-
-        <div>
-          <p className="t-eyebrow text-faint">Dónde pedirlos</p>
-          <ul className="mt-2 divide-y divide-border border-y border-border">
-            {AUTORIDADES.map((a) => (
-              <li key={a.entidad}>
-                <a
-                  href={a.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center justify-between gap-4 py-3"
-                >
-                  <span className="min-w-0">
-                    <span className="block text-[13px] text-subtle">{a.region}</span>
-                    <span className="block text-[15px] font-semibold group-hover:text-primary">{a.entidad}</span>
+        {/* En pantalla grande, que permisos a la izquierda y a quien
+            pedirlos a la derecha. */}
+        <div className="grid gap-8 md:grid-cols-[1.15fr_1fr] md:gap-10">
+          <div>
+            <p className="t-eyebrow text-faint">Qué permisos</p>
+            <ol className="mt-4 flex flex-col gap-5">
+              {PERMISOS_PASOS.map((p, i) => (
+                <li key={p.titulo} className="grid grid-cols-[32px_1fr] gap-x-3">
+                  <span className="flex size-8 items-center justify-center rounded-full bg-primary-soft font-mono text-[13px] font-semibold text-primary">
+                    {i + 1}
                   </span>
-                  <ExternalLink className="size-4 shrink-0 text-subtle group-hover:text-primary" aria-hidden />
-                </a>
-              </li>
-            ))}
-          </ul>
+                  <span>
+                    <span className="t-h3 block">{p.titulo}</span>
+                    <span className="t-small mt-1 block text-subtle">{p.texto}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div>
+            <p className="t-eyebrow text-faint">Dónde pedirlos</p>
+            <ul className="mt-3 divide-y divide-border border-y border-border">
+              {AUTORIDADES.map((a) => (
+                <li key={a.entidad}>
+                  <a
+                    href={a.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center justify-between gap-4 py-3.5"
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-[13px] text-subtle">{a.region}</span>
+                      <span className="block text-[15.5px] font-semibold group-hover:text-primary">{a.entidad}</span>
+                    </span>
+                    <ExternalLink className="size-4 shrink-0 text-subtle group-hover:text-primary" aria-hidden />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        <p className={cn("t-caption")}>{PERMISOS_NOTA}</p>
+        <p className="t-caption border-t border-border pt-5">{PERMISOS_NOTA}</p>
       </DialogContent>
     </Dialog>
   );
