@@ -60,7 +60,7 @@ export function siguientePaso(p: Paso): SiguientePaso {
     return { label: "Arme su caja", href: "/caja", n: 1 };
   }
   if (crudo === "wizard") {
-    return { label: "Haga su consulta", href: "/consulta", n: 3 };
+    return { label: "Haga su consulta", href: "/consulta", n: 4 };
   }
 
   switch (p) {
@@ -70,7 +70,7 @@ export function siguientePaso(p: Paso): SiguientePaso {
       return { label: "Conozca sus grillos", href: "/grillos", n: 2 };
     case "3":
     case "listo":
-      return { label: "Haga su consulta", href: "/consulta", n: 3 };
+      return { label: "Haga su consulta", href: "/consulta", n: 4 };
     default:
       return { label: "Arme su caja", href: "/caja", n: 1 };
   }

@@ -44,7 +44,7 @@ import { cn } from "@/lib/utils";
  * `useConversacion`), y al salir de ella el panel vuelve a abrirse.
  */
 const OCULTO = ["/chat", "/reset"];
-const CAMINO = ["/caja", "/grillos", "/consulta", "/resultado"];
+const CAMINO = ["/caja", "/grillos", "/recoleccion", "/consulta", "/resultado"];
 
 export function AsistenteFlotante() {
   const pathname = usePathname() ?? "/";

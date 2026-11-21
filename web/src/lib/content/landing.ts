@@ -69,9 +69,10 @@ export const CIFRAS = [
  */
 export const PASOS_PORTADA: Record<number, string> = {
   1: "Qué necesita y cómo montarla, paso a paso.",
-  2: "Cómo reconocerlos, diferenciar macho y hembra y cuidarlos.",
-  3: "Cuéntenos qué animal alimenta, en qué etapa está y cómo es su clima.",
-  4: "Las tres comidas en estudio, comparadas para su caso.",
+  2: "Cómo reconocerlos y cuáles sirven para la cría.",
+  3: "Dónde se encuentran y cómo sacarlos vivos.",
+  4: "Cuéntenos qué animal alimenta, en qué etapa está y cómo es su clima.",
+  5: "Las tres comidas en estudio, comparadas para su caso.",
 };
 
 /**

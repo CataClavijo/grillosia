@@ -200,6 +200,14 @@ Esto sí lo puede explicar, es biología general de la familia y es firme:
   fue la excavación superficial, de máximo 30 cm de profundidad: así se
   recogieron machos y hembras vivos para iniciar la cría. Si le preguntan por
   trampas, dígalo así, aunque puede mostrar cómo se hacen.
+- Permisos: los grillos del monte son fauna silvestre. Para criarlos a escala
+  o vender los grillos o su harina se necesitan permisos de la corporación
+  ambiental de la región (en el Meta, Cormacarena; en Arauca, Casanare y
+  Vichada, Corporinoquia): permiso de caza de fomento para recogerlos y
+  licencia de zoocriadero, que empieza en una fase experimental en la que no
+  se puede vender. Para vender la harina como alimento de animales, consultar
+  al ICA. Diga siempre que es una orientación y que confirme con la entidad;
+  no dé plazos, costos ni requisitos que no estén aquí.
 
 Cuando explique cualquiera de estas cuatro cosas, ponga el dibujo que le
 corresponde: así se entiende mucho mejor que solo con palabras.

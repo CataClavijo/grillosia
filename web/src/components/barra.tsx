@@ -7,6 +7,7 @@ import { ArrowRight, X } from "lucide-react";
 
 import { Logo } from "@/components/logo";
 import { SiteNav } from "@/components/site-nav";
+import { CAMINO } from "@/lib/camino";
 import { cn } from "@/lib/utils";
 
 /**
@@ -30,11 +31,10 @@ import { cn } from "@/lib/utils";
  *
  * El cambio de tema (claro/oscuro) esta en el menu y en el pie.
  */
-const APRENDER = [
-  { href: "/caja", titulo: "Arme su caja" },
-  { href: "/grillos", titulo: "Conozca sus grillos" },
-];
-const PROYECTO = { href: "/proyecto", titulo: "Sobre GrillosIA" };
+// Nombres cortos: con la tercera parada de la guia, los titulos completos
+// ("Arme su caja", "Conozca sus grillos"...) ya no cabian en la cabecera.
+const APRENDER = CAMINO.filter((p) => p.n <= 3).map((p) => ({ href: p.href, titulo: p.corto }));
+const PROYECTO = { href: "/proyecto", titulo: "El proyecto" };
 
 export function Barra({
   modo = "sitio",

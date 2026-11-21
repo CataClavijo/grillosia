@@ -89,7 +89,7 @@ export function SiteNav() {
 
           <p className="t-eyebrow px-2 pt-6 pb-2 text-faint">Guía de cría</p>
           <ul className="flex flex-col">
-            {CAMINO.filter((p) => p.n <= 2).map((p) => {
+            {CAMINO.filter((p) => p.n <= 3).map((p) => {
               const activa = pathname === p.href;
               return (
                 <li key={p.href}>

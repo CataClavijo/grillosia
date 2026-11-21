@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
  * una tiene una forma propia segun lo que explica:
  *
  *  - Macho y hembra: lo mismo, con la lamina que muestra el ovipositor.
- *  - Crecimiento: una linea de tiempo que se dibuja al entrar.
+ *  - Ciclo: huevo, ninfa y adulto en secuencia.
  *  - Importancia: la cifra de la meta.
  */
 export function GrillosPestanas() {
@@ -50,7 +50,7 @@ export function GrillosPestanas() {
         },
         {
           id: "crecimiento",
-          titulo: "Crecimiento",
+          titulo: "Ciclo",
           contenido: <Crecimiento />,
         },
         {

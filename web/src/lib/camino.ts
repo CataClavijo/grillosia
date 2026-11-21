@@ -1,5 +1,5 @@
 /**
- * El camino: cuatro paradas en fila.
+ * El camino: cinco paradas en fila.
  *
  * Antes habia once rutas y la pantalla de inicio ofrecia nueve salidas. De
  * once pantallas, solo una tenia un paso siguiente claro: desde la guia de la
@@ -10,7 +10,7 @@
  * PANTALLA, UNA ACCION. Si una pantalla ofrece dos caminos hacia adelante,
  * uno sobra o pertenece a la biblioteca.
  *
- * Los pasos 1 y 2 se pueden saltar. Quien ya tiene sus grillos criados no
+ * Los pasos 1, 2 y 3 (la guia de cria) se pueden saltar. Quien ya tiene sus grillos criados no
  * tiene por que pasar por la guia de la caja para preguntar que darles de
  * comer; obligarlo seria justo la friccion que estamos quitando.
  */
@@ -23,6 +23,8 @@ export interface Parada {
   resumen: string;
   /** Texto del unico boton que lleva adelante. */
   siguiente: string;
+  /** Nombre corto para la cabecera, donde los titulos largos no caben. */
+  corto: string;
 }
 
 export const CAMINO: Parada[] = [
@@ -30,6 +32,7 @@ export const CAMINO: Parada[] = [
     n: 1,
     href: "/caja",
     titulo: "Arme su caja",
+    corto: "Su caja",
     resumen: "Qué necesita y cómo montarla, paso a paso.",
     siguiente: "Ya tengo mi caja",
   },
@@ -37,20 +40,33 @@ export const CAMINO: Parada[] = [
     n: 2,
     href: "/grillos",
     titulo: "Conozca sus grillos",
-    resumen: "Cuáles criamos y qué cuidados piden.",
+    corto: "Sus grillos",
+    resumen: "Cómo reconocerlos y cuáles sirven para la cría.",
     siguiente: "Seguir",
   },
   {
+    // Los lugares van aparte de los grillos: antes estaban en la misma
+    // pagina y se mezclaban (Catalina, 2026-11-21).
     n: 3,
+    href: "/recoleccion",
+    titulo: "Busque sus grillos",
+    corto: "Dónde buscarlos",
+    resumen: "Dónde se encuentran y cómo sacarlos vivos.",
+    siguiente: "Seguir",
+  },
+  {
+    n: 4,
     href: "/consulta",
     titulo: "Haga su consulta",
+    corto: "Consulta",
     resumen: "Cuatro preguntas sobre su animal y su clima.",
     siguiente: "Ver mi resultado",
   },
   {
-    n: 4,
+    n: 5,
     href: "/resultado",
     titulo: "Vea su resultado",
+    corto: "Resultado",
     resumen: "Las tres comidas comparadas para su caso.",
     siguiente: "Preguntar sobre esto",
   },

@@ -19,7 +19,7 @@ import { BIBLIOTECA, CAMINO } from "@/lib/camino";
  * No se dibuja en las pantallas del camino: alli la accion hacia adelante
  * vive fija abajo y el pie la estorbaria.
  */
-const SIN_PIE = ["/chat", "/reset", "/consulta", "/caja", "/grillos", "/resultado"];
+const SIN_PIE = ["/chat", "/reset", "/consulta", "/caja", "/grillos", "/recoleccion", "/resultado"];
 
 const claseEnlace =
   "inline-flex min-h-8 items-center text-[14.5px] text-subtle transition-colors duration-150 hover:text-foreground";

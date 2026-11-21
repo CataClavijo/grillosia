@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Box, Bug } from "lucide-react";
+import { ArrowRight, Box, Bug, MapPin } from "lucide-react";
 
 import { Barra } from "@/components/barra";
 import { BarraComposicion } from "@/components/barra-composicion";
@@ -362,10 +362,11 @@ export default function Inicio() {
                 </dd>
               </dl>
               {/* La guia de cria: apoyo, no protagonista. */}
-              <ul className="mt-7 grid gap-3 sm:mt-9 sm:grid-cols-2">
+              <ul className="mt-7 grid gap-3 sm:mt-9">
                 {[
                   { href: "/caja", titulo: "Arme su caja", texto: PASOS_PORTADA[1], Icono: Box },
                   { href: "/grillos", titulo: "Conozca sus grillos", texto: PASOS_PORTADA[2], Icono: Bug },
+                  { href: "/recoleccion", titulo: "Busque sus grillos", texto: PASOS_PORTADA[3], Icono: MapPin },
                 ].map(({ href, titulo, texto, Icono }) => (
                   <li key={href}>
                     <Link

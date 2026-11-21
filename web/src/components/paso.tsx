@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
+import { AvisoPermisos } from "@/components/aviso-permisos";
 import { Barra } from "@/components/barra";
 import { BotonAsistente } from "@/components/boton-asistente";
 import { CAMINO, siguienteParada } from "@/lib/camino";
@@ -41,11 +42,13 @@ export function Paso({
   const sigue = siguienteParada(n);
   const href = accion?.href ?? sigue?.href;
   const texto = accion?.texto ?? actual?.siguiente ?? "Seguir";
-  const anterior = n > 1 ? `/${["", "caja", "grillos", "consulta"][n - 1]}` : "/";
+  const anterior = CAMINO.find((x) => x.n === n - 1)?.href ?? "/";
 
   return (
     <>
       <Barra />
+      {/* Las paginas de la guia de cria llevan arriba el aviso de permisos. */}
+      {n <= 3 && <AvisoPermisos forma="franja" />}
       <main
         aria-label={titulo}
         className={cn(

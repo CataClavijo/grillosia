@@ -6,14 +6,14 @@ import { AL_RECOGERLOS, FOTOS_SITIOS, METODOS_RECOLECCION } from "@/lib/content/
 import { cn } from "@/lib/utils";
 
 /**
- * ¿Donde encontrarlos?
+ * Busque sus grillos: la pagina /recoleccion.
  *
  * Primero los sitios reales donde el proyecto los busco (fotos de campo),
  * despues como se sacaron vivos: el metodo que funciono con su dibujo, y en
  * una linea lo que no funciono, porque las trampas son lo primero que a
  * cualquiera se le ocurre.
  */
-export function DondeEncontrarlos() {
+export function DondeEncontrarlos({ children }: { children?: React.ReactNode }) {
   const { tradicionales, ajustado } = METODOS_RECOLECCION;
   const noFunciono = tradicionales.metodos
     .map((m, i) => (i === 0 ? m : m.toLowerCase()))
@@ -22,11 +22,16 @@ export function DondeEncontrarlos() {
 
   return (
     <section aria-labelledby="donde-encontrarlos">
+      {/* Es el titular de su propia pagina (/recoleccion). */}
       <EncabezadoSeccion
+        as="h1"
+        tamano="h1"
         rotulo="En el Piedemonte Llanero"
-        titulo={<span id="donde-encontrarlos">¿Dónde encontrarlos?</span>}
+        titulo={<span id="donde-encontrarlos">Busque sus grillos</span>}
         entrada="El proyecto los buscó en Granada y Cubarral, en el Meta: bosque, cacaotales y plataneras, siempre con hojarasca en el suelo."
       />
+      {/* Lo que va justo debajo del titular (el aviso de permisos). */}
+      {children}
 
       {/* En el celular la primera foto va a todo el ancho y las otras dos
           debajo, una al lado de la otra; en pantalla grande, las tres en fila. */}
@@ -50,16 +55,16 @@ export function DondeEncontrarlos() {
       </ul>
       <p className="mt-2 text-[12px] text-subtle">Fotos de los sitios de muestreo del proyecto.</p>
 
-      <h3 className="mt-10 font-display text-[1.75rem] sm:mt-14 font-semibold leading-tight">Cómo sacarlos vivos</h3>
+      <h2 className="mt-10 font-display text-[1.75rem] sm:mt-14 font-semibold leading-tight">Cómo sacarlos vivos</h2>
       <div className="mt-5 grid gap-5 lg:grid-cols-12 lg:gap-8">
         <article className="rounded-lg border border-vegetal/35 bg-surface p-5 lg:col-span-7 lg:p-6">
           <p className="inline-flex items-center gap-2 rounded-full bg-vegetal px-3 py-1 text-[13px] font-semibold text-background">
             <Check className="size-3.5" strokeWidth={3} aria-hidden />
             {ajustado.veredicto}
           </p>
-          <h4 className="mt-3 text-[17px] font-semibold">
+          <h3 className="mt-3 text-[17px] font-semibold">
             {ajustado.metodo}, {ajustado.profundidad.toLowerCase()} de profundidad
-          </h4>
+          </h3>
           {/* Acuarela del corte del suelo. La marca de profundidad va en texto
               encima del dibujo y no dentro de la imagen: asi se lee nitida en
               cualquier pantalla. Va de la superficie (40 % del alto del
@@ -91,7 +96,7 @@ export function DondeEncontrarlos() {
               <X className="size-3.5" strokeWidth={3} aria-hidden />
               {tradicionales.veredicto}
             </p>
-            <h4 className="mt-3 text-[17px] font-semibold">{noFunciono}</h4>
+            <h3 className="mt-3 text-[17px] font-semibold">{noFunciono}</h3>
             <p className="t-small mt-2 text-foreground/85">{tradicionales.texto}</p>
           </article>
           <p className="t-small text-subtle">
