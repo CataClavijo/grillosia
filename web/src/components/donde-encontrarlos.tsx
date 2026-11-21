@@ -45,6 +45,7 @@ export function DondeEncontrarlos({ children }: { children?: React.ReactNode }) 
                   alt={f.alt}
                   fill
                   sizes="(max-width: 640px) 100vw, 33vw"
+                  quality={60}
                   className="object-cover"
                 />
               </div>

@@ -14,6 +14,14 @@ const nextConfig: NextConfig = {
   // El boton redondo "N" de Next en desarrollo tapaba el "Atras" de la
   // barra de abajo en las vistas previas por la red.
   devIndicators: false,
+  // Las fotos y acuarelas se sirven en AVIF cuando el navegador lo acepta:
+  // pesan bastante menos que WebP a la misma calidad visible, y la pagina la
+  // abren productores con datos moviles contados. 60 es la calidad de las
+  // fotos grandes de campo; 75, la de todo lo demas.
+  images: {
+    formats: ["image/avif", "image/webp"],
+    qualities: [60, 75],
+  },
   async redirects() {
     return [
       { source: "/como-armar", destination: "/caja", permanent: true },
