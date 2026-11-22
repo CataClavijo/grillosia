@@ -23,6 +23,9 @@ type Reconocedor = {
   interimResults: boolean;
   start: () => void;
   stop: () => void;
+  abort?: () => void;
+  onspeechstart?: (() => void) | null;
+  onspeechend?: (() => void) | null;
   onresult: ((e: unknown) => void) | null;
   onerror: ((e: unknown) => void) | null;
   onend: (() => void) | null;
@@ -77,9 +80,31 @@ function traducirError(codigo: unknown): ErrorDictado | null {
  * Dictado por voz. Devuelve lo que se va oyendo para que el campo de texto lo
  * muestre en vivo: sin eso, el productor no sabe si lo esta escuchando.
  */
-export function useDictado(alTerminar: (texto: string) => void) {
+export function useDictado(
+  alTerminar: (texto: string) => void,
+  opciones?: {
+    /**
+     * Cuantas veces se reabre el microfono si nadie dice nada.
+     *
+     * El navegador cierra el reconocimiento por su cuenta tras unos segundos
+     * de silencio. En manos libres eso dejaba la conversacion en "toque para
+     * hablar" a los ocho segundos, justo cuando la persona todavia estaba
+     * pensando que preguntar. Con paciencia se reabre solo unas veces mas; no
+     * para siempre, porque en Android cada apertura suena y gasta bateria.
+     *
+     * Sin indicarlo, se comporta como siempre: el boton de dictar del chat
+     * avisa "no se oyo nada" al primer silencio.
+     */
+    paciencia?: number;
+  },
+) {
+  const paciencia = opciones?.paciencia;
   const [estado, setEstado] = useState<EstadoDictado>("inactivo");
   const [parcial, setParcial] = useState("");
+  /** Se esta oyendo voz en este momento (no solo el microfono abierto). */
+  const [voz, setVoz] = useState(false);
+  /** Reaperturas en silencio que lleva esta escucha. */
+  const silencios = useRef(0);
   /**
    * Entre "ya termine de hablar" y que el navegador entregue el texto pasa un
    * momento. Sin mostrarlo, parecia que el boton no habia hecho nada.
@@ -140,6 +165,39 @@ export function useDictado(alTerminar: (texto: string) => void) {
     rec.current?.stop();
   }, []);
 
+  /**
+   * Cierra el microfono SIN entregar lo oido.
+   *
+   * `parar` significa "ya termine de hablar" y envia la frase. Al salir de
+   * manos libres o al apagarse la pantalla no se quiere eso: media frase
+   * suelta se enviaria como pregunta cuando ya nadie espera la respuesta.
+   */
+  const cancelar = useCallback(() => {
+    queremosOir.current = false;
+    if (silencio.current) window.clearTimeout(silencio.current);
+    const r = rec.current;
+    rec.current = null;
+    if (r) {
+      r.onresult = null;
+      r.onerror = null;
+      r.onend = null;
+      r.onspeechstart = null;
+      r.onspeechend = null;
+      try {
+        if (r.abort) r.abort();
+        else r.stop();
+      } catch {
+        /* ya estaba cerrado */
+      }
+    }
+    final.current = "";
+    ultimo.current = "";
+    setParcial("");
+    setVoz(false);
+    setProcesando(false);
+    setEstado((e) => (e === "no-disponible" ? e : "inactivo"));
+  }, []);
+
   const limpiarError = useCallback(() => setError(null), []);
 
   const empezar = useCallback(() => {
@@ -164,6 +222,8 @@ export function useDictado(alTerminar: (texto: string) => void) {
       anterior.onresult = null;
       anterior.onerror = null;
       anterior.onend = null;
+      anterior.onspeechstart = null;
+      anterior.onspeechend = null;
       try {
         anterior.stop();
       } catch {
@@ -176,12 +236,17 @@ export function useDictado(alTerminar: (texto: string) => void) {
     final.current = "";
     ultimo.current = "";
     enviado.current = false;
+    silencios.current = 0;
     setParcial("");
+    setVoz(false);
     r.lang = "es-CO";
     // Modo continuo: sin esto el navegador cierra por su cuenta en cuanto
     // cree que termino un enunciado, y corta a quien encadena frases.
     r.continuous = true;
     r.interimResults = true;
+
+    r.onspeechstart = () => setVoz(true);
+    r.onspeechend = () => setVoz(false);
 
     r.onresult = (e: unknown) => {
       const ev = e as {
@@ -237,11 +302,22 @@ export function useDictado(alTerminar: (texto: string) => void) {
     };
 
     r.onerror = (e: unknown) => {
+      const motivo = traducirError((e as { error?: unknown })?.error);
+      // Silencio con paciencia: no es un fallo todavia. Se deja que `onend`
+      // reabra el microfono, que es quien lleva la cuenta.
+      if (
+        motivo === "sin-voz" &&
+        !ultimo.current &&
+        paciencia !== undefined &&
+        silencios.current < paciencia
+      ) {
+        return;
+      }
       if (silencio.current) window.clearTimeout(silencio.current);
       queremosOir.current = false;
       setProcesando(false);
+      setVoz(false);
       // "no-speech" solo es un fallo si de verdad no se oyo nada.
-      const motivo = traducirError((e as { error?: unknown })?.error);
       if (motivo && !(motivo === "sin-voz" && ultimo.current)) setError(motivo);
       setEstado("inactivo");
     };
@@ -253,7 +329,13 @@ export function useDictado(alTerminar: (texto: string) => void) {
       // El navegador cierra por su cuenta tras un rato de silencio absoluto.
       // Si nadie llego a decir nada y seguimos queriendo oir, se reabre: de
       // lo contrario el modo manos libres se queda mudo sin avisar.
-      if (queremosOir.current && !final.current.trim() && !ultimo.current) {
+      if (
+        queremosOir.current &&
+        !final.current.trim() &&
+        !ultimo.current &&
+        (paciencia === undefined || silencios.current < paciencia)
+      ) {
+        silencios.current++;
         try {
           r.start();
           return;
@@ -264,6 +346,7 @@ export function useDictado(alTerminar: (texto: string) => void) {
       if (silencio.current) window.clearTimeout(silencio.current);
       queremosOir.current = false;
       setProcesando(false);
+      setVoz(false);
       setEstado("inactivo");
       // Se toma lo definitivo si existe; si no, lo ultimo que se oyo.
       const texto = (final.current.trim() || ultimo.current).trim();
@@ -286,7 +369,7 @@ export function useDictado(alTerminar: (texto: string) => void) {
       setError("otro");
       setEstado("inactivo");
     }
-  }, [alTerminar]);
+  }, [alTerminar, paciencia]);
 
   useEffect(
     () => () => {
@@ -297,7 +380,17 @@ export function useDictado(alTerminar: (texto: string) => void) {
     [],
   );
 
-  return { estado, parcial, empezar, parar, procesando, error, limpiarError };
+  return {
+    estado,
+    parcial,
+    voz,
+    empezar,
+    parar,
+    cancelar,
+    procesando,
+    error,
+    limpiarError,
+  };
 }
 
 /**
@@ -357,6 +450,9 @@ function vozFemenina(): SpeechSynthesisVoice | null {
  */
 const PRIMER_TROZO = 90;
 const TROZO = 200;
+
+/** Cuanto se espera un trozo de audio antes de leerlo con la voz del aparato. */
+const TOPE_AUDIO_MS = 7000;
 
 function trocear(texto: string): string[] {
   const frases: string[] = [];
@@ -436,11 +532,20 @@ export function useLectura() {
       const a = audio.current ?? new Audio();
       a.src = SILENCIO;
       a.volume = 0;
-      void a.play().then(() => {
-        a.pause();
-        a.volume = 1;
-        desbloqueado.current = true;
-      });
+      a.play().then(
+        () => {
+          // Solo se pausa si sigue sonando el silencio: si ya entro una
+          // respuesta de verdad, pausar aqui la cortaria.
+          if (a.src === SILENCIO) a.pause();
+          a.volume = 1;
+          desbloqueado.current = true;
+        },
+        () => {
+          // El navegador no dejo. Sin devolver el volumen, el elemento
+          // quedaba en cero para siempre y la respuesta salia muda.
+          a.volume = 1;
+        },
+      );
       audio.current = a;
 
       // La voz del sistema pide el mismo permiso, por si toca usarla.
@@ -491,7 +596,7 @@ export function useLectura() {
   }, []);
 
   const conElNavegador = useCallback(
-    (texto: string, id: string) =>
+    (texto: string, id: string, base = 0) =>
       new Promise<void>((listo) => {
         if (typeof window === "undefined" || !window.speechSynthesis) {
           setEstado("quieto");
@@ -507,9 +612,11 @@ export function useLectura() {
           u.lang = suya.lang;
         }
         let cerrado = false;
+        let vigia = 0;
         const terminar = () => {
           if (cerrado) return;
           cerrado = true;
+          window.clearInterval(vigia);
           cortar.current = null;
           setAvance(1);
           setEstado("quieto");
@@ -521,11 +628,40 @@ export function useLectura() {
         u.onerror = terminar;
         // `onboundary` da la posicion de verdad, palabra por palabra.
         u.onboundary = (e) => {
-          if (texto.length) setAvance(e.charIndex / texto.length);
+          // `base`: cuando el aparato termina una respuesta que empezo con
+          // la voz del servicio, el avance sigue desde donde iba y no vuelve
+          // al principio (la linea resaltada saltaba a la primera).
+          if (texto.length)
+            setAvance(base + (e.charIndex / texto.length) * (1 - base));
+        };
+        let arranco = false;
+        u.onstart = () => {
+          arranco = true;
         };
         setEstado("hablando");
         setLeyendo(id);
         window.speechSynthesis.speak(u);
+
+        // Vigia. La voz del sistema a veces no avisa que termino (pasa en
+        // Chrome de Android y con frases largas en escritorio): sin esto la
+        // promesa no resolvia nunca y manos libres se quedaba en "hablando"
+        // sin volver a abrir el microfono. Se da por terminada si el
+        // navegador ya no esta hablando, o si pasa de un tiempo que ninguna
+        // lectura normal alcanza. El silencio solo cuenta cuando ya arranco
+        // (o pasaron cinco segundos): algunos telefonos tardan en cargar su
+        // voz, y darla por terminada antes abriria el microfono encima.
+        const inicio = Date.now();
+        const tope = 8000 + texto.length * 130;
+        let callado = 0;
+        vigia = window.setInterval(() => {
+          const s = window.speechSynthesis;
+          const cuenta = arranco || Date.now() - inicio > 5000;
+          callado = !cuenta || s.speaking || s.pending ? 0 : callado + 1;
+          if (callado >= 3 || Date.now() - inicio > tope) {
+            if (Date.now() - inicio > tope) s.cancel();
+            terminar();
+          }
+        }, 500);
       }),
     [],
   );
@@ -557,18 +693,32 @@ export function useLectura() {
     const esperas = [0, 250, 700];
     for (const espera of esperas) {
       if (espera) await new Promise((listo) => setTimeout(listo, espera));
+      // Tope de tiempo. Con senal mala la peticion no falla: se queda
+      // colgada, y sin tope la respuesta quedaba en pantalla, muda, con el
+      // microfono cerrado. Pasado el tope no se insiste: si la red esta asi
+      // de lenta, otro intento es mas silencio; lee el aparato.
+      const corte = new AbortController();
+      let vencio = false;
+      const reloj = setTimeout(() => {
+        vencio = true;
+        corte.abort();
+      }, TOPE_AUDIO_MS);
       try {
         const res = await fetch("/api/voz", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ texto: trozo }),
+          signal: corte.signal,
         });
         if (res.ok) return await res.blob();
         // 503 es lo esperado cuando no hay servicio o se paso el tope: es
         // definitivo, no se insiste.
         if (res.status === 503) return null;
       } catch {
+        if (vencio) return null;
         // Red: eso si puede arreglarse solo. Se sigue intentando.
+      } finally {
+        clearTimeout(reloj);
       }
     }
     return null;
@@ -589,6 +739,7 @@ export function useLectura() {
         audio.current = a;
         const url = URL.createObjectURL(blob);
         a.src = url;
+        a.volume = 1;
 
         let cerrado = false;
         const terminar = (bien: boolean) => {
@@ -686,15 +837,22 @@ export function useLectura() {
             console.warn(
               `[voz] el trozo ${i + 1} no llego; el resto va con la voz del aparato`,
             );
-          await conElNavegador(trozos.slice(i).join(" "), id);
+          await conElNavegador(trozos.slice(i).join(" "), id, leidos / total);
           return;
         }
 
         setEstado("hablando");
         const bien = await reproducir(blob, leidos / total, trozos[i].length / total);
-        if (!vigente() || !bien) {
-          if (!vigente()) return;
-          break;
+        if (!vigente()) return;
+        if (!bien) {
+          // El audio llego pero no pudo sonar (el navegador lo bloqueo o no
+          // lo supo leer). Antes aqui se abandonaba y la respuesta quedaba
+          // sin decirse; lo que falta lo lee el aparato.
+          console.warn(
+            `[voz] el trozo ${i + 1} no pudo sonar; el resto va con la voz del aparato`,
+          );
+          await conElNavegador(trozos.slice(i).join(" "), id, leidos / total);
+          return;
         }
         leidos += trozos[i].length;
       }

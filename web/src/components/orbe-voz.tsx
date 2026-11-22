@@ -5,36 +5,68 @@ import { useEffect, useRef } from "react";
 /**
  * Visualizador de voz.
  *
- * Reacciona a la amplitud real: al microfono mientras escucha, y al audio de
- * la respuesta mientras habla. Esa es la diferencia entre una animacion que
- * decora y una que informa. Cuando el circulo se mueve con la voz, el
- * productor SABE que lo esta oyendo; con una animacion en bucle solo puede
- * suponerlo, y si duda, repite la pregunta.
+ * Dice, sin leer nada, de quien es el turno:
  *
- * Va en canvas y no en CSS porque son decenas de trazos redibujados en cada
- * cuadro. Si el navegador no da permiso de microfono, o el aparato no puede,
- * cae a un latido suave: se pierde la reaccion, no la funcion.
+ *   escuchando  aro terracota, hueco, con ondas que ENTRAN hacia el centro.
+ *               Se hincha cuando el telefono oye voz.
+ *   hablando    disco crema, LLENO, con ondas que SALEN. Late al ritmo del
+ *               habla mientras suena el audio.
+ *   pensando    aro apagado con un arco que gira.
+ *   pausa       aro quieto y tenue: el microfono esta cerrado.
+ *
+ * Hueco contra lleno y entrar contra salir, y no solo un cambio de color: en
+ * la version anterior los dos turnos eran el mismo circulo translucido y el
+ * de "hablando" se veia gris, sin que se supiera quien tenia la palabra.
+ *
+ * NO abre el microfono por su cuenta. Antes pedia `getUserMedia` para leer la
+ * amplitud real, y eso traia tres problemas: en Chrome de Android el
+ * reconocimiento de voz y un flujo de microfono abierto se estorban (el
+ * flujo queda en silencio, o el reconocimiento deja de oir); el microfono
+ * seguia tomado mientras el asistente hablaba; y cada vez que el circulo
+ * volvia a aparecer se pedia de nuevo. Ahora reacciona a lo que el propio
+ * reconocimiento informa: `voz` (hay alguien hablando) y `pulso` (llego una
+ * palabra nueva). Es menos fino que la amplitud, pero es verdad: se mueve
+ * cuando de verdad se le esta oyendo.
  */
 
-type Fase = "escuchando" | "pensando" | "hablando";
+export type ModoOrbe = "escuchando" | "pensando" | "hablando" | "pausa";
 
-// Terracota claro: el mismo color de accion del sitio, aclarado para fondo oscuro.
-const VERDE = "224, 162, 127"; // #E0A27F
+const TERRACOTA = "224, 162, 127"; // #E0A27F, el color de accion aclarado para fondo oscuro
 const CREMA = "244, 241, 231"; // #F4F1E7
+const TENUE = "154, 145, 134"; // #9A9186
 
 export function OrbeVoz({
-  fase,
-  audio,
+  modo,
+  voz = false,
+  pulso = 0,
+  sonando = false,
+  lado = 232,
   className,
 }: {
-  fase: Fase;
-  /** Elemento que reproduce la respuesta, para leer su amplitud. */
-  audio?: HTMLAudioElement | null;
+  modo: ModoOrbe;
+  /** El reconocimiento esta oyendo voz ahora mismo. */
+  voz?: boolean;
+  /** Cambia cada vez que llega una palabra nueva; cada cambio da un empujon. */
+  pulso?: number;
+  /** El audio de la respuesta ya esta sonando (no solo cargando). */
+  sonando?: boolean;
+  /** Lado del lienzo, en pixeles. */
+  lado?: number;
   className?: string;
 }) {
   const lienzo = useRef<HTMLCanvasElement | null>(null);
-  const faseRef = useRef<Fase>(fase);
-  faseRef.current = fase;
+  // Lo que cambia en cada pintado se lee por referencia: asi el bucle de
+  // dibujo se arma una sola vez y no se reinicia con cada palabra.
+  const actual = useRef({ modo, voz, sonando });
+  const empujon = useRef(0);
+
+  useEffect(() => {
+    actual.current = { modo, voz, sonando };
+  }, [modo, voz, sonando]);
+
+  useEffect(() => {
+    if (pulso) empujon.current = 1;
+  }, [pulso]);
 
   useEffect(() => {
     const canvas = lienzo.current;
@@ -47,93 +79,86 @@ export function OrbeVoz({
     ).matches;
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const lado = 260;
     canvas.width = lado * dpr;
     canvas.height = lado * dpr;
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     let cancelado = false;
     let cuadro = 0;
-    let flujo: MediaStream | null = null;
-    let audioCtx: AudioContext | null = null;
-    let analizador: AnalyserNode | null = null;
-    let datos: Uint8Array<ArrayBuffer> | null = null;
     /** Nivel suavizado, 0 a 1. Sin suavizado el circulo tiembla. */
     let nivel = 0;
+    /** Cuanto de "lleno" esta el disco, 0 a 1: suaviza el cambio de turno. */
+    let lleno = 0;
     let t = 0;
+    let antes = performance.now();
 
-    async function escucharMicrofono() {
-      try {
-        flujo = await navigator.mediaDevices.getUserMedia({ audio: true });
-        if (cancelado) {
-          flujo.getTracks().forEach((p) => p.stop());
-          return;
-        }
-        const AC =
-          window.AudioContext ??
-          (window as unknown as { webkitAudioContext: typeof AudioContext })
-            .webkitAudioContext;
-        audioCtx = new AC();
-        const fuente = audioCtx.createMediaStreamSource(flujo);
-        analizador = audioCtx.createAnalyser();
-        analizador.fftSize = 256;
-        fuente.connect(analizador);
-        datos = new Uint8Array(new ArrayBuffer(analizador.frequencyBinCount));
-      } catch {
-        // Sin permiso de microfono se anima igual, solo que sin reaccionar.
-        analizador = null;
-      }
-    }
+    const c = lado / 2;
+    const base = lado * 0.235;
+    const holgura = c - base - 3;
 
-    void escucharMicrofono();
-
-    const dibujar = () => {
+    const dibujar = (ahora: number) => {
       if (cancelado) return;
-      t += 0.016;
+      const dt = Math.min(0.05, Math.max(0, (ahora - antes) / 1000));
+      antes = ahora;
+      t += dt;
 
-      // Amplitud actual
-      let crudo = 0;
-      if (analizador && datos && faseRef.current === "escuchando") {
-        analizador.getByteFrequencyData(datos);
-        let suma = 0;
-        for (let i = 0; i < datos.length; i++) suma += datos[i];
-        crudo = Math.min(1, suma / datos.length / 90);
-      } else if (faseRef.current === "hablando") {
-        // Mientras habla no se lee el audio: se late con el ritmo del habla,
-        // que es suficiente y evita enredarse con el elemento de audio.
-        crudo = 0.35 + Math.sin(t * 7) * 0.18 + Math.sin(t * 11.3) * 0.08;
+      const { modo: m, voz: oyendo, sonando: suena } = actual.current;
+
+      // A donde quiere ir el nivel segun el turno.
+      let meta: number;
+      if (m === "escuchando") {
+        meta = oyendo
+          ? 0.5 + Math.sin(t * 9) * 0.12
+          : 0.14 + Math.sin(t * 1.6) * 0.05;
+        meta += empujon.current * 0.45;
+      } else if (m === "hablando") {
+        // Ritmo de habla, no la amplitud real: leer el audio obligaria a
+        // pasarlo por otro canal, y si ese canal falla la respuesta no suena.
+        meta = suena
+          ? 0.42 + Math.sin(t * 7) * 0.2 + Math.sin(t * 11.3) * 0.1
+          : 0.16;
+      } else if (m === "pensando") {
+        meta = 0.12;
       } else {
-        crudo = 0.12;
+        meta = 0.04;
       }
-      if (reducido) crudo = 0.2;
-      nivel += (crudo - nivel) * 0.18;
+      empujon.current *= 0.9;
+      if (reducido) meta = m === "pausa" ? 0.04 : 0.2;
+      nivel += (Math.min(1, Math.max(0, meta)) - nivel) * 0.16;
+      lleno += ((m === "hablando" ? 1 : 0) - lleno) * 0.14;
 
-      const c = lado / 2;
       ctx.clearRect(0, 0, lado, lado);
 
-      const color = faseRef.current === "hablando" ? CREMA : VERDE;
-      const base = 52;
+      const color =
+        m === "hablando" ? CREMA : m === "pausa" ? TENUE : TERRACOTA;
+      const radio = base + nivel * holgura * 0.42;
 
-      // Anillos concentricos que se abren con la voz
-      const anillos = 3;
-      for (let i = 0; i < anillos; i++) {
-        const fase01 = ((t * 0.32 + i / anillos) % 1);
-        const r = base + fase01 * (46 + nivel * 58);
-        const alfa = (1 - fase01) * 0.42 * (0.35 + nivel);
-        ctx.beginPath();
-        ctx.arc(c, c, r, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${color}, ${alfa.toFixed(3)})`;
-        ctx.lineWidth = 1.4;
-        ctx.stroke();
+      // Ondas: salen cuando habla, entran cuando escucha.
+      if (!reducido && (m === "hablando" || m === "escuchando")) {
+        const ondas = 3;
+        for (let i = 0; i < ondas; i++) {
+          let f = (t * (m === "hablando" ? 0.42 : 0.3) + i / ondas) % 1;
+          if (m === "escuchando") f = 1 - f;
+          const r = radio + 4 + f * (holgura * (0.5 + nivel * 0.5));
+          // Fuerte cerca del nucleo y se apaga hacia afuera, en los dos
+          // sentidos: asi la que entra "aparece" lejos y la que sale se va.
+          const alfa = (1 - f) * 0.55 * (0.35 + nivel);
+          ctx.beginPath();
+          ctx.arc(c, c, Math.min(r, c - 1.5), 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(${color}, ${Math.max(0, alfa).toFixed(3)})`;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
       }
 
-      // Nucleo: un circulo apenas deformado, para que respire sin parecer gelatina
-      const radio = base + nivel * 26;
+      // Nucleo: un circulo apenas deformado, para que respire sin parecer
+      // gelatina.
       ctx.beginPath();
       for (let a = 0; a <= Math.PI * 2 + 0.01; a += 0.06) {
-        const onda =
-          Math.sin(a * 3 + t * 1.7) * 2.2 * nivel +
-          Math.sin(a * 5 - t * 2.3) * 1.4 * nivel;
+        const onda = reducido
+          ? 0
+          : Math.sin(a * 3 + t * 1.7) * 2.4 * nivel +
+            Math.sin(a * 5 - t * 2.3) * 1.5 * nivel;
         const rr = radio + onda;
         const x = c + Math.cos(a) * rr;
         const y = c + Math.sin(a) * rr;
@@ -141,19 +166,21 @@ export function OrbeVoz({
         else ctx.lineTo(x, y);
       }
       ctx.closePath();
-      ctx.fillStyle = `rgba(${color}, ${(0.1 + nivel * 0.14).toFixed(3)})`;
+      // Hueco al escuchar, lleno al hablar.
+      const relleno = 0.08 + nivel * 0.1 + lleno * 0.84;
+      ctx.fillStyle = `rgba(${color}, ${Math.min(1, relleno).toFixed(3)})`;
       ctx.fill();
-      ctx.strokeStyle = `rgba(${color}, ${(0.5 + nivel * 0.35).toFixed(3)})`;
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = `rgba(${color}, ${(m === "pausa" ? 0.55 : 0.75 + nivel * 0.25).toFixed(3)})`;
+      ctx.lineWidth = m === "pausa" ? 1.5 : 2.5;
       ctx.stroke();
 
-      // Mientras piensa: un arco que gira, sin amplitud que mostrar
-      if (faseRef.current === "pensando") {
-        const giro = t * 2.4;
+      // Mientras piensa: un arco que gira, sin amplitud que mostrar.
+      if (m === "pensando") {
+        const giro = reducido ? -Math.PI / 2 : t * 2.6;
         ctx.beginPath();
-        ctx.arc(c, c, base + 30, giro, giro + Math.PI * 0.42);
-        ctx.strokeStyle = `rgba(${VERDE}, 0.85)`;
-        ctx.lineWidth = 2.5;
+        ctx.arc(c, c, radio + 14, giro, giro + Math.PI * 0.5);
+        ctx.strokeStyle = `rgba(${TERRACOTA}, 0.9)`;
+        ctx.lineWidth = 3;
         ctx.lineCap = "round";
         ctx.stroke();
       }
@@ -165,17 +192,15 @@ export function OrbeVoz({
     return () => {
       cancelado = true;
       cancelAnimationFrame(cuadro);
-      flujo?.getTracks().forEach((p) => p.stop());
-      void audioCtx?.close();
     };
-  }, []);
+  }, [lado]);
 
   return (
     <canvas
       ref={lienzo}
       aria-hidden
       className={className}
-      style={{ width: 260, height: 260 }}
+      style={{ width: lado, height: lado }}
     />
   );
 }

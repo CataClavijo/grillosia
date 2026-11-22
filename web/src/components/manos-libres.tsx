@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { X } from "lucide-react";
+import { Mic, Square, X } from "lucide-react";
 
 import { FIGURAS } from "@/components/figura";
-import { OrbeVoz } from "@/components/orbe-voz";
-import { useDictado, useLectura } from "@/lib/voz";
+import { OrbeVoz, type ModoOrbe } from "@/components/orbe-voz";
+import { useDictado, useLectura, type ErrorDictado } from "@/lib/voz";
 import { cn } from "@/lib/utils";
 
 /**
@@ -66,6 +66,15 @@ function guionar(texto: string) {
     for (const linea of enLineas(limpio)) {
       lineas.push(linea);
       dibujos.push(actual);
+    }
+  }
+  // Un marcador que quedo DESPUES de todo el texto. El asistente a veces
+  // contesta en dos frases y pone el dibujo al final; como el dibujo vale
+  // "de aqui en adelante" y adelante no habia nada, no se mostraba nunca.
+  // Se le da a las lineas de atras que no tengan uno.
+  if (actual && dibujos[dibujos.length - 1] !== actual) {
+    for (let i = dibujos.length - 1; i >= 0 && !dibujos[i]; i--) {
+      dibujos[i] = actual;
     }
   }
   return { lineas, dibujos };
@@ -249,6 +258,42 @@ function conNegritas(linea: string) {
   );
 }
 
+/**
+ * Lo que se dice cuando el microfono no abre.
+ *
+ * Antes no se decia nada: con el permiso negado la pantalla quedaba en "toque
+ * para hablar", uno tocaba, y volvia a quedar igual, sin una palabra de por
+ * que. Cada motivo lleva que paso y que hacer, y ademas se lee en voz alta:
+ * este modo es para quien no lee con soltura.
+ */
+const AVISOS: Record<
+  Exclude<ErrorDictado, "sin-voz">,
+  { titulo: string; texto: string }
+> = {
+  permiso: {
+    titulo: "Falta el permiso del micrófono",
+    texto:
+      "Toque el candado que está arriba, junto a la dirección de la página, permita el micrófono y vuelva a tocar el círculo.",
+  },
+  "sin-microfono": {
+    titulo: "No encuentro el micrófono",
+    texto:
+      "Puede que otra aplicación lo esté usando. Ciérrela y toque el círculo.",
+  },
+  "sin-red": {
+    titulo: "No hay señal",
+    texto:
+      "Para oírle se necesita internet. Cuando vuelva la señal, toque el círculo.",
+  },
+  otro: {
+    titulo: "No pude abrir el micrófono",
+    texto: "Toque el círculo para intentar otra vez.",
+  },
+};
+
+/** Cuanto se espera la respuesta antes de avisar que la senal esta lenta. */
+const AVISO_LENTO_MS = 7000;
+
 export function ManosLibres({
   abierto,
   onCerrar,
@@ -256,14 +301,37 @@ export function ManosLibres({
 }: {
   abierto: boolean;
   onCerrar: () => void;
-  preguntar: (texto: string) => Promise<string>;
+  /** `voz` le pide al asistente contestar para ser oido: corto y de a una pregunta. */
+  preguntar: (texto: string, opciones?: { voz?: boolean }) => Promise<string>;
 }) {
   const [fase, setFase] = useState<Fase>("escuchando");
   const [dicho, setDicho] = useState("");
   const [respuesta, setRespuesta] = useState("");
+  /** La respuesta se demora: se avisa para que no parezca que se colgo. */
+  const [lento, setLento] = useState(false);
   const vivo = useRef(false);
 
-  const { leer, callar, desbloquear, avance } = useLectura();
+  /**
+   * La fase, para leerla desde funciones asincronas, y el numero del turno.
+   *
+   * El turno es lo que impide que dos cosas hablen a la vez. Cada pregunta
+   * toma un numero; interrumpir, salir o apagar la pantalla lo cambian, y lo
+   * que quede en camino de un turno viejo (la respuesta que llega tarde, el
+   * "volver a escuchar" del final) se descarta al ver que ya no es el suyo.
+   *
+   * Sin esto, salir mientras pensaba y volver a entrar hacia que la respuesta
+   * vieja sonara encima del microfono abierto.
+   */
+  const faseRef = useRef<Fase>("escuchando");
+  const turno = useRef(0);
+
+  const ponerFase = useCallback((f: Fase) => {
+    faseRef.current = f;
+    setFase(f);
+    setLento(false);
+  }, []);
+
+  const { leer, callar, desbloquear, avance, estado: estadoLectura } = useLectura();
 
   // `empezar` nace mas abajo (depende de `alOir`), asi que se alcanza por
   // referencia para poder volver a escuchar al terminar de hablar.
@@ -274,18 +342,23 @@ export function ManosLibres({
 
   const alOir = useCallback(
     async (texto: string) => {
-      if (!vivo.current) return;
+      // Solo se atiende mientras se esta escuchando. Una frase que llegue con
+      // un turno en marcha abriria otro encima.
+      if (!vivo.current || faseRef.current !== "escuchando") return;
 
       if (esEco(texto, ultimoDicho.current)) {
         volverAOir.current();
         return;
       }
 
+      const mio = ++turno.current;
+      const vigente = () => vivo.current && turno.current === mio;
+
       setDicho(texto);
       // La respuesta anterior NO se borra: se queda hasta que llegue la nueva.
       // Borrarla aqui dejaba la pantalla en blanco justo cuando uno se habia
       // quedado a medias de leerla, y ya no habia forma de volver a verla.
-      setFase("pensando");
+      ponerFase("pensando");
 
       // TODO el turno va protegido, y el regreso a escuchar va en `finally`.
       //
@@ -295,37 +368,46 @@ export function ManosLibres({
       // volvia a abrir el microfono. Quedaba en "Pensando" sin decir nada, y
       // desde fuera se ve como que dejo de reconocer la voz.
       try {
-        const bruto = await conTope(preguntar(texto), 40000);
-        if (!vivo.current) return;
+        const bruto = await conTope(preguntar(texto, { voz: true }), 40000);
+        if (!vigente()) return;
 
         // Se guarda EN CRUDO, con los marcadores: de ahi sale el guion que
         // sincroniza cada dibujo con su linea.
         setRespuesta(bruto);
         ultimoDicho.current = sinMarcas(bruto);
-        setFase("hablando");
+        ponerFase("hablando");
 
         // Se espera a que ACABE de sonar. Antes se reabria el microfono 400 ms
         // despues de empezar a hablar, y se oia a si mismo.
         await leer(bruto, "manos-libres", { servicio: true });
       } catch (e) {
         console.warn("[voz] el turno no se pudo completar:", e);
-        if (vivo.current) {
-          const aviso = "No le pude responder esta vez. Vuelva a preguntar.";
+        if (vigente()) {
+          const aviso =
+            typeof navigator !== "undefined" && navigator.onLine === false
+              ? "Se fue la señal. Cuando vuelva, pregunte otra vez."
+              : "No le pude responder esta vez. Vuelva a preguntar.";
           setRespuesta(aviso);
           ultimoDicho.current = aviso;
+          ponerFase("hablando");
+          // El aviso tambien se DICE. Antes solo se escribia, y quien no
+          // estaba mirando la pantalla se quedaba esperando una respuesta
+          // que no iba a llegar. Va con la voz del aparato: si no hubo red
+          // para la respuesta, tampoco la hay para pedir el audio.
+          await leer(aviso, "manos-libres").catch(() => {});
         }
       } finally {
-        if (vivo.current) {
+        if (vigente()) {
           // Pausa corta: lo justo para no pisar el final de su propia frase.
           await new Promise((listo) => window.setTimeout(listo, 400));
-          if (vivo.current) {
-            setFase("escuchando");
+          if (vigente()) {
+            ponerFase("escuchando");
             volverAOir.current();
           }
         }
       }
     },
-    [preguntar, leer],
+    [preguntar, leer, ponerFase],
   );
 
   const guion = useMemo(() => guionar(respuesta), [respuesta]);
@@ -362,15 +444,34 @@ export function ManosLibres({
 
   const caja = useRef<HTMLDivElement>(null);
 
-  // Arrastra la linea que suena a la vista. `nearest` y no `center`: centrar
-  // mueve la caja entera en cada frase y marea.
+  // Una respuesta nueva se empieza a leer desde arriba. Si la anterior era
+  // larga y habia quedado corrida hasta el final, la nueva aparecia ya
+  // desplazada y su primera linea quedaba fuera de la vista.
   useEffect(() => {
+    if (caja.current) caja.current.scrollTop = 0;
+  }, [respuesta]);
+
+  // Arrastra la linea que suena a la vista. `nearest` y no `center`: centrar
+  // mueve el texto entero en cada frase y marea. Las lineas llevan margen de
+  // desplazamiento, asi que la que viene tambien alcanza a verse.
+  useEffect(() => {
+    if (fase !== "hablando") return;
     const el = caja.current?.querySelector<HTMLElement>('[data-suena="si"]');
     el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [activa]);
+  }, [activa, fase, respuesta]);
 
-  const dictado = useDictado(alOir);
-  const { empezar, parar, estado: estadoDictado, parcial } = dictado;
+  // Paciencia de dos: si nadie dice nada, el microfono se reabre solo dos
+  // veces mas antes de quedar en pausa.
+  const dictado = useDictado(alOir, { paciencia: 2 });
+  const {
+    empezar,
+    parar,
+    cancelar,
+    estado: estadoDictado,
+    parcial,
+    voz: oyendoVoz,
+    error: errorDictado,
+  } = dictado;
 
   useEffect(() => {
     volverAOir.current = empezar;
@@ -379,58 +480,210 @@ export function ManosLibres({
   /**
    * El toque hace lo unico sensato en cada momento.
    *
-   * Hablando: lo calla. `callar` corta el audio, con lo que `leer` resuelve y
-   * el ciclo de `alOir` reabre el microfono por su cuenta.
+   * Hablando: lo calla y abre el microfono EN el mismo toque. Antes solo
+   * callaba y esperaba a que el ciclo reabriera por su cuenta casi medio
+   * segundo despues: la pantalla seguia diciendo "respondiendo" y la primera
+   * palabra de quien interrumpia se perdia.
    *
-   * Callado sin estar oyendo: abre el microfono. Esta rama es la importante.
-   * Reabrir el reconocimiento sin que medie un toque no esta garantizado
-   * -Safari en iPhone lo restringe-, y si falla, el modo se queda mudo sin
-   * decir nada y no hay manera de salir del atasco. Con esto siempre queda
+   * Pensando: nada. Abrir el microfono aqui dejaba dos turnos a la vez, y la
+   * respuesta que venia en camino sonaba con el microfono abierto.
+   *
+   * Escuchando con algo ya dicho: es "ya termine", se envia sin esperar al
+   * silencio.
+   *
+   * Callado sin estar oyendo: abre el microfono. Reabrir el reconocimiento
+   * sin que medie un toque no esta garantizado -Safari en iPhone lo
+   * restringe-, y si falla, el modo se queda mudo; con esto siempre queda
    * una salida a un toque.
    */
   const alTocar = useCallback(() => {
-    if (fase === "hablando") {
+    if (faseRef.current === "pensando") return;
+    if (faseRef.current === "hablando") {
+      turno.current++;
       callar();
+      ponerFase("escuchando");
+      empezar();
       return;
     }
-    if (estadoDictado !== "escuchando") empezar();
-  }, [fase, callar, empezar, estadoDictado]);
+    if (estadoDictado === "escuchando") {
+      if (parcial.trim()) parar();
+      return;
+    }
+    // Por si se esta leyendo un aviso: que no se oiga a si mismo.
+    callar();
+    empezar();
+  }, [callar, empezar, parar, ponerFase, estadoDictado, parcial]);
 
   useEffect(() => {
-    if (abierto) {
-      vivo.current = true;
-      // El toque que abrio esta capa es el unico momento en que el navegador
-      // movil deja desbloquear el audio. Despues ya es tarde.
-      desbloquear();
-      setDicho("");
-      setRespuesta("");
-      setFase("escuchando");
-      empezar();
-    } else {
-      vivo.current = false;
-      parar();
-      callar();
-    }
+    if (!abierto) return;
+    vivo.current = true;
+    turno.current++;
+    // El toque que abrio esta capa es el unico momento en que el navegador
+    // movil deja desbloquear el audio. Despues ya es tarde.
+    desbloquear();
+    setDicho("");
+    setRespuesta("");
+    ultimoDicho.current = "";
+    ponerFase("escuchando");
+    empezar();
     return () => {
       vivo.current = false;
+      turno.current++;
+      // `cancelar` y no `parar`: al salir, media frase no se envia.
+      cancelar();
+      callar();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [abierto]);
 
+  // Mientras piensa: pasado un rato se avisa que la senal esta lenta, para
+  // que no parezca que se colgo.
+  useEffect(() => {
+    if (fase !== "pensando") return;
+    const reloj = window.setTimeout(() => setLento(true), AVISO_LENTO_MS);
+    return () => window.clearTimeout(reloj);
+  }, [fase, dicho]);
+
+  // Cuando el microfono no abre, el motivo se dice en voz alta.
+  useEffect(() => {
+    if (!abierto || !errorDictado || errorDictado === "sin-voz") return;
+    if (faseRef.current !== "escuchando") return;
+    const aviso = AVISOS[errorDictado];
+    void leer(`${aviso.titulo}. ${aviso.texto}`, "manos-libres-aviso").catch(
+      () => {},
+    );
+  }, [abierto, errorDictado, leer]);
+
+  const cerrar = useRef(onCerrar);
+  useEffect(() => {
+    cerrar.current = onCerrar;
+  }, [onCerrar]);
+
+  /**
+   * Salir, por cualquiera de los caminos: el boton, la tecla Escape o el
+   * boton de atras del telefono.
+   *
+   * Al abrir se deja una marca en el historial. Sin ella, "atras" en Android
+   * -que es como mucha gente cierra las cosas- sacaba de la pagina entera en
+   * vez de cerrar la conversacion. Con la marca, atras solo la cierra.
+   */
+  const salir = useCallback(() => {
+    if (window.history.state?.manosLibres) window.history.back();
+    else cerrar.current();
+  }, []);
+
+  useEffect(() => {
+    if (!abierto) return;
+
+    if (!window.history.state?.manosLibres) {
+      window.history.pushState(
+        { ...(window.history.state ?? {}), manosLibres: true },
+        "",
+      );
+    }
+    const alVolver = () => cerrar.current();
+    const alTeclear = (e: KeyboardEvent) => {
+      if (e.key === "Escape") salir();
+    };
+    window.addEventListener("popstate", alVolver);
+    window.addEventListener("keydown", alTeclear);
+
+    // La pagina de atras no se mueve mientras la capa esta encima.
+    const antes = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      window.removeEventListener("popstate", alVolver);
+      window.removeEventListener("keydown", alTeclear);
+      document.body.style.overflow = antes;
+    };
+  }, [abierto, salir]);
+
+  /**
+   * Pantalla encendida, y todo quieto si la pagina deja de verse.
+   *
+   * Un telefono apaga la pantalla a los treinta segundos sin tocarlo, que es
+   * justo como se usa este modo; al apagarse, el reconocimiento se corta. Se
+   * pide que no se apague mientras la capa esta abierta.
+   *
+   * Y si la persona cambia de aplicacion o bloquea el telefono, se calla y
+   * se cierra el microfono: el audio seguia sonando con la pagina oculta.
+   * Al volver queda en pausa, a un toque de seguir.
+   */
+  useEffect(() => {
+    if (!abierto) return;
+    type Candado = { release: () => Promise<void> };
+    let candado: Candado | null = null;
+    let suelto = false;
+
+    const pedir = async () => {
+      try {
+        const nav = navigator as Navigator & {
+          wakeLock?: { request: (tipo: "screen") => Promise<Candado> };
+        };
+        const nuevo = (await nav.wakeLock?.request("screen")) ?? null;
+        if (suelto) void nuevo?.release().catch(() => {});
+        else candado = nuevo;
+      } catch {
+        /* sin bateria o sin soporte: se sigue sin el */
+      }
+    };
+    const alCambiar = () => {
+      if (document.visibilityState === "visible") {
+        void pedir();
+        return;
+      }
+      turno.current++;
+      cancelar();
+      callar();
+      ponerFase("escuchando");
+    };
+
+    void pedir();
+    document.addEventListener("visibilitychange", alCambiar);
+    return () => {
+      suelto = true;
+      document.removeEventListener("visibilitychange", alCambiar);
+      void candado?.release().catch(() => {});
+    };
+  }, [abierto, cancelar, callar, ponerFase]);
+
   if (!abierto) return null;
 
-  const rotulo =
-    fase === "escuchando"
-      ? estadoDictado === "escuchando"
-        ? parcial
-          ? "Le escuchamos"
-          : respuesta
-            ? "Respuesta anterior"
-            : "Le escuchamos"
-        : "Toque para hablar"
-      : fase === "pensando"
+  const oyendo = estadoDictado === "escuchando";
+  const modo: ModoOrbe =
+    fase === "escuchando" ? (oyendo ? "escuchando" : "pausa") : fase;
+
+  const problema =
+    modo === "pausa" && estadoDictado === "no-disponible"
+      ? {
+          titulo: "Este navegador no puede oírle",
+          texto: "Abra la página en Chrome para hablar con el asistente.",
+        }
+      : modo === "pausa" && errorDictado && errorDictado !== "sin-voz"
+        ? AVISOS[errorDictado]
+        : null;
+
+  /** El estado, en palabras de todos los dias. Es lo que mas grande se lee. */
+  const titulo = problema
+    ? problema.titulo
+    : modo === "escuchando"
+      ? "Le escucho"
+      : modo === "pensando"
         ? "Pensando"
-        : "Respondiendo";
+        : modo === "hablando"
+          ? "Hablando"
+          : "Toque el círculo para hablar";
+
+  /** Una sola linea de ayuda, y solo cuando hay algo que hacer o que saber. */
+  const pista =
+    modo === "hablando"
+      ? figura
+        ? "Toque la imagen para interrumpir"
+        : "Toque el círculo para interrumpir"
+      : modo === "pensando" && lento
+        ? "La señal está lenta. Espere un momento."
+        : "";
 
   /**
    * ¿Se resalta la linea que suena, o se deja la respuesta quieta para releer?
@@ -446,60 +699,53 @@ export function ManosLibres({
    * confirman que se le oyo bien.
    */
   const mostrarLineas =
-    lineas.length > 0 && (siguiendo || (fase === "escuchando" && !parcial));
+    !problema &&
+    lineas.length > 0 &&
+    (siguiendo || (fase === "escuchando" && !parcial));
 
-  const texto =
-    fase === "escuchando"
-      ? parcial || "Hable cuando quiera. Pregunte lo que sea."
-      : fase === "pensando"
-        ? dicho
-        : respuesta;
+  const conDibujo = Boolean(figura) && fase === "hablando";
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-[#16130F]">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Conversación por voz"
+      data-manos-libres={modo}
+      className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-[#16130F] text-[#F4F1E7]"
+    >
       {/* Sin lamina de fondo: el paisaje con palmas ya no es parte de la
           identidad, y el fondo liso deja todo el foco en la conversacion. */}
 
-      <div className="relative flex flex-1 flex-col px-6 pb-[max(env(safe-area-inset-bottom),20px)] pt-[max(env(safe-area-inset-top),14px)]">
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={onCerrar}
-            aria-label="Salir del modo manos libres"
-            className="flex size-12 items-center justify-center rounded-full border border-white/25 text-[#F4F1E7] transition-colors hover:bg-white/10"
-          >
-            <X className="size-5" />
-          </button>
-        </div>
-
-        <div className="flex flex-1 flex-col items-center justify-center gap-7">
-          {figura && fase === "hablando" ? (
-            /* Cuando hay dibujo, manda el dibujo: el circulo se reduce a una
-               senal pequena para no competir con el. */
-            /* El dibujo ES el boton de interrumpir. Cuando ocupaba el sitio
-               del circulo no quedaba nada que tocar, y habia que aguantar la
-               respuesta entera. */
+      <div className="mx-auto flex min-h-0 w-full max-w-[560px] flex-1 flex-col items-center px-6 pb-[max(env(safe-area-inset-bottom),20px)] pt-[max(env(safe-area-inset-top),16px)] sm:pt-[6vh]">
+        {/* Alto fijo: el circulo y el dibujo ocupan el mismo sitio, asi que
+            al pasar de uno a otro nada de lo de abajo salta. */}
+        <div className="flex h-[268px] w-full shrink-0 items-center justify-center [@media(max-height:620px)]:h-[212px]">
+          {conDibujo && figura ? (
+            /* Cuando hay dibujo, manda el dibujo, y el dibujo ES el boton de
+               interrumpir. Cuando ocupaba el sitio del circulo sin serlo no
+               quedaba nada que tocar, y habia que aguantar la respuesta
+               entera. */
             <button
               type="button"
               onClick={alTocar}
               aria-label="Interrumpir y hablar"
-              className="w-full max-w-[420px] text-left"
+              className="w-full max-w-[344px] rounded-2xl text-left outline-none focus-visible:ring-2 focus-visible:ring-[#E0A27F] [@media(max-height:620px)]:max-w-[260px]"
             >
               {/* `key` con el id: al cambiar de dibujo React monta uno nuevo y
                   la animacion vuelve a correr. Sin eso el cambio es un salto
-                  seco, y ahora que la imagen va siguiendo a la voz eso pasa
-                  varias veces en una misma respuesta. */}
+                  seco, y como la imagen va siguiendo a la voz eso pasa varias
+                  veces en una misma respuesta. */}
               <figure key={figura.id} className="animate-in fade-in duration-500">
-                <div className="overflow-hidden rounded-2xl border border-white/15 bg-[#FBF9F2]">
+                <div className="flex aspect-[3/2] items-center justify-center overflow-hidden rounded-2xl border border-white/15 bg-[#FBF9F2]">
                   <Image
                     src={figura.src ?? `/figuras/${figura.id}.webp`}
                     alt={figura.alt}
                     width={900}
                     height={600}
-                    className="h-auto w-full"
+                    className="h-full w-full object-contain"
                   />
                 </div>
-                <figcaption className="mt-2.5 text-center text-[13.5px] leading-snug text-[#B5AB9C]">
+                <figcaption className="mt-2 truncate text-center text-[14px] leading-snug text-[#B5AB9C]">
                   {figura.titulo}
                   {figura.credito && <> · Fotografía: {figura.credito}</>}
                 </figcaption>
@@ -510,81 +756,119 @@ export function ManosLibres({
               type="button"
               onClick={alTocar}
               aria-label={
-                fase === "hablando" ? "Interrumpir y hablar" : "Hablar"
+                modo === "hablando"
+                  ? "Interrumpir y hablar"
+                  : modo === "pensando"
+                    ? "Pensando la respuesta"
+                    : modo === "escuchando"
+                      ? "Ya terminé de hablar"
+                      : "Hablar"
               }
-              className="shrink-0 rounded-full"
+              aria-disabled={modo === "pensando"}
+              className={cn(
+                "relative flex shrink-0 items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[#E0A27F] [@media(max-height:620px)]:scale-[0.8]",
+                modo === "pensando" && "cursor-default",
+              )}
             >
-              <OrbeVoz fase={fase} />
+              <OrbeVoz
+                modo={modo}
+                voz={oyendoVoz}
+                pulso={parcial.length}
+                sonando={estadoLectura === "hablando"}
+              />
+              {/* El icono dice que hace el toque: microfono para hablar,
+                  cuadro para detener. Mientras piensa no hay nada que tocar. */}
+              <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                {modo === "hablando" ? (
+                  <Square className="size-7 fill-[#16130F] text-[#16130F]" aria-hidden />
+                ) : modo === "pensando" ? null : (
+                  <Mic
+                    className={cn(
+                      "size-9",
+                      modo === "escuchando" ? "text-[#E0A27F]" : "text-[#B5AB9C]",
+                    )}
+                    aria-hidden
+                  />
+                )}
+              </span>
             </button>
           )}
+        </div>
 
-          <div className="flex flex-col items-center gap-3">
-            {(fase === "hablando" ||
-              (fase === "escuchando" && estadoDictado !== "escuchando")) && (
-              <span className="text-[13px] text-[#9A9186]">
-                {fase !== "hablando"
-                  ? "Toque el círculo para hablar"
-                  : figura
-                    ? "Toque la imagen para interrumpir"
-                    : "Toque el círculo para interrumpir"}
-              </span>
-            )}
-            <span className="rotulo flex items-center gap-2 text-[#E0A27F]">
-              {figura && fase === "hablando" && (
-                <span className="size-2 animate-pulse rounded-full bg-[#F4F1E7]" />
-              )}
-              {rotulo}
-            </span>
-            {/* Alto fijo: si la caja crece con el texto, el circulo salta, y
-                eso se veia como un fallo. Con dibujo se reserva menos, que el
-                dibujo ya ocupa lo suyo.
+        {/* El estado, grande y en palabras. Antes iba en un rotulo
+            monoespaciado en mayusculas de 12 px, que es lo mas dificil de leer
+            de toda la pantalla y era justo lo que mas importaba. */}
+        <p
+          role="status"
+          aria-live="polite"
+          className="mt-2 flex items-center justify-center gap-2.5 text-balance text-center text-[26px] leading-tight font-semibold tracking-[-0.01em]"
+        >
+          {conDibujo && (
+            <span className="size-2.5 shrink-0 animate-pulse rounded-full bg-[#F4F1E7]" aria-hidden />
+          )}
+          {titulo}
+        </p>
+        <p className="mt-1.5 min-h-[1.4em] text-center text-[16px] leading-snug text-[#B5AB9C]">
+          {pista}
+        </p>
 
-                Mientras habla se muestran TODAS las lineas y se resalta la que
-                suena. Antes se recortaban a cuatro con puntos suspensivos y no
-                habia manera de leer el resto. */}
-            <div
-              ref={caja}
-              aria-live="polite"
-              className={`barra-fina w-full max-w-[36ch] overflow-y-auto ${
-                figura ? "h-[9rem]" : "h-[30svh] min-h-[9rem]"
-              }`}
-            >
-              {mostrarLineas ? (
-                <div className="flex flex-col gap-2 py-1">
-                  {lineas.map((linea, i) => (
-                    <p
-                      key={i}
-                      data-suena={siguiendo && i === activa ? "si" : "no"}
-                      className={`text-center text-[17px] leading-relaxed transition-colors duration-300 ${
-                        !siguiendo
-                          ? // Ya no suena: se puede releer entera, sin que una
-                            // linea resalte por encima de las demas.
-                            "text-[#B5AB9C]"
-                          : i === activa
-                            ? "text-[#F4F1E7]"
-                            : i < activa
-                              ? "text-[#857C70]"
-                              : "text-[#645C52]"
-                      }`}
-                    >
-                      {conNegritas(linea)}
-                    </p>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center text-[17px] leading-relaxed text-[#F4F1E7]">
-                  {conNegritas(texto)}
-                </p>
-              )}
-            </div>
+        {/* El texto ocupa todo lo que queda. Antes iba en una caja de alto
+            fijo con su propia barra: unas pocas lineas apretadas y el resto
+            escondido. Si la respuesta es larga se desliza aqui mismo, y los
+            bordes se desvanecen para que el corte no parezca un error. */}
+        <div
+          ref={caja}
+          className="barra-fina mt-3 min-h-0 w-full flex-1 overflow-y-auto overscroll-contain [mask-image:linear-gradient(to_bottom,transparent,black_14px,black_calc(100%-22px),transparent)]"
+        >
+          <div className="mx-auto flex min-h-full max-w-[30ch] flex-col justify-start py-3 text-[22px] leading-[1.38] sm:max-w-[34ch]">
+            {mostrarLineas ? (
+              <div className="flex flex-col gap-3">
+                {lineas.map((linea, i) => (
+                  <p
+                    key={i}
+                    data-suena={siguiendo && i === activa ? "si" : "no"}
+                    className={cn(
+                      "scroll-my-12 text-center text-pretty transition-colors duration-300",
+                      !siguiendo
+                        ? // Ya no suena: se puede releer entera, sin que una
+                          // linea resalte por encima de las demas.
+                          "text-[#B5AB9C]"
+                        : i === activa
+                          ? "text-[#F4F1E7]"
+                          : i < activa
+                            ? "text-[#8F867A]"
+                            : "text-[#6F675C]",
+                    )}
+                  >
+                    {conNegritas(linea)}
+                  </p>
+                ))}
+              </div>
+            ) : problema ? (
+              <p className="text-center text-pretty text-[#F4F1E7]">{problema.texto}</p>
+            ) : fase === "pensando" ? (
+              /* Sus propias palabras, en el color de quien escucha: confirman
+                 que se le oyo bien mientras llega la respuesta. */
+              <p className="text-center text-pretty text-[#E0A27F]">{dicho}</p>
+            ) : parcial ? (
+              <p className="text-center text-pretty text-[#E0A27F]">{parcial}</p>
+            ) : modo === "escuchando" ? (
+              <p className="text-center text-pretty text-[#B5AB9C]">
+                Pregunte lo que quiera sobre sus grillos.
+              </p>
+            ) : null}
           </div>
         </div>
 
+        {/* Una sola salida. Antes habia dos —una equis arriba y este boton—
+            y el boton, blanco y lleno, pesaba mas que el circulo, que es lo
+            que de verdad se usa. */}
         <button
           type="button"
-          onClick={onCerrar}
-          className="mx-auto flex min-h-14 w-full max-w-[320px] items-center justify-center rounded-full bg-[#F4F1E7] text-[16px] font-bold text-[#16130F] transition-opacity hover:opacity-90"
+          onClick={salir}
+          className="mt-3 flex min-h-14 w-full max-w-[320px] shrink-0 items-center justify-center gap-2 rounded-full border border-white/30 text-[17px] font-semibold text-[#F4F1E7] outline-none transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-[#E0A27F] active:bg-white/15"
         >
+          <X className="size-5" aria-hidden />
           Terminar
         </button>
       </div>
