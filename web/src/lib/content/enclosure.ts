@@ -72,8 +72,8 @@ export const MATERIALS: Material[] = [
   },
   {
     id: "sustrato",
-    item: "Sustrato seco",
-    detail: "Tierra seca, aserrín limpio o papel periódico para el fondo.",
+    item: "Sustrato de coco",
+    detail: "Fibra de coco seca para el fondo, la que usa el proyecto.",
   },
   {
     id: "hueveras",
@@ -126,7 +126,7 @@ export const ENCLOSURE_STEPS: EnclosureStep[] = [
     number: 3,
     imagen: "/acuarelas/caja-sustrato.webp",
     title: "Ponga el sustrato",
-    body: "Cubra el fondo con una capa delgada de material seco. Ayuda a mantener la caja seca y facilita la limpieza.",
+    body: "Cubra el fondo con una capa delgada de fibra de coco seca. Ayuda a mantener la caja seca y facilita la limpieza.",
     tip: "No use materiales húmedos ni con olor a moho.",
   },
   {

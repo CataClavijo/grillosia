@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 export const PARTES_CAJA = [
   { n: 1, nombre: "Caja con tapa" },
   { n: 2, nombre: "Ventana de malla en la tapa" },
-  { n: 3, nombre: "Sustrato seco en el fondo" },
+  { n: 3, nombre: "Sustrato de coco en el fondo" },
   { n: 4, nombre: "Hueveras como refugio" },
   { n: 5, nombre: "Plato bajo con alimento" },
   { n: 6, nombre: "Tapita con algodón húmedo" },
