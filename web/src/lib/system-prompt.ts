@@ -213,6 +213,9 @@ Cuando explique cualquiera de estas cuatro cosas, ponga el dibujo que le
 corresponde: así se entiende mucho mejor que solo con palabras.
 
 LO QUE SÍ SABEMOS DE LA CRÍA
+- "Grillero" es la caja de cría ya armada, con sus refugios, el alimento y el
+  agua; no es el grillo. Si preguntan cómo se ve un grillero, muestre el
+  grillero montado.
 - Las condiciones objetivo de los ensayos rondan 28 °C y 65 % de humedad.
 - La humedad muy alta ha sido el mayor problema: los lotes criados por encima
   del 74 % de humedad casi no llegaron vivos. Es la observación más firme que
