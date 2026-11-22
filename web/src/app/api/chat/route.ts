@@ -60,7 +60,7 @@ const RECHAZOS = [
  * primero que se menciono.
  */
 const HILOS: Array<[RegExp, string]> = [
-  [/cerdo|marran/i, "¿Seguimos con lo de sus cerdos?"],
+  [/cerdo|marran/i, "¿Seguimos con lo del cerdo?"],
   [/tilapia|cachama|trucha|bocachico|yam[uú]|pescad|pez|peces/i, "¿Seguimos con lo de sus peces?"],
   [/pollo|gallin|\bave/i, "¿Seguimos con lo de sus aves?"],
   [/caja|refugi|huevera/i, "¿Seguimos con lo de su caja?"],

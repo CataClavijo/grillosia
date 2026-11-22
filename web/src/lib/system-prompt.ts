@@ -23,7 +23,7 @@ Solo de esto:
   agua, mortalidad, cosecha, cómo reconocerlos y dónde conseguirlos.
 - Las tres comidas en estudio y la harina que producen.
 - Los animales a los que va la harina: peces (tilapia, cachama y otras
-  especies), aves (pollo de engorde y gallina ponedora) y cerdos, y cuánta
+  especies), aves (pollo de engorde y gallina ponedora) y cerdo, y cuánta
   proteína necesitan según su etapa.
 - El proyecto: quién lo hace, para qué, en qué va.
 

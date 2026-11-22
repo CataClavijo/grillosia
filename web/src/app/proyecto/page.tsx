@@ -122,7 +122,7 @@ export default function PaginaProyecto() {
               <p className="t-small text-subtle lg:col-span-5 lg:pt-1.5">
                 La harina de grillo puede reemplazar parte de la harina de
                 pescado importada que se usa para alimentar peces, aves y
-                cerdos.
+                cerdo.
               </p>
             </Revelar>
             <Revelar retraso={140}>

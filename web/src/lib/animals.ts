@@ -44,9 +44,9 @@ export const CATEGORIAS: Categoria[] = [
   },
   {
     id: "cerdos",
-    name: "Cerdos",
+    name: "Cerdo",
     image: "/acuarelas/cerdo.webp",
-    pregunta: "¿En qué etapa están sus cerdos?",
+    pregunta: "¿En qué etapa está su cerdo?",
   },
 ];
 

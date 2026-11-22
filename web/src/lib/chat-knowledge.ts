@@ -83,7 +83,7 @@ const KNOWLEDGE: KnowledgeEntry[] = [
       "para que sirve",
     ],
     answer: {
-      text: "La harina que estudiamos es para tres grupos de animales: **peces** (tilapia, cachama y otras especies), **aves** (pollo de engorde y gallina ponedora) y **cerdos**. Cada uno necesita una cantidad distinta de proteína según su etapa: un alevín no come lo mismo que un pez adulto. En la consulta elige su animal y su etapa, y le mostramos lo que necesita con su fuente científica, o le decimos si ese dato todavía está pendiente.",
+      text: "La harina que estudiamos es para tres grupos de animales: **peces** (tilapia, cachama y otras especies), **aves** (pollo de engorde y gallina ponedora) y **cerdo**. Cada uno necesita una cantidad distinta de proteína según su etapa: un alevín no come lo mismo que un pez adulto. En la consulta elige su animal y su etapa, y le mostramos lo que necesita con su fuente científica, o le decimos si ese dato todavía está pendiente.",
       links: [LINKS.wizard],
     },
   },

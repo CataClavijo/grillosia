@@ -277,7 +277,7 @@ export const CRECIMIENTO_NOTA =
  */
 export const IMPORTANCIA = [
   "El grillo se cría en poco espacio, come poco y da una harina rica en proteína.",
-  "Esa harina se estudia como alternativa a la harina de pescado importada, que encarece la alimentación de peces, aves y cerdos.",
+  "Esa harina se estudia como alternativa a la harina de pescado importada, que encarece la alimentación de peces, aves y cerdo.",
   "La meta interna del proyecto es una harina con 60 a 70 % de proteína en base seca. Todavía no es un dato conseguido: se confirma con el análisis de laboratorio de cada prueba.",
 ];
 

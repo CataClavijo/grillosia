@@ -57,7 +57,7 @@ export const POR_QUE = [
  */
 export const CIFRAS = [
   { valor: "3", rotulo: "Comidas en estudio" },
-  { valor: "3", rotulo: "Grupos de animales: peces, aves y cerdos" },
+  { valor: "3", rotulo: "Grupos de animales: peces, aves y cerdo" },
   { valor: "17", rotulo: "Variables registradas por lote" },
   // Contrato 207-2025: del 29-12-2025 al 29-06-2027.
   { valor: "18", rotulo: "Meses de proyecto" },
@@ -156,7 +156,7 @@ export const FOTO_PORTADA = {
 export const CONSULTA_PASOS = [
   {
     titulo: "Elija su animal y su etapa",
-    cuerpo: "Peces, aves o cerdos, y el momento de vida en que están: cada etapa pide una proteína distinta.",
+    cuerpo: "Peces, aves o cerdo, y el momento de vida en que están: cada etapa pide una proteína distinta.",
   },
   {
     titulo: "Cuéntenos su clima",

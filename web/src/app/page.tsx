@@ -152,7 +152,7 @@ export default function Inicio() {
         <section className="pb-12 sm:pb-16 lg:pb-24">
           <Contenedor>
             <Revelar className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-              <EncabezadoSeccion rotulo="Para qué animales" titulo="Peces, aves y cerdos">
+              <EncabezadoSeccion rotulo="Para qué animales" titulo="Peces, aves y cerdo">
                 <p className="t-lead">
                   Cada animal necesita una cantidad distinta de proteína según
                   su etapa productiva.{" "}
