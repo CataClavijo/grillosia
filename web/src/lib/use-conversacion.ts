@@ -72,6 +72,7 @@ function saveDraft(messages: MensajeConversacion[]) {
 async function preguntarAlAsistente(
   mensajes: { role: "user" | "assistant"; text: string }[],
   contexto: ContextoConsulta | null,
+  voz: boolean,
 ): Promise<{
   text?: string;
   links?: KnowledgeLink[];
@@ -81,7 +82,9 @@ async function preguntarAlAsistente(
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ mensajes, contexto }),
+      // `voz`: la respuesta se va a OIR, no a leer. El servidor le pide al
+      // asistente contestar corto y de a una pregunta.
+      body: JSON.stringify({ mensajes, contexto, voz: voz || undefined }),
     });
     if (!res.ok) return { motivo: "otro" };
 
@@ -221,7 +224,7 @@ export function useConversacion() {
 
   /** Envia una pregunta y devuelve el texto de la respuesta. */
   const preguntar = useCallback(
-    async (texto: string): Promise<string> => {
+    async (texto: string, opciones?: { voz?: boolean }): Promise<string> => {
       const clean = texto.trim();
       if (!clean) return "";
 
@@ -233,7 +236,11 @@ export function useConversacion() {
       setThinking(true);
 
       try {
-        const delAsistente = await preguntarAlAsistente(historia, contextoConsulta);
+        const delAsistente = await preguntarAlAsistente(
+          historia,
+          contextoConsulta,
+          opciones?.voz === true,
+        );
         let respuesta: { text: string; links?: KnowledgeLink[] };
         if (delAsistente.text) {
           respuesta = { text: delAsistente.text, links: delAsistente.links };

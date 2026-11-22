@@ -17,6 +17,10 @@ import {
   SYSTEM_PROMPT,
   bloqueDeContexto,
   bloqueDeFiguras,
+  bloqueDeVoz,
+  muyLargaParaVoz,
+  PEDIR_VOZ_CORTA,
+  recordatorioDeVoz,
 } from "@/lib/system-prompt";
 import type { ContextoConsulta } from "@/lib/system-prompt";
 
@@ -353,7 +357,12 @@ export async function POST(request: Request) {
     );
   }
 
-  let cuerpo: { mensajes?: MensajeEntrada[]; contexto?: ContextoConsulta };
+  let cuerpo: {
+    mensajes?: MensajeEntrada[];
+    contexto?: ContextoConsulta;
+    /** La respuesta se va a oir en manos libres, no a leer. */
+    voz?: boolean;
+  };
   try {
     cuerpo = await request.json();
   } catch {
@@ -367,6 +376,9 @@ export async function POST(request: Request) {
 
   const partes = [SYSTEM_PROMPT, bloqueDeFiguras()];
   if (cuerpo.contexto) partes.push(bloqueDeContexto(cuerpo.contexto));
+  // Al final a proposito: lo ultimo que lee el modelo es lo que mas pesa, y
+  // en voz la forma de la respuesta es lo que cambia.
+  if (cuerpo.voz === true) partes.push(bloqueDeVoz());
   const sistema = partes.join("\n\n");
 
   // Solo las últimas vueltas: la conversación de un productor es corta y así
@@ -376,10 +388,19 @@ export async function POST(request: Request) {
     content: m.text,
   }));
 
+  const enVoz = cuerpo.voz === true;
+
   const mensajes: unknown[] = [
     { role: "system", content: sistema },
     ...historia,
   ];
+  if (enVoz) {
+    const ultima = historia[historia.length - 1]?.content ?? "";
+    mensajes.push({ role: "system", content: recordatorioDeVoz(ultima) });
+  }
+
+  /** En voz, una respuesta larga se manda a acortar UNA sola vez. */
+  let yaSeAcorto = false;
 
   try {
     for (let vuelta = 0; vuelta <= MAX_VUELTAS; vuelta++) {
@@ -399,6 +420,19 @@ export async function POST(request: Request) {
             text: fueraDeTema(historia),
             fueraDeTema: true,
           });
+        }
+        const sobra = enVoz && !yaSeAcorto ? muyLargaParaVoz(bruto) : null;
+        if (sobra) {
+          // No gasta una vuelta de herramienta: es la misma respuesta, dicha
+          // mas corta. Si la segunda tambien sale larga se entrega tal cual;
+          // es mejor una respuesta larga que ninguna.
+          yaSeAcorto = true;
+          mensajes.push(
+            { role: "assistant", content: bruto },
+            { role: "system", content: PEDIR_VOZ_CORTA[sobra] },
+          );
+          vuelta--;
+          continue;
         }
         return NextResponse.json({ disponible: true, text: limpiar(bruto) });
       }

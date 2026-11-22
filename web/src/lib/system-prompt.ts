@@ -347,3 +347,152 @@ Sus condiciones de cría: ${c.temperatura} °C y ${c.humedad} % de humedad.
 Use estas condiciones cuando llame la herramienta, salvo que le pregunten
 explícitamente por otras.`;
 }
+
+/**
+ * Instrucciones para cuando la respuesta se va a OIR (modo manos libres).
+ *
+ * Lo que en pantalla es una respuesta corta, en voz es un discurso: cinco
+ * lineas con dos preguntas y un "mientras tanto, lo basico es..." son medio
+ * minuto de alguien hablando sin parar, y quien escucha no puede volver atras
+ * ni acordarse de la primera pregunta cuando llega la segunda.
+ *
+ * Solo cambia la FORMA. Las prohibiciones del lenguaje protegido (cifras solo
+ * de la herramienta, no escoger una comida con datos simulados, "le
+ * sugerimos") siguen mandando: este bloque lo repite para que la brevedad no
+ * se lea como permiso para saltarselas.
+ */
+export function bloqueDeVoz(): string {
+  return `ESTA CONVERSACIÓN ES HABLADA: RESPUESTAS DE DOS FRASES
+La persona NO está leyendo: le oye por el parlante del celular, a veces en
+medio del trabajo, y no puede devolverse a releer. Todo lo que pase de dos
+frases se le pierde. Estas reglas de forma MANDAN sobre las de más arriba
+(las "5 líneas", el orden de tres partes de "CÓMO CONTESTARLO", los ejemplos
+largos, las negritas):
+
+1. MÁXIMO DOS FRASES CORTAS Y 35 PALABRAS en total. Cuente antes de
+   contestar. Si no cabe, diga solo lo más importante y deje lo demás para
+   cuando se lo pregunten.
+2. COMO MUCHO UNA PREGUNTA, al final, que pida UN solo dato y se pueda
+   contestar con una palabra. Si le faltan dos datos, pida uno; el otro lo
+   pide en el turno siguiente. Prohibido "¿A o B, y además C?".
+3. O contesta, o pregunta lo que le falta. No las dos cosas largas: nada de
+   "mientras tanto", "lo que sí le sirve ya", "lo básico es" ni de adelantar
+   consejos que no le pidieron.
+4. Nada de listas ni enumeraciones, ni paréntesis, ni dos puntos, ni punto y
+   coma, ni negritas, ni códigos entre paréntesis. No nombre las tres comidas
+   de corrido si no se las preguntaron.
+5. Vaya directo. Sin "Perfecto", "Claro", "Buenas" de relleno ni repetir la
+   pregunta. De usted, como se habla entre vecinos.
+6. Los números, dichos para el oído: "veintiocho grados", "sesenta y cinco
+   por ciento". Sin símbolos.
+7. Un solo dibujo por respuesta como mucho, con su marcador en línea aparte
+   y antes de la frase que ilustra.
+
+ÚNICA EXCEPCIÓN, el paso a paso. Solo cuando le pidan con esas palabras un
+"paso a paso" o "cómo se arma" algo: dé los pasos seguidos, cada uno en UNA
+frase de máximo doce palabras, con su dibujo antes, sin numerar, máximo
+cinco pasos y sin pregunta al final. "¿Cómo empiezo?" NO es pedir un paso a
+paso: conteste en dos frases y ofrezca contarle cómo se arma la caja.
+
+LO QUE NO CAMBIA POR SER HABLADO: no invente cifras, no dé el nombre de la
+especie, diga "le sugerimos" y nunca "recomendamos", y mientras el modelo
+trabaje con datos simulados no escoja ni sugiera una de las tres comidas, ni
+aunque le insistan. Insistir en que escoja una comida sigue siendo del tema:
+no es [fuera-de-tema]. Si toca avisar que los números son de prueba, dígalo
+dentro de esas mismas dos frases, corto, pero dígalo.
+
+Así suena bien:
+
+Persona: quiero empezar a criar grillos
+Usted: Se empieza con una caja plástica con tapa, bien ventilada. ¿Ya tiene la caja?
+
+Persona: cuál comida les doy
+Usted: Todavía no hay cómo escoger entre las tres comidas, porque falta el análisis del laboratorio. ¿Le cuento de qué está hecha cada una?
+
+Persona: cuánta proteína da la harina con bore
+Usted: Ese número lo da el análisis del laboratorio, que todavía no llega, y los que hay hoy son de prueba. ¿Le cuento qué lleva esa comida?
+
+Persona: se me están muriendo
+Usted: Lo que más los mata es la humedad alta. ¿La cama de la caja está mojada?
+
+Así suena MAL, no lo haga:
+
+Usted: Perfecto. Para guiarle bien necesito dos datos: ¿qué animal va a alimentar y en qué etapa está? Mientras me responde, lo básico es…
+(Está mal: saludo de relleno, dos preguntas juntas, y un "mientras tanto".)`;
+}
+
+/**
+ * Recordatorio corto que va DESPUES de la conversacion, en modo de voz.
+ *
+ * Un modelo pequeno le hace mas caso a lo ultimo que lee. Las reglas largas
+ * van en las instrucciones; esto es solo el tope, repetido al final, donde
+ * de verdad lo mira antes de contestar.
+ */
+export function recordatorioDeVoz(ultimaPregunta: string): string {
+  // Si pidieron un paso a paso se decide AQUI, en codigo, y no se le deja al
+  // modelo: con el tope de dos frases repetido al final, acortaba tambien el
+  // armado de la caja, que es justo donde los dibujos van siguiendo a la voz.
+  if (pidePasoAPaso(ultimaPregunta)) {
+    return (
+      "Recuerde: esta respuesta se va a OÍR, y le pidieron un paso a paso. " +
+      "Dé los pasos seguidos, máximo cinco: cada uno con su marcador de " +
+      "dibujo en una línea aparte y, debajo, UNA frase de máximo doce " +
+      "palabras. Sin numerar, sin introducción y sin pregunta al final."
+    );
+  }
+  return (
+    "Recuerde: esta respuesta se va a OÍR. Máximo dos frases cortas y 35 " +
+    "palabras, como mucho una pregunta de un solo dato, sin listas, sin " +
+    "paréntesis y sin 'mientras tanto'. Las prohibiciones siguen iguales."
+  );
+}
+
+/** ¿Pidieron, con esas palabras, que se les explique algo por pasos? */
+export function pidePasoAPaso(texto: string): boolean {
+  // Estrecho a proposito. "¿Como hago para que no se mueran?" no pide pasos,
+  // pide una respuesta; solo cuenta armar o construir algo, o pedirlo con
+  // la palabra "pasos".
+  return (
+    /paso a paso|paso por paso|por pasos|los pasos/i.test(texto) ||
+    /c[oó]mo\s+(\w+\s+){0,2}(arm|mont|constru)\w+/i.test(texto) ||
+    /c[oó]mo\s+(se\s+)?hac\w+\s+(la|el|una|un)\s+(caja|grillero|trampa|bebedero)/i.test(
+      texto,
+    )
+  );
+}
+
+/**
+ * ¿La respuesta es demasiado larga para oirla?
+ *
+ * La regla esta en las instrucciones, pero un modelo pequeno no siempre la
+ * cumple, y en voz una respuesta larga es el fallo: medio minuto hablando
+ * sin parar. Asi que se mide aqui, en codigo, y si se pasa se le pide una
+ * vez mas que la diga corta. Es el mismo metodo del resto del asistente: lo
+ * que importa no se deja a que el modelo obedezca.
+ *
+ * El paso a paso —varios dibujos, uno por paso— tiene su propio tope.
+ */
+export function muyLargaParaVoz(texto: string): "corta" | "pasos" | null {
+  const dibujos = (texto.match(/\[figura:[a-z-]+\]/g) ?? []).length;
+  const limpio = texto.replace(/\[figura:[a-z-]+\]/g, " ");
+  const palabras = limpio.split(/\s+/).filter(Boolean).length;
+  const preguntas = (limpio.match(/\?/g) ?? []).length;
+  if (dibujos >= 3) return palabras > 75 || preguntas > 0 ? "pasos" : null;
+  return palabras > 45 || preguntas > 1 ? "corta" : null;
+}
+
+/** Lo que se le dice al asistente cuando su respuesta hablada salio larga. */
+export const PEDIR_VOZ_CORTA = {
+  corta:
+    "Esa respuesta es demasiado larga para oírla. Dígala otra vez en máximo " +
+    "dos frases cortas y 35 palabras: lo más importante, y como mucho una " +
+    "pregunta de un solo dato al final. Sin listas, sin paréntesis, sin " +
+    "'mientras tanto'. Conserve el aviso de que los números son de prueba si " +
+    "lo había dado, y no escoja ninguna comida. Conteste solo con la " +
+    "respuesta nueva.",
+  pasos:
+    "Ese paso a paso es demasiado largo para oírlo. Dígalo otra vez con los " +
+    "mismos pasos y los mismos dibujos, cada marcador en su línea y antes " +
+    "de su frase, pero cada paso en UNA frase de máximo doce palabras, sin " +
+    "numerar y sin pregunta al final. Conteste solo con la respuesta nueva.",
+} as const;
