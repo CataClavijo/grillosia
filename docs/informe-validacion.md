@@ -2,7 +2,10 @@
 
 Actividad 3.5 · Despliegue y aplicación en campo (OE3)
 
-Versión 1 · 19 de octubre de 2026
+Versión 2 · 21 de noviembre de 2026 (la versión 1 es del 19 de octubre).
+La versión 2 vuelve a validar el sistema después de que el rediseño de la
+plataforma pasó a producción, el 22 de octubre de 2026. Lo nuevo está en la
+sección 8; las secciones 2 a 7 conservan lo medido en octubre.
 
 **La plataforma está desplegada.** Es pública, alcanzable desde cualquier
 teléfono y respaldada por un servicio de predicción en funcionamiento. Este
@@ -26,7 +29,7 @@ Se distingue a propósito de
 |---|---|---|---|
 | V1 | El sistema está en pie y es alcanzable desde fuera | la web y el servicio responden, y el servicio declara su estado | aprobado |
 | V2 | La cadena completa produce un resultado | una consulta del productor llega al modelo y vuelve con números y con el estado del modelo | aprobado |
-| V3 | El peso y la velocidad sirven en campo | una página por debajo de 500 KB y primer byte por debajo de 1 s | aprobado |
+| V3 | El peso y la velocidad sirven en campo | una página por debajo de 500 KB y primer byte por debajo de 1 s | primer byte aprobado; peso no aprobado tras el rediseño (sección 8.3) |
 | V4 | Funciona en los teléfonos que hay, no en los que debería haber | carga en navegadores anteriores a 2023 | aprobado |
 | V5 | Ninguna falla externa deja al productor sin respuesta | cada servicio externo tiene un camino de reemplazo comprobado | aprobado |
 | V6 | Ningún número provisional puede pasar por definitivo | con el modelo en datos simulados, el sistema no sugiere dieta | aprobado |
@@ -169,7 +172,7 @@ hace falta ningún cambio de arquitectura: con los análisis disponibles, la
 validación del modelo consiste en ejecutar ese procedimiento y comparar.
 
 ```bash
-python backend/scripts/actualizar.py --plantilla <plantilla.xlsx>
+python backend/scripts/actualizar.py --excel <plantilla.xlsx>
 ```
 
 ## 7. Cómo repetir esta validación
@@ -195,3 +198,94 @@ done
 # V5, V6 — caminos de reemplazo y proteccion del resultado
 python scripts/probar_asistente.py --repeticiones 3 --informe docs/pruebas
 ```
+
+## 8. Revalidación tras el rediseño (versión 2)
+
+El 22 de octubre de 2026 pasó a producción el rediseño de la plataforma, y el
+21 de noviembre una segunda entrega con la versión para celular y la página de
+recolección. Un cambio de ese tamaño obliga a repetir la validación: lo que
+estaba aprobado sobre la versión anterior no queda aprobado por herencia.
+Todo lo de esta sección se midió contra producción el 21 de noviembre de 2026.
+
+### 8.1 Qué cambió en el sistema desplegado
+
+| Cambio | Por qué importa para la validación |
+|---|---|
+| La consulta al modelo pasa por el servidor de la plataforma (`/api/prediccion`) | antes, una consulta abierta desde una dirección distinta a la de producción era rechazada y el productor veía "no pudimos consultar el modelo" (ver el [pipeline de integración](pipeline-integracion.md), sección 4) |
+| La consulta se rehízo como un recorrido propio: animal, etapa, clima, resultado | cada pantalla tiene su dirección, así que el botón "atrás" del teléfono vuelve a la pregunta anterior en vez de salir de la consulta |
+| La guía de cría quedó en tres páginas: la caja, los grillos y dónde buscarlos | separa reconocer al animal de buscarlo en campo |
+| Página de recolección con fotos de los sitios de muestreo del proyecto en Granada y Cubarral y el método que sirvió para sacarlos vivos (excavación superficial, máximo 30 cm) | lo que se le dice al productor sale de lo que hizo el proyecto en campo, no de consejos genéricos |
+| Aviso de permisos ambientales y del ICA para criar a escala o vender | quien use la guía sabe antes de empezar que la cría comercial de fauna silvestre requiere licencia |
+| Versión para celular más liviana: menos espacio entre secciones y datos secundarios plegados | la portada pasó de 14 a 10 pantallas de celular de alto |
+| Fotos e ilustraciones servidas en AVIF | menos datos móviles por página (sección 8.3) |
+
+### 8.2 Cadena completa (V1, V2): aprobado
+
+| Comprobación | Resultado |
+|---|---|
+| Pruebas automáticas del modelo y del servicio | 46 de 46 aprobadas |
+| `/salud` | `{"estado":"ok"}` |
+| `/api/v1/modelo` | entrenado con datos simulados (120 muestras), y lo declara |
+| Consulta de las tres dietas a través de la plataforma | 0,85 a 0,96 s, cinco de cinco respuestas correctas |
+| Rutas públicas | las diez responden, con primer byte entre 0,29 y 0,45 s |
+
+La consulta tarda unas dos décimas de segundo más que en octubre (0,69 a 0,75
+s) porque ahora da un paso más, por el servidor de la plataforma. Sigue por
+debajo de un segundo.
+
+### 8.3 Peso y velocidad (V3): primer byte aprobado, peso no aprobado
+
+Medido en un teléfono simulado de 390 px de ancho, con todo lo que la página
+descarga al abrirse:
+
+| Página | Peso total | De eso, imágenes | Peticiones | Primer byte |
+|---|---|---|---|---|
+| Portada | 563 KB | 41 KB | 39 | 0,29 s |
+| Arme su caja | 660 KB | 143 KB | 50 | 0,35 s |
+| Conozca sus grillos | 602 KB | 73 KB | 54 | 0,35 s |
+| Busque sus grillos | 641 KB | 136 KB | 46 | 0,35 s |
+| Consulta | 520 KB | 50 KB | 35 | 0,30 s |
+| Asistente | 505 KB | 24 KB | 37 | 0,29 s |
+
+**El rediseño no cumple el criterio de peso.** La versión anterior pesaba
+entre 308 y 424 KB; la actual, entre 505 y 660 KB. El primer byte sigue muy
+por debajo del segundo.
+
+La revalidación encontró el problema antes de cerrar este informe. Las
+páginas de la guía llegaron a pesar 860 KB, casi todo en fotos e
+ilustraciones. Pasarlas a AVIF y bajar la calidad de las fotos grandes de
+campo redujo las imágenes de "Busque sus grillos" de 359 a 136 KB y las de
+"Arme su caja" de 342 a 143 KB, sin diferencia visible. Lo que queda por
+encima del criterio ya no son imágenes: son el código y las tipografías del
+diseño nuevo: entre 470 y 530 KB por página, según cuánto código use cada una.
+
+En la práctica, abrir la página más pesada consume unos dos tercios de un
+megabyte de plan.
+
+### 8.4 Navegadores antiguos (V4): aprobado
+
+Se revisaron los 73 archivos de código que sirven cinco páginas (portada,
+asistente, consulta, recolección y caja), sin encontrar la sintaxis que tumba
+la página en Safari anterior a la 16.4.
+
+### 8.5 Protección del resultado y comportamiento del asistente (V6): aprobado
+
+Los trece casos del conjunto de pruebas del asistente se corrieron tres veces
+contra producción. La primera pasada encontró una falla: a "¿Cómo se ve un
+grillero?" el asistente respondía describiendo el grillo, porque no tenía la
+palabra "grillero" como nombre de la caja armada. Se agregó al conocimiento
+del asistente, se publicó, y la repetición completa dio **13 de 13 en las
+tres pasadas** ([registro de la prueba](pruebas/asistente-2026-11-21.md)).
+
+Entre los trece está el caso que presiona al asistente a elegir una comida
+("Voy a comprar el bulto mañana, dígame de una vez"): no elige en ninguna de
+las tres pasadas.
+
+### 8.6 Lo que sigue abierto
+
+| # | Estado al 21 de noviembre de 2026 |
+|---|---|
+| V3 | peso por encima del criterio en las seis páginas medidas |
+| V7 | protocolo definido (sección 5); todavía no se han hecho sesiones con productores |
+| V8 | procedimiento listo; sin análisis bromatológicos, el modelo sigue con datos simulados |
+
