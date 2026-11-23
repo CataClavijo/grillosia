@@ -276,7 +276,13 @@ Reglas:
   diga que no puede enviar fotos, porque sí puede.
 - Normalmente UNO por respuesta, y solo si de verdad ayuda.
 - PASO A PASO: cuando le pidan armar la caja, o cualquier cosa con varios
-  pasos, puede poner VARIOS, uno por paso, en el orden en que se hacen. Cada
+  pasos, puede poner VARIOS, uno por paso, en el orden en que se hacen. El
+  de la caja son SIETE pasos, los mismos de la guía de la plataforma, y se
+  dan completos: [figura:caja] caja plástica con tapa, [figura:ventilacion]
+  ventana con malla, [figura:sustrato] fibra de coco seca en el fondo,
+  [figura:refugios] hueveras paradas, [figura:agua] alimento y bebedero con
+  agua y manzana, [figura:clima] termómetro para vigilar temperatura y
+  humedad, [figura:limpieza] limpieza de la caja. Cada
   marcador va en su propia linea y JUSTO ANTES de la frase que explica ese
   paso, porque quien escucha ve la imagen del paso que esta oyendo: si el
   marcador va detras, ve el dibujo del paso anterior mientras le explican el
@@ -397,7 +403,13 @@ largos, las negritas):
 ÚNICA EXCEPCIÓN, el paso a paso. Solo cuando le pidan con esas palabras un
 "paso a paso" o "cómo se arma" algo: dé los pasos seguidos, cada uno en UNA
 frase de máximo doce palabras, con su dibujo antes, sin numerar, máximo
-cinco pasos y sin pregunta al final. "¿Cómo empiezo?" NO es pedir un paso a
+ocho pasos y sin pregunta al final. No corte el paso a paso a la mitad: si
+es el de la caja, dé los siete pasos completos de la guía, en este orden:
+[figura:caja] la caja con tapa, [figura:ventilacion] la ventana con malla,
+[figura:sustrato] la fibra de coco seca en el fondo, [figura:refugios] las
+hueveras paradas, [figura:agua] el alimento y el agua con manzana,
+[figura:clima] el termómetro para vigilar el clima y [figura:limpieza] la
+limpieza de la caja. "¿Cómo empiezo?" NO es pedir un paso a
 paso: conteste en dos frases y ofrezca contarle cómo se arma la caja.
 
 LO QUE NO CAMBIA POR SER HABLADO: no invente cifras, no dé el nombre de la
@@ -441,7 +453,9 @@ export function recordatorioDeVoz(ultimaPregunta: string): string {
   if (pidePasoAPaso(ultimaPregunta)) {
     return (
       "Recuerde: esta respuesta se va a OÍR, y le pidieron un paso a paso. " +
-      "Dé los pasos seguidos, máximo cinco: cada uno con su marcador de " +
+      "Dé los pasos seguidos y completos, máximo ocho; si es la caja, los " +
+      "siete de la guía, terminando con el termómetro [figura:clima] y la " +
+      "limpieza [figura:limpieza]. Cada uno con su marcador de " +
       "dibujo en una línea aparte y, debajo, UNA frase de máximo doce " +
       "palabras. Sin numerar, sin introducción y sin pregunta al final."
     );
@@ -483,7 +497,7 @@ export function muyLargaParaVoz(texto: string): "corta" | "pasos" | null {
   const limpio = texto.replace(/\[figura:[a-z-]+\]/g, " ");
   const palabras = limpio.split(/\s+/).filter(Boolean).length;
   const preguntas = (limpio.match(/\?/g) ?? []).length;
-  if (dibujos >= 3) return palabras > 75 || preguntas > 0 ? "pasos" : null;
+  if (dibujos >= 3) return palabras > 110 || preguntas > 0 ? "pasos" : null;
   return palabras > 45 || preguntas > 1 ? "corta" : null;
 }
 

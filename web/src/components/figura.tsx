@@ -97,9 +97,9 @@ export const FIGURAS: DefinicionFigura[] = [
   {
     id: "sustrato",
     src: "/acuarelas/caja-sustrato.webp",
-    titulo: "La cama pareja en el fondo",
-    alt: "Un montón pequeño de sustrato seco de viruta y cartón picado.",
-    cuando: "Cuando pregunten por la cama, el sustrato o qué poner en el fondo.",
+    titulo: "Fibra de coco seca en el fondo",
+    alt: "Un montón pequeño de fibra de coco seca, suelta, para el fondo de la caja.",
+    cuando: "Cuando pregunten por la cama, el sustrato, la fibra de coco o qué poner en el fondo.",
   },
   {
     id: "refugios",
@@ -239,6 +239,14 @@ export const FIGURAS: DefinicionFigura[] = [
     alt: "Un termómetro-higrómetro digital pequeño.",
     cuando:
       "Cuando pregunten por la temperatura, la humedad o dónde poner el termómetro.",
+  },
+  {
+    id: "limpieza",
+    src: "/acuarelas/caja-limpieza.webp",
+    titulo: "La caja limpia, con coco y hueveras",
+    alt: "Caja plástica transparente con fibra de coco en el fondo y hueveras de cartón paradas, limpia y sin restos de comida.",
+    cuando:
+      "Cuando pregunten cómo limpiar la caja, cada cuánto cambiar la cama o qué hacer con la comida vieja y los grillos muertos.",
   },
 ];
 

@@ -199,7 +199,7 @@ export function Conversacion({
       <div
         ref={hilo}
         className={cn(
-          "flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto overflow-x-hidden",
+          "relative flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto overflow-x-hidden",
           panel ? "px-5 py-5" : "py-6",
         )}
         aria-live="polite"

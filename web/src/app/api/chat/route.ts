@@ -34,6 +34,10 @@ const DIETAS = ["D1", "D2", "D3"];
 
 /** Tope de vueltas de herramienta. Con una basta; dos es margen. */
 const MAX_VUELTAS = 2;
+/** Una pregunta de un productor cabe de sobra en 1.500 caracteres. */
+const MAX_LARGO_PERSONA = 1500;
+/** Las respuestas del asistente que vuelven en el historial. */
+const MAX_LARGO_ASISTENTE = 4000;
 
 /**
  * Respuestas para lo que no es del tema.
@@ -369,7 +373,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Petición inválida." }, { status: 400 });
   }
 
-  const entrantes = Array.isArray(cuerpo.mensajes) ? cuerpo.mensajes : [];
+  // Solo turnos de la persona y del asistente, y con tope de largo. Sin este
+  // filtro, quien llame directo a la ruta podia mandar un turno con
+  // `role: "system"` y darle instrucciones al modelo con la misma autoridad
+  // que las del proyecto, o pegar un texto enorme que se paga por palabra.
+  const entrantes = (Array.isArray(cuerpo.mensajes) ? cuerpo.mensajes : [])
+    .filter(
+      (m): m is MensajeEntrada =>
+        !!m &&
+        (m.role === "user" || m.role === "assistant") &&
+        typeof m.text === "string" &&
+        m.text.trim().length > 0,
+    )
+    .map((m) => ({
+      ...m,
+      text: m.text.slice(0, m.role === "user" ? MAX_LARGO_PERSONA : MAX_LARGO_ASISTENTE),
+    }));
   if (entrantes.length === 0) {
     return NextResponse.json({ error: "Sin mensajes." }, { status: 400 });
   }
