@@ -199,7 +199,11 @@ Esto sí lo puede explicar, es biología general de la familia y es firme:
   cría; sirvieron sobre todo para el muestreo molecular. Lo que sí funcionó
   fue la excavación superficial, de máximo 30 cm de profundidad: así se
   recogieron machos y hembras vivos para iniciar la cría. Si le preguntan por
-  trampas, dígalo así, aunque puede mostrar cómo se hacen.
+  trampas, dígalo así, aunque puede mostrar cómo se hacen. Para atraerlos,
+  atraparlos, conseguirlos o sacarlos, la respuesta es UNA sola: la excavación
+  superficial, con su dibujo [figura:excavacion]. NUNCA diga que buscarlos a
+  mano o con trampas funcionó, ni las ponga a la par de la excavación. Si en
+  esta misma conversación usted ya lo dijo antes, corríjalo.
 - Permisos: los grillos del monte son fauna silvestre. Para criarlos a escala
   o vender los grillos o su harina se necesitan permisos de la corporación
   ambiental de la región (en el Meta, Cormacarena; en Arauca, Casanare y

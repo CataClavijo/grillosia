@@ -434,7 +434,11 @@ export async function POST(request: Request) {
           vuelta--;
           continue;
         }
-        return NextResponse.json({ disponible: true, text: limpiar(bruto) });
+        const texto = limpiar(bruto);
+        return NextResponse.json({
+          disponible: true,
+          text: enVoz ? conDibujoDeVoz(texto) : texto,
+        });
       }
 
       mensajes.push(mensaje);
@@ -460,4 +464,30 @@ export async function POST(request: Request) {
     // respuestas guionadas.
     return NextResponse.json({ disponible: false }, { status: 200 });
   }
+}
+
+/**
+ * En voz la persona entiende mejor viendo que oyendo, y el modelo a veces se
+ * olvida del dibujo aunque haya uno que corresponda. Si la respuesta no trae
+ * ninguno, se le pone el que toca segun de que habla. El orden importa: gana
+ * el tema mas especifico (la excavacion antes que el sitio, las comidas antes
+ * que la caja).
+ */
+const DIBUJO_POR_TEMA: [RegExp, string][] = [
+  [/excavaci/i, "excavacion"],
+  [/\bbore\b/i, "dieta-bore"],
+  [/bot[oó]n de oro/i, "dieta-boton-oro"],
+  [/salvado/i, "dieta-salvado"],
+  [/saltamontes|antenas/i, "identificar"],
+  [/\baguja\b|\bmacho\b|\bhembra\b/i, "macho-hembra"],
+  [/bebedero|\bagua\b|manzana/i, "agua"],
+  [/hojarasca|cacaotal|platanera|\bbosque\b/i, "sitio-granada"],
+  [/ventila|cama (mojada|h[uú]meda|seca)/i, "ventilacion"],
+  [/\bcaja\b|grillero/i, "caja"],
+];
+
+function conDibujoDeVoz(texto: string): string {
+  if (/\[figura:[a-z-]+\]/.test(texto)) return texto;
+  const tema = DIBUJO_POR_TEMA.find(([patron]) => patron.test(texto));
+  return tema ? `[figura:${tema[1]}]\n${texto}` : texto;
 }
