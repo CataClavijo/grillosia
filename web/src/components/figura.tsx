@@ -136,12 +136,29 @@ export const FIGURAS: DefinicionFigura[] = [
       "Cuando pregunten por las antenas, o cuando una foto real ayude más que el dibujo comparativo para reconocer un grillo.",
   },
   {
+    id: "excavacion",
+    src: "/acuarelas/excavacion.webp",
+    titulo: "Excavación superficial, máximo 30 cm",
+    alt: "Corte del suelo de un bosque: la hojarasca y la tierra suelta de encima se abren con una pala pequeña, sin pasar de 30 centímetros de profundidad, donde se esconden los grillos.",
+    cuando:
+      "Cuando pregunten cómo atrapar, conseguir, sacar o recoger grillos vivos para empezar la cría. Es el método que SÍ le funcionó al proyecto en campo: use este dibujo antes que cualquier trampa.",
+  },
+  {
+    id: "sitio-granada",
+    src: "/fotos/sitios/granada-bosque.webp",
+    credito: "Proyecto GrillosIA",
+    titulo: "Sitio de muestreo en Granada, Meta",
+    alt: "Sotobosque en Granada, Meta: heliconias de flor roja, árboles delgados y palmas, con hojarasca en el suelo.",
+    cuando:
+      "Cuando pregunten dónde buscar grillos, en qué tipo de lugar viven o cómo es el sitio donde el proyecto los encontró.",
+  },
+  {
     id: "trampa-vaso",
     src: "/acuarelas/trampa-vaso.webp",
     titulo: "Trampa de vaso enterrado",
     alt: "Corte del suelo: un vaso plástico enterrado a ras de tierra con un pedazo de fruta dentro, y encima una teja apoyada en dos piedras que deja un hueco de entrada y tapa la lluvia.",
     cuando:
-      "Cuando pregunten cómo atrapar grillos, qué trampa poner, cómo hacer una trampa casera o cómo conseguirlos sin comprarlos.",
+      "Solo cuando pregunten por esta trampa en particular o cómo se hace una trampa de caída. En los ensayos del proyecto casi no dio grillos vivos: dígalo, y para conseguirlos muestre la excavación.",
   },
   {
     id: "atrapar-mano",
@@ -149,7 +166,7 @@ export const FIGURAS: DefinicionFigura[] = [
     titulo: "Atraparlos a mano, sin apretar",
     alt: "Dos manos: una baja ahuecada sobre un grillo posado en el suelo y la otra espera al lado para cerrar el hueco entre ambas.",
     cuando:
-      "Cuando pregunten cómo cogerlos con la mano, cómo agarrarlos sin lastimarlos o si se pueden tomar con los dedos.",
+      "Cuando pregunten cómo agarrar con la mano un grillo que ya encontró, sin lastimarlo. No es un método para conseguirlos: buscarlos a mano casi no dio grillos vivos en los ensayos.",
   },
   {
     id: "trampa-carton",
@@ -157,7 +174,7 @@ export const FIGURAS: DefinicionFigura[] = [
     titulo: "Cartón enrollado y huevera como refugio",
     alt: "Un pedazo de cartón corrugado enrollado y una huevera de cartón, con grillos metidos entre los pliegues.",
     cuando:
-      "Cuando pregunten por trampas de refugio, cómo juntarlos con cartón o huevera, o cómo atraerlos a un sitio para recogerlos.",
+      "Solo cuando pregunten por trampas de refugio con cartón o huevera. El proyecto no consiguió así los grillos para la cría: para eso muestre la excavación.",
   },
   {
     id: "identificar",
