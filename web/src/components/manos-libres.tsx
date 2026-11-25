@@ -285,6 +285,11 @@ const AVISOS: Record<
     texto:
       "Para oírle se necesita internet. Cuando vuelva la señal, toque el círculo.",
   },
+  "sin-servicio": {
+    titulo: "El dictado de este navegador no responde",
+    texto:
+      "Hay internet, pero el navegador no logró pasar su voz a texto. Toque el círculo para intentar otra vez; si sigue igual, abra GrillosIA en Google Chrome o en Safari.",
+  },
   otro: {
     titulo: "No pude abrir el micrófono",
     texto: "Toque el círculo para intentar otra vez.",

@@ -64,6 +64,11 @@ const MENSAJE_ERROR: Record<ErrorDictado | "no-disponible", { titulo: string; te
     titulo: "El dictado necesita internet",
     texto: "Revise la conexión o escriba su pregunta.",
   },
+  "sin-servicio": {
+    titulo: "El dictado de este navegador no responde",
+    texto:
+      "Hay internet, pero el navegador no logró pasar su voz a texto. Intente otra vez, escriba su pregunta o abra GrillosIA en Google Chrome o en Safari.",
+  },
   "sin-voz": {
     titulo: "No alcanzamos a oírle",
     texto: "Toque el micrófono y hable cerca del teléfono, sin prisa.",

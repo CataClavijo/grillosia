@@ -50,11 +50,21 @@ export type EstadoDictado = "inactivo" | "escuchando" | "no-disponible";
  * Por que fallo el dictado, dicho de forma que se pueda explicar en humano.
  * `permiso`: la persona (o el navegador) nego el microfono.
  * `sin-microfono`: no hay microfono o lo tiene otra aplicacion.
- * `sin-red`: el reconocimiento de Chrome necesita internet.
+ * `sin-red`: el reconocimiento de Chrome necesita internet y no lo hay.
+ * `sin-servicio`: SI hay internet, pero el servicio de dictado del navegador
+ *   no responde (pasa en Brave, Opera, algunos Chromium sin servicio de voz,
+ *   o cuando el de Google falla). El navegador lo reporta como "network",
+ *   asi que decir "no hay señal" ahi era mentirle a la persona.
  * `sin-voz`: se abrio el microfono pero no se oyo nada.
  * `otro`: cualquier otra cosa.
  */
-export type ErrorDictado = "permiso" | "sin-microfono" | "sin-red" | "sin-voz" | "otro";
+export type ErrorDictado =
+  | "permiso"
+  | "sin-microfono"
+  | "sin-red"
+  | "sin-servicio"
+  | "sin-voz"
+  | "otro";
 
 function traducirError(codigo: unknown): ErrorDictado | null {
   switch (codigo) {
@@ -105,6 +115,8 @@ export function useDictado(
   const [voz, setVoz] = useState(false);
   /** Reaperturas en silencio que lleva esta escucha. */
   const silencios = useRef(0);
+  /** Errores de red seguidos del dictado: se reintenta antes de avisar. */
+  const fallosRed = useRef(0);
   /**
    * Entre "ya termine de hablar" y que el navegador entregue el texto pasa un
    * momento. Sin mostrarlo, parecia que el boton no habia hecho nada.
@@ -237,6 +249,7 @@ export function useDictado(
     ultimo.current = "";
     enviado.current = false;
     silencios.current = 0;
+    fallosRed.current = 0;
     setParcial("");
     setVoz(false);
     r.lang = "es-CO";
@@ -302,7 +315,18 @@ export function useDictado(
     };
 
     r.onerror = (e: unknown) => {
-      const motivo = traducirError((e as { error?: unknown })?.error);
+      let motivo = traducirError((e as { error?: unknown })?.error);
+      if (motivo === "sin-red") {
+        const enLinea = typeof navigator === "undefined" || navigator.onLine !== false;
+        // El servicio de dictado de Chrome a veces falla una vez y a la
+        // siguiente responde. Mientras haya internet y nadie haya hablado
+        // todavia, se reintenta dos veces en silencio: `onend` reabre.
+        if (enLinea && queremosOir.current && !ultimo.current && fallosRed.current < 2) {
+          fallosRed.current++;
+          return;
+        }
+        if (enLinea) motivo = "sin-servicio";
+      }
       // Silencio con paciencia: no es un fallo todavia. Se deja que `onend`
       // reabra el microfono, que es quien lleva la cuenta.
       if (
