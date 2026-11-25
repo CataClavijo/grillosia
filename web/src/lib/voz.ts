@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { ReconocedorServidor, puedeGrabar } from "@/lib/dictado-servidor";
+
 /**
  * Voz del asistente.
  *
@@ -31,12 +33,31 @@ type Reconocedor = {
   onend: (() => void) | null;
 };
 
+/**
+ * Se pasa a transcribir en el servidor cuando el dictado del navegador fallo
+ * en esta visita aunque habia internet. Dura hasta recargar la pagina.
+ */
+let modoServidor = false;
+
+/**
+ * Brave trae la funcion de dictado pero le bloquea el servicio de Google, asi
+ * que falla siempre. Se va directo al servidor en vez de hacer esperar a la
+ * persona tres intentos fallidos.
+ */
+function esBrave(): boolean {
+  return typeof navigator !== "undefined" && "brave" in navigator;
+}
+
 function crearReconocedor(): Reconocedor | null {
   if (typeof window === "undefined") return null;
   const w = window as unknown as Record<string, unknown>;
   const Ctor = (w.SpeechRecognition ?? w.webkitSpeechRecognition) as
     | (new () => Reconocedor)
     | undefined;
+  if (Ctor && !modoServidor && !esBrave()) return new Ctor();
+  // Sin dictado propio (Firefox), con dictado bloqueado (Brave) o caido: se
+  // graba y se transcribe en el servidor.
+  if (puedeGrabar()) return new ReconocedorServidor() as unknown as Reconocedor;
   return Ctor ? new Ctor() : null;
 }
 
@@ -75,6 +96,9 @@ function traducirError(codigo: unknown): ErrorDictado | null {
       return "sin-microfono";
     case "network":
       return "sin-red";
+    case "servidor":
+      // La transcripcion en el servidor no respondio, con internet.
+      return "sin-servicio";
     case "no-speech":
       return "sin-voz";
     case "aborted":
@@ -164,6 +188,8 @@ export function useDictado(
   const ESPERA_TRAS_CIERRE_MS = 850;
   /** Cuando el navegador cierra solo pero seguimos queriendo escuchar. */
   const queremosOir = useRef(false);
+  /** `empezar`, para volver a abrir el microfono al cambiar al servidor. */
+  const reempezar = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     setEstado(hayDictado() ? "inactivo" : "no-disponible");
@@ -325,6 +351,23 @@ export function useDictado(
           fallosRed.current++;
           return;
         }
+        // Con internet y el dictado del navegador caido: se cambia a
+        // transcribir en el servidor y se vuelve a abrir el microfono, sin
+        // que la persona tenga que hacer nada.
+        if (enLinea && !(r instanceof ReconocedorServidor) && puedeGrabar()) {
+          modoServidor = true;
+          rec.current = null;
+          r.onresult = null;
+          r.onerror = null;
+          r.onend = null;
+          try {
+            r.abort?.();
+          } catch {
+            /* ya estaba cerrado */
+          }
+          window.setTimeout(() => reempezar.current?.(), 0);
+          return;
+        }
         if (enLinea) motivo = "sin-servicio";
       }
       // Silencio con paciencia: no es un fallo todavia. Se deja que `onend`
@@ -394,6 +437,10 @@ export function useDictado(
       setEstado("inactivo");
     }
   }, [alTerminar, paciencia]);
+
+  useEffect(() => {
+    reempezar.current = empezar;
+  }, [empezar]);
 
   useEffect(
     () => () => {
